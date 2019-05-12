@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { registerRootComponent, AppLoading, Asset, Font } from 'expo';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { View, Image, Dimensions } from 'react-native';
@@ -13,11 +14,10 @@ import SigninTrainee from './src/views/login/signinTrainee';
 import SigninTrainer from './src/views/login/signinTrainer';
 import Profile from './src/drawer/profile';
 import Lists from './src/drawer/lists';
-import ListTest from './src/Components/ListTest';
-import ListsScreen1 from './src/views/lists/screen1'
 import Settings from './src/drawer/settings';
 import HomeTrainee from './src/Pages/HomeTrainee';
 import HomeTrainer from './src/Pages/HomeTrainer';
+import TraineeProfile from './src/Pages/TraineeProfile';
 
 import CreateGroup from './src/Pages/createGroup';
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -55,6 +55,10 @@ const MainRoot = DrawerNavigator(
       // navigationOptions: {
       //   drawerLabel:()=>null
       // }
+    },
+    TraineeProfile: {
+      path: '/traineeProfile',
+      screen: TraineeProfile,
     },
     CreateGroup: {
       path: '/createGroup',
