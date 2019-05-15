@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { Text, View, Switch, StyleSheet, Dimensions, LayoutAnimation, ActivityIndicator, ScrollView, Button, TouchableOpacity } from 'react-native';
+import { Text, View, Switch, StyleSheet, Dimensions, LayoutAnimation, ActivityIndicator, ScrollView, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
-import { Avatar, Badge, Divider } from 'react-native-elements';
+import { Avatar, Badge, Divider, Button } from 'react-native-elements';
 import Map from '../Components/Map';
 import GenderButton from '../Components/genderButton';
 import { Font } from 'expo';
@@ -9,14 +9,17 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import ActionButton from 'react-native-action-button';
 import Icon1 from 'react-native-vector-icons/Feather';
 import Icon2 from 'react-native-vector-icons/AntDesign';
-import Icon3 from 'react-native-vector-icons/Foundation';
+import Icon3 from 'react-native-vector-icons/MaterialCommunityIcons';
+import IconNew from 'react-native-vector-icons/Entypo';
 import TimePickerNew from '../Components/TimePicker';
 import moment from 'moment';
 import PendingRequests from '../Components/PendingRequests';
 import ApprovedRequests from '../Components/ApprovedRequests';
-import FutureTrainings  from '../Components/FutureTrainings';
+import FutureTrainings from '../Components/FutureTrainings';
+import SearchModal from '../Components/SearchModal';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
+const SCREEN_HEIGHT = Dimensions.get('window').height;
 const MALE_AVATAR = require('../../Images/MaleAvatar.png');
 const FEMALE_AVATAR = require('../../Images/FemaleAvatar.png');
 const TRAINER_AVATAR = require('../../Images/TrainerAvatar.png');
@@ -36,16 +39,17 @@ export default class HomeTrainee extends Component {
     this.state = {
       status: 0,
       fontLoaded: false,
-      isSwitchOn: false,
-      isDateTimePickerVisible: false,
+      searchModalVisible: false,
+      searchMode: false,
+      //isSwitchOn: false,
       latitude: 0,
       longitude: 0,
-      withTrainer: false,
-      withPartner: false,
-      groupWithTrainer: false,
-      groupWithPartners: false,
-      startTime: (moment(new Date()).format('YYYY-MM-DD HH:mm:ss')),
-      endTime: (moment(new Date()).format('YYYY-MM-DD HH:mm:ss')),
+      // withTrainer: false,
+      // withPartner: false,
+      // groupWithTrainer: false,
+      // groupWithPartners: false,
+      // startTime: (moment(new Date()).format('YYYY-MM-DD HH:mm:ss')),
+      // endTime: (moment(new Date()).format('YYYY-MM-DD HH:mm:ss')),
       coupleResults: [],
       groupResults: [],
       pendingRequestsOn: false,
@@ -57,30 +61,15 @@ export default class HomeTrainee extends Component {
       approvedRequests: []
 
     };
-
-    this.onConfirmStartTime = this.onConfirmStartTime.bind(this);
+    //this.setSearchMode=this.setSearchMode.bind(this);
+    this.setSearchLocation = this.setSearchLocation.bind(this);
+    this.searchModalVisible = this.searchModalVisible.bind(this);
+    this.getCoupleResults = this.getCoupleResults.bind(this);
+    this.getGroupResults = this.getGroupResults.bind(this);
   }
 
-  boolToInt(b) {
-    if (b == true)
-      return 1;
-    else return 0;
-  }
-
-  onConfirmStartTime = (hour, minute) => {
-    start = hour + ":" + minute;
-    this.setState({ startTime: moment(new Date()).format('YYYY-MM-DD') + " " + start + ":00.000" });
-
-  }
-
-  onConfirmEndTime = (hour, minute) => {
-    end = hour + ":" + minute;
-    this.setState({ endTime: moment(new Date()).format('YYYY-MM-DD') + " " + end + ":00.000" });
-  }
-
-  switchChange() {
-    this.setState({ isSwitchOn: !this.state.isSwitchOn })
-
+  searchModalVisible() {
+    this.setState({ searchModalVisible: !this.state.searchModalVisible })
   }
 
   async componentDidMount() {
@@ -104,18 +93,6 @@ export default class HomeTrainee extends Component {
 
   }
 
-  setPartnerTraining = () =>
-    LayoutAnimation.easeInEaseOut() || this.setState({ withPartner: !this.state.withPartner });
-
-  setTrainerTraining = () =>
-    LayoutAnimation.easeInEaseOut() || this.setState({ withTrainer: !this.state.withTrainer });
-
-  setPartnersGroupTraining = () =>
-    LayoutAnimation.easeInEaseOut() || this.setState({ groupWithPartners: !this.state.groupWithPartners });
-
-  setTrainerGroupTraining = () =>
-    LayoutAnimation.easeInEaseOut() || this.setState({ groupWithTrainer: !this.state.groupWithTrainer });
-
   getCurrentLocation = () => {
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -133,61 +110,28 @@ export default class HomeTrainee extends Component {
     );
   };
 
-  search() {
-    this.setState({ coupleResults: [], groupResults: [] });
-    if (this.state.startTime < this.state.endTime) {
-      var OnlineDetails = {
-        //UserCode: 28,
-        UserCode: this.props.navigation.getParam('userCode', '0'),
-        Latitude: this.state.latitude,
-        Longitude: this.state.longitude,
-        StartTime: this.state.startTime,
-        EndTime: this.state.endTime,
-        WithTrainer: this.boolToInt(this.state.withTrainer),
-        WithPartner: this.boolToInt(this.state.withPartner),
-        GroupWithTrainer: this.boolToInt(this.state.groupWithTrainer),
-        GroupWithPartners: this.boolToInt(this.state.groupWithPartners),
-      };
+  getCoupleResults(coupleResults) {
+    this.setState({
+      coupleResults: coupleResults,
+    })
 
-      //נכנס רק אם משתמש חיפש אימון זוגי עם מאמן או מתאמן
+  }
 
-      if (OnlineDetails.WithPartner == 1 || OnlineDetails.WithTrainer == 1) {
+  getGroupResults(groupResults) {
+    this.setState({
+      groupResults: groupResults,
+    })
+  }
 
-        fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/InsertOnlineTrainee', {
-          method: 'POST',
-          headers: { "Content-type": "application/json; charset=UTF-8" },
-          body: JSON.stringify(OnlineDetails),
-        })
-          .then(res => res.json())
-          .then(response => {
-            if (response.length == 0) alert('No Couple Training Results');
-            else this.setState({ coupleResults: response });
-          })
+  setSearchLocation(Latitude, Longitude) {
+    this.setState({
+      latitude: Latitude,
+      longitude: Longitude
+    });
+  }
 
-          .catch(error => console.warn('Error:', error.message));
-      }
-
-      //נכנס רק אם משתמש חיפש אימון קבוצתי עם מאמן או בלי מאמן
-      if (this.state.groupWithTrainer || this.state.groupWithPartners) {
-
-        fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/SearchGroups', {
-
-          method: 'POST',
-          headers: { "Content-type": "application/json; charset=UTF-8" },
-          body: JSON.stringify(OnlineDetails),
-        })
-          .then(res => res.json())
-          .then(response => {
-            if (response.length == 0) alert('No Group Results');
-            else this.setState({ groupResults: response });
-          })
-
-          .catch(error => console.warn('Error:', error.message));
-      }
-
-    }
-    else alert('Start time cannot be before end time');
-
+  setSearchMode=(mode)=>{
+      this.setState({searchMode: mode});
   }
 
   getRequests(IsApproved) {
@@ -207,8 +151,8 @@ export default class HomeTrainee extends Component {
   }
 
   getFutureTrainings() {
-// + this.props.navigation.getParam('userCode', '0')
-    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetFutureCoupleTrainings?UserCode='+this.props.navigation.getParam('userCode', '0'), {
+    // + this.props.navigation.getParam('userCode', '0')
+    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetFutureCoupleTrainings?UserCode=' + this.props.navigation.getParam('userCode', '0'), {
 
       method: 'GET',
       headers: { "Content-type": "application/json; charset=UTF-8" },
@@ -218,347 +162,282 @@ export default class HomeTrainee extends Component {
         this.setState({ futureCoupleTrainings: response })
       })
       .catch(error => console.warn('Error:', error.message));
-//+ this.props.navigation.getParam('userCode', '0')
-      fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetFutureGroupTrainings?UserCode='+this.props.navigation.getParam('userCode', '0') , {
+    //+ this.props.navigation.getParam('userCode', '0')
+    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetFutureGroupTrainings?UserCode=' + this.props.navigation.getParam('userCode', '0'), {
 
-        method: 'GET',
-        headers: { "Content-type": "application/json; charset=UTF-8" },
+      method: 'GET',
+      headers: { "Content-type": "application/json; charset=UTF-8" },
+    })
+      .then(res => res.json())
+      .then(response => {
+        this.setState({ futureGroupTrainings: response })
       })
-        .then(res => res.json())
-        .then(response => {
-          this.setState({ futureGroupTrainings: response })
-        })
-        .catch(error => console.warn('Error:', error.message));
-console.warn("couple "+this.state.futureCoupleTrainings);
+      .catch(error => console.warn('Error:', error.message));
   }
 
 
-
+  //userCode={this.props.navigation.getParam('userCode', '0')}
   render() {
     return (
-      <View style={{ flex: 1, flexDirection: 'column', width: SCREEN_WIDTH }}>
 
-        {this.state.fontLoaded ?
+      <KeyboardAvoidingView behavior='position' style={styles.formContainer} keyboardVerticalOffset={-70}>
+        {this.state.status == 1 ?
 
-          <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', }} >
+          <View style={{ flex: 1, width: SCREEN_WIDTH, backgroundColor: 'white', height: SCREEN_HEIGHT, alignItems: 'center' }}>
+            {this.state.searchModalVisible ?
+              <SearchModal setSearchMode={this.setSearchMode} setSearchLocation={this.setSearchLocation} userCode={1} searchModalVisible={this.searchModalVisible} getCoupleResults={this.getCoupleResults} getGroupResults={this.getGroupResults} style={{ zIndex: 1000 }}></SearchModal>
+              : null}
 
-            <View style={styles.container}>
+            <View style={{ flex: 6, zIndex: 0, width: SCREEN_WIDTH, height: SCREEN_HEIGHT }} >
 
-              <Switch
-                trackColor={{ true: 'rgba(213, 100, 140, 1)' }}
-                style={styles.switch}
-                onValueChange={() => this.setState({ isSwitchOn: !this.state.isSwitchOn })}
-                value={this.state.isSwitchOn}
-              />
-
-              <View style={{ flex: 1, marginLeft: 45 }}>
-
-                <Avatar
-                  rounded
-                  source={
-                    PENDING_REQUESTS
-                  }
-                  size="medium"
-                  onPress={() => {
-                    this.setState({ pendingRequestsOn: !this.state.pendingRequestsOn, approvedRequestsOn: false, futureTrainingsOn: false, isSwitchOn: false });
-                    this.getRequests(false);
-                  }}
-                />
-
-                <Badge
-                  status="warning"
-                  containerStyle={{ position: 'absolute', top: -3, right: 35 }}
-                  value={this.state.pendingRequests.length}
-                />
-
-              </View>
-
-              <View style={{ flex: 1 }}>
-
-                <Avatar
-                  rounded
-                  source={
-                    APPROVED_REQUESTS
-                  }
-                  size="medium"
-                  onPress={() => {
-                    this.setState({ approvedRequestsOn: !this.state.approvedRequestsOn, pendingRequestsOn: false, futureTrainingsOn: false, isSwitchOn: false })
-                    this.getRequests(true);
-                  }}
-
-                />
-
-                <Badge
-                  status="primary"
-                  containerStyle={{ position: 'absolute', top: -3, right: 35 }}
-                  value={this.state.approvedRequests.length}
-                />
-
-              </View>
-
-              <View style={{ flex: 1 }}>
-
-                <Avatar
-                  rounded
-                  source={
-                    FUTURE_TRAININGS
-                  }
-                  size="medium"
-                  onPress={() => {
-                    this.setState({ futureTrainingsOn: !this.state.futureTrainingsOn, approvedRequestsOn: false, pendingRequestsOn: false, isSwitchOn: false });
-                    this.getFutureTrainings();
-                  }
-                  }
-                />
-
-                <Badge
-                  status="success"
-                  containerStyle={{ position: 'absolute', top: -3, right: 35 }}
-                  value={this.state.futureCoupleTrainings.length+this.state.futureGroupTrainings.length}
-                />
-
-              </View>
-
-            </View>
-
-            <View >
-
-              <Divider style={styles.dividerStyle}></Divider>
+              <Map style={{ zIndex: 0 }} SenderCode={this.props.navigation.getParam('userCode', '0')} coupleResults={this.state.coupleResults} groupResults={this.state.groupResults} longitude={this.state.longitude} latitude={this.state.latitude}></Map>
 
             </View>
 
 
-            {this.state.isSwitchOn ?
-              <View style={{ flex: 4, flexDirection: 'column', marginBottom: 15, marginTop: 10 }}>
 
-                <View style={styles.trainingsPreferencesStyle}>
+            {this.state.fontLoaded ?
+              <View style={{ flex: 1, zIndex: 1000, position: 'absolute', left: 0, top: 20, width: SCREEN_WIDTH, }}>
+                <View style={styles.container}>
+                  <IconNew
+                    name="menu"
+                    size={30}
+                    //type="entypo"
+                    containerStyle={{ marginLeft: 10 }}
+                    onPress={() => this.props.navigation.navigate('DrawerOpen')}
+                  />
+                  <View style={{ flex: 1, marginLeft: 55 }}>
 
-                  <Text style={style = styles.trainingsHeadline}>
-                    Looking for
-                    </Text>
-
-                  <View style={styles.trainingsPreferencesContainerStyle} >
-
-                    <GenderButton style={{ margin: 10 }}
-                      label="Partner"
-                      image={TRAINEE_AVATAR}
-                      onPress={
-                        () => {
-                          this.setPartnerTraining();
-                        }
+                    <Avatar
+                      rounded
+                      source={
+                        PENDING_REQUESTS
                       }
-                      selected={this.state.withPartner == true}
+                      size="medium"
+                      onPress={() => {
+                        this.setState({ pendingRequestsOn: !this.state.pendingRequestsOn, approvedRequestsOn: false, futureTrainingsOn: false, isSwitchOn: false });
+                        this.getRequests(false);
+                      }}
                     />
 
-                    <GenderButton style={{ margin: 10 }}
-                      label="Trainer"
-                      image={TRAINER_AVATAR}
-                      onPress={
-                        () => {
-                          this.setTrainerTraining();
-                        }
-                      }
-                      selected={this.state.withTrainer == true}
-                    />
-
-                    <GenderButton style={{ margin: 10 }}
-                      label="Partners"
-                      image={MALE_AVATAR}
-                      onPress={
-                        () => {
-                          this.setPartnersGroupTraining();
-                        }
-                      }
-                      selected={this.state.groupWithPartners == true}
-                    />
-
-                    <GenderButton style={{ margin: 10 }}
-                      label="Partners & Trainer"
-                      image={FEMALE_AVATAR}
-                      onPress={
-                        () => {
-                          this.setTrainerGroupTraining();
-                        }
-                      }
-                      selected={this.state.groupWithTrainer == true}
+                    <Badge
+                      status="warning"
+                      color='red'
+                      containerStyle={{ position: 'absolute', top: -3, }}
+                      value={this.state.pendingRequests.length}
                     />
 
                   </View>
 
+                  <View style={{ flex: 1 }}>
+
+                    <Avatar
+                      rounded
+                      source={
+                        APPROVED_REQUESTS
+                      }
+                      size="medium"
+                      onPress={() => {
+                        this.setState({ approvedRequestsOn: !this.state.approvedRequestsOn, pendingRequestsOn: false, futureTrainingsOn: false, isSwitchOn: false })
+                        this.getRequests(true);
+                      }}
+
+                    />
+
+                    <Badge
+                      status="primary"
+                      containerStyle={{ position: 'absolute', top: -3, }}
+                      value={this.state.approvedRequests.length}
+                    />
+
+                  </View>
+
+                  <View style={{ flex: 1 }}>
+
+                    <Avatar
+                      rounded
+                      source={
+                        FUTURE_TRAININGS
+                      }
+                      size="medium"
+                      onPress={() => {
+                        this.setState({ futureTrainingsOn: !this.state.futureTrainingsOn, approvedRequestsOn: false, pendingRequestsOn: false, isSwitchOn: false });
+                        this.getFutureTrainings();
+                      }
+                      }
+                    />
+
+                    <Badge
+                      status="success"
+                      containerStyle={{ position: 'absolute', top: -3, }}
+                      value={this.state.futureCoupleTrainings.length + this.state.futureGroupTrainings.length}
+                    />
+
+                  </View>
                 </View>
+                {this.state.pendingRequestsOn ?
 
-                <View style={{ flex: 1, flexDirection: 'row' }}>
+                  <PendingRequests PendingRequests={this.state.pendingRequests} UserCode={this.props.navigation.getParam('userCode', '0')}></PendingRequests>
+                  : null}
 
-                  <View style={{ flex: 4, flexDirection: 'row', marginLeft: 15 }}>
+                {this.state.approvedRequestsOn ?
+                  <ApprovedRequests ApprovedRequests={this.state.approvedRequests} UserCode={this.props.navigation.getParam('userCode', '0')} ></ApprovedRequests>
+                  : null
+                }
 
-                    <Icon
-                      size={40}
-                      color='rgba(216, 121, 112, 1)'
-                      name='clock-o'
-                    ></Icon>
 
-                    <View style={{ flex: 1, flexDirection: 'row' }}>
+                {this.state.futureTrainingsOn ?
+                  //{this.props.navigation.getParam('userCode', '0')}
+                  <FutureTrainings FutureCoupleTrainings={this.state.futureCoupleTrainings} FutureGroupTrainings={this.state.futureGroupTrainings} UserCode={this.props.navigation.getParam('userCode', '0')}></FutureTrainings>
+                  : null}
 
-                      <TimePickerNew setTime={this.onConfirmStartTime} title={'From: '}></TimePickerNew>
+                <View style={{ flex: 1, flexDirection: "column", justifyContent: 'center', top: 500, height: 200 }}>
+                  <View style={styles.searchButtonsContainer}>
 
-                      <TimePickerNew setTime={this.onConfirmEndTime} title={'To: '}></TimePickerNew>
+                      {this.state.searchMode ? 
+                      <ActionButton
 
-                    </View>
-
-                  </View >
-
-                  <View style={{ flex: 1, }}>
-
-                    <ActionButton
-                      buttonColor='#46db93'
-                      size={50}
                       renderIcon={active => active ? (<Icon1
-                        name="md-create"
-                        size={60}
+                        name="search"
+                        size={30}
+                        style={styles.uploadImageIcon}
                       />) :
-                        (<Icon
-                          name='search'
-                          color='white'
-                          size={20}
+                        (<Icon1
+                          name="search"
+                          size={30}
+                          style={styles.uploadImageIcon}
                         />)
+
                       }
-                      onPress={() => this.search()}
-                    ></ActionButton>
+                      verticalOrientation='up'
+                      buttonColor='rgba(71, 224, 135,0.7)'
+                      size={60}
+                    >
+                      <ActionButton.Item
+                        buttonColor='rgba(237,29,26,0.7)'
+                        onPress={()=>this.setSearchMode(false)}
+                      >
+                        <Icon2
+                          name="poweroff"
+                          size={30}
+                          style={styles.uploadImageIcon}
+                        />
+                      </ActionButton.Item>
+                        <ActionButton.Item
+                        buttonColor='rgba(255,255,255,0.7)'
+                        onPress={() => {
+                          this.props.navigation.navigate('CreateGroup', { creatorCode: this.props.navigation.getParam('userCode', '0'), isTrainer: 0 })
+                        }}
+                      >
+                        <Icon2
+                          name="addusergroup"
+                          size={30}
+                          style={styles.uploadImageIcon}
+                        />
+                      </ActionButton.Item>
+                      <ActionButton.Item
+                        buttonColor='rgba(255,255,255,0.7)'
+                        onPress={() => this.searchModalVisible()}
+                      >
+                        <Icon3
+                          name="account-search-outline"
+                          size={30}
+                          style={styles.uploadImageIcon}
+                        />
+                      </ActionButton.Item>
+                      </ActionButton>
+                       : 
+                       <ActionButton
 
+                       renderIcon={active => active ? (<Icon1
+                         name="search"
+                         size={30}
+                         style={styles.uploadImageIcon}
+                       />) :
+                         (<Icon1
+                           name="search"
+                           size={30}
+                           style={styles.uploadImageIcon}
+                         />)
+ 
+                       }
+                       verticalOrientation='up'
+                       buttonColor='rgba(255,255,255,0.7)'
+                       size={60}
+                     >
+                      
+                         <ActionButton.Item
+                         buttonColor='rgba(255,255,255,0.7)'
+                         onPress={() => {
+                           this.props.navigation.navigate('CreateGroup', { creatorCode: this.props.navigation.getParam('userCode', '0'), isTrainer: 0 })
+                         }}
+                       >
+                         <Icon2
+                           name="addusergroup"
+                           size={30}
+                           style={styles.uploadImageIcon}
+                         />
+                       </ActionButton.Item>
+                       <ActionButton.Item
+                         buttonColor='rgba(255,255,255,0.7)'
+                         onPress={() => this.searchModalVisible()}
+                       >
+                         <Icon3
+                           name="account-search-outline"
+                           size={30}
+                           style={styles.uploadImageIcon}
+                         />
+                       </ActionButton.Item>
+                       </ActionButton>
+
+                       }
+
+                    
+                   
                   </View>
-
                 </View>
 
+
+
               </View>
-              : null}
-
-            {this.state.pendingRequestsOn ?
-
-              <PendingRequests PendingRequests={this.state.pendingRequests} UserCode={this.props.navigation.getParam('userCode', '0')}></PendingRequests>
-              : null}
-
-  {this.state.approvedRequestsOn ?
-              <ApprovedRequests ApprovedRequests={this.state.approvedRequests} UserCode={this.props.navigation.getParam('userCode', '0')} ></ApprovedRequests>
-              : null
+              :
+              null
             }
 
-
-            {this.state.futureTrainingsOn ?
-            //{this.props.navigation.getParam('userCode', '0')}
-              <FutureTrainings FutureCoupleTrainings={this.state.futureCoupleTrainings} FutureGroupTrainings={this.state.futureGroupTrainings}  UserCode={this.props.navigation.getParam('userCode', '0')}></FutureTrainings>
-              : null}
-
-          
-
-
-            <View style={{ flex: 6, }}>
-
-              {this.state.status == 1 ?
-                <View style={{ flex: 1, flexDirection: 'column', alignItems: 'center' }}>
-                  <View style={{ flex: 1, position: 'absolute', zIndex: 10000, width: SCREEN_WIDTH - 30 }}>
-
-                    <GooglePlacesAutocomplete style={{ flex: 1, }}
-
-                      //MODE_OVERLAY={true}
-                      placeholder="Search"
-                      minLength={1} // minimum length of text to search
-                      autoFocus={false}
-                      returnKeyType={'search'}
-                      listViewDisplayed="false"
-                      styles={{
-                        listViewDisplayed: { backgroundColor: 'blue' }
-
-                      }
-                      }
-                      fetchDetails={true}
-                      renderDescription={row => row.description || row.formatted_address || row.name}
-                      onPress={(data, details = null) => {
-                        this.setState({ latitude: details.geometry.location.lat, longitude: details.geometry.location.lng });
-                      }}
-                      getDefaultValue={() => {
-                        return ''; // text input default value
-                      }}
-                      query={{
-                        key: 'AIzaSyB_OIuPsnUNvJ-CN0z2dir7cVbqJ7Xj3_Q',
-                        language: 'en', // language of the results
-                        //types: '(regions)', // default: 'geocode',
-                      }}
-                      styles={{
-                        description: {
-                          fontWeight: 'bold',
-                        },
-                        predefinedPlacesDescription: {
-                          color: '#1faadb',
-                        },
-                      }}
-                      enablePoweredByContainer={true}
-                      currentLocation={true}
-                      currentLocationLable='Current Location'
-                      nearbyPlacesAPI="GoogleReverseGeocoding"
-                      GooglePlacesSearchQuery={{
-                        rankby: 'distance',
-                        types: 'food',
-                      }}
-                      filterReverseGeocodingByTypes={[
-                        'locality',
-                        'administrative_area_level_3',
-                        'street_address'
-                      ]}
-                      debounce={200}
-                    />
-
-                  </View>
-
-                  <Map style={{ zIndex: 0 }} SenderCode={this.props.navigation.getParam('userCode', '0')} coupleResults={this.state.coupleResults} groupResults={this.state.groupResults} longitude={this.state.longitude} latitude={this.state.latitude}></Map>
-
-                  <ActionButton
-                    buttonColor='#46db93'
-                    size={65}
-                    renderIcon={active => active ? (<Icon2
-                      name="addusergroup"
-                      size={45}
-                    />) : (<Icon2
-                      name="addusergroup"
-                      size={45}
-                    />)
-                    }
-                    onPress={() => {
-                      this.props.navigation.navigate('CreateGroup', { creatorCode: this.props.navigation.getParam('userCode', '0'), isTrainer: 0 })
-                    }
-
-                    }
-                  ></ActionButton>
-
-                </View>
-                :
-                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                  <ActivityIndicator style={{ flex: 1 }}
-                    size='large'
-                  ></ActivityIndicator>
-                </View>}
-
-
-            </View>
-
-
-          </View>
-          :
-          null}
-
-      </View>
+          </View > :
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <ActivityIndicator style={{ flex: 1 }}
+              size='large'
+            ></ActivityIndicator>
+          </View>}
+      </KeyboardAvoidingView>
     );
   }
 }
-
 
 const styles = StyleSheet.create({
 
   container: {
     flex: 1,
+    zIndex: 1000,
+    position: 'absolute',
     flexDirection: 'row',
-    marginTop: 40,
-    marginLeft: 15,
-    height: 15,
+    alignItems: 'center',
+    height: 80,
+    padding: 10,
+    backgroundColor: 'rgba(255, 255, 255,0.9)',
+    width: SCREEN_WIDTH,
+    paddingLeft: 30
+
+  },
+
+  searchButtonsContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingRight: 60,
+    paddingLeft: 60
+
   },
 
   switch: {
@@ -569,7 +448,8 @@ const styles = StyleSheet.create({
     flex: 2,
     flexDirection: 'column',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    zIndex: 0
   },
 
   trainingsHeadline: {
@@ -586,6 +466,11 @@ const styles = StyleSheet.create({
 
   dividerStyle: {
     backgroundColor: 'gray'
-  }
+  },
+  formContainer: {
+    flex: 1,
+    justifyContent: 'space-around',
+    alignItems: 'center',
+  },
 
 })

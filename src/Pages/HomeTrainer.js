@@ -45,9 +45,9 @@ export default class HomeTrainer extends Component {
       endTime: (moment(new Date()).format('YYYY-MM-DD HH:mm:ss')),
       coupleResults: [],
       groupResults: [],
-pendingRequests: false,
-approvedRequests: false, 
-futureTrainings: false
+      pendingRequests: false,
+      approvedRequests: false,
+      futureTrainings: false
     };
 
     this.onConfirmStartTime = this.onConfirmStartTime.bind(this);
@@ -133,22 +133,22 @@ futureTrainings: false
         Longitude: this.state.longitude,
         StartTime: this.state.startTime,
         EndTime: this.state.endTime,
-       
+
       };
       console.warn(OnlineDetails);
 
-     
-        fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/InsertOnlineTrainer', {
-          method: 'POST',
-          headers: { "Content-type": "application/json; charset=UTF-8" },
-          body: JSON.stringify(OnlineDetails),
-        })
-          .then(res => res.json())
-          .then(response => {
-          })
 
-          .catch(error => console.warn('Error:', error.message));
-      }
+      fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/InsertOnlineTrainer', {
+        method: 'POST',
+        headers: { "Content-type": "application/json; charset=UTF-8" },
+        body: JSON.stringify(OnlineDetails),
+      })
+        .then(res => res.json())
+        .then(response => {
+        })
+
+        .catch(error => console.warn('Error:', error.message));
+    }
 
 
   }
@@ -178,7 +178,7 @@ futureTrainings: false
                     PENDING_REQUESTS
                   }
                   size="medium"
-                  onPress={()=>this.setState({pendingRequests: true })}
+                  onPress={() => this.setState({ pendingRequests: true })}
                 />
 
                 <Badge
@@ -197,7 +197,7 @@ futureTrainings: false
                     APPROVED_REQUESTS
                   }
                   size="medium"
-                  onPress={()=> this.setState({approvedRequests: true})}
+                  onPress={() => this.setState({ approvedRequests: true })}
                 />
 
                 <Badge
@@ -216,7 +216,7 @@ futureTrainings: false
                     FUTURE_TRAININGS
                   }
                   size="medium"
-                  onPress={()=> this.setState({futureTrainings: true})}
+                  onPress={() => this.setState({ futureTrainings: true })}
 
                 />
 
@@ -296,22 +296,22 @@ futureTrainings: false
 
               </View>
               :
-              this.state.pendingRequests ? 
-              <View>
+              this.state.pendingRequests ?
+                <View>
 
-              </View> 
-              : 
-                this.state.futureTrainings ? 
-              <View>
-                  
-              </View> 
-              : 
-              this.state.approvedRequests ? 
-              <View>
-                  
-              </View> 
-              : null
-            
+                </View>
+                :
+                this.state.futureTrainings ?
+                  <View>
+
+                  </View>
+                  :
+                  this.state.approvedRequests ?
+                    <View>
+
+                    </View>
+                    : null
+
             }
 
             <View style={{ flex: 6, }}>

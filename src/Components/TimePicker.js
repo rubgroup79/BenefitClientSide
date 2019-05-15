@@ -44,6 +44,7 @@ export default class TimePickerNew extends Component {
                     }}
                     titleStyle={{
                         color: 'rgba(216, 121, 112, 1)',
+                        fontFamily: 'regular'
                     }}
                     backgroundColor='transparent'
                     onPress={() => this.TimePicker.open()}

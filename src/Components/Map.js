@@ -26,11 +26,11 @@ export default class LocationPage extends React.Component {
       <View style={styles.container}>
 
         <MapView
+          //provider = { MapView.PROVIDER_GOOGLE }
           style={{
             flex: 1,
-            width: Dimensions.get('window').width - 30
+            width: SCREEN_WIDTH +30
           }}
-
           region={{
             latitude: this.props.latitude,
             longitude: this.props.longitude,
@@ -106,6 +106,7 @@ const styles = StyleSheet.create({
     fontSize: 40,
     marginTop: -14,
     width: SCREEN_WIDTH + 20,
+    backgroundColor: 'white',
 
   },
 
