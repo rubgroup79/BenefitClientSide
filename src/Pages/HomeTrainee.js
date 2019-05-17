@@ -1,18 +1,13 @@
 import React, { Component } from 'react';
-import { Text, View, Switch, StyleSheet, Dimensions, LayoutAnimation, ActivityIndicator, ScrollView, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
-import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
-import { Avatar, Badge, Divider, Button } from 'react-native-elements';
+import { View, StyleSheet, Dimensions, ActivityIndicator, KeyboardAvoidingView } from 'react-native';
+import { Avatar, Badge } from 'react-native-elements';
 import Map from '../Components/Map';
-import GenderButton from '../Components/genderButton';
 import { Font } from 'expo';
-import Icon from 'react-native-vector-icons/FontAwesome';
 import ActionButton from 'react-native-action-button';
 import Icon1 from 'react-native-vector-icons/Feather';
 import Icon2 from 'react-native-vector-icons/AntDesign';
 import Icon3 from 'react-native-vector-icons/MaterialCommunityIcons';
 import IconNew from 'react-native-vector-icons/Entypo';
-import TimePickerNew from '../Components/TimePicker';
-import moment from 'moment';
 import PendingRequests from '../Components/PendingRequests';
 import ApprovedRequests from '../Components/ApprovedRequests';
 import FutureTrainings from '../Components/FutureTrainings';
@@ -20,10 +15,6 @@ import SearchModal from '../Components/SearchModal';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
-const MALE_AVATAR = require('../../Images/MaleAvatar.png');
-const FEMALE_AVATAR = require('../../Images/FemaleAvatar.png');
-const TRAINER_AVATAR = require('../../Images/TrainerAvatar.png');
-const TRAINEE_AVATAR = require('../../Images/TraineeAvatar.png');
 const APPROVED_REQUESTS = require('../../Images/ApprovedRequests.png');
 const PENDING_REQUESTS = require('../../Images/PendingRequests.png');
 const FUTURE_TRAININGS = require('../../Images/FutureTrainings.png');
@@ -41,15 +32,8 @@ export default class HomeTrainee extends Component {
       fontLoaded: false,
       searchModalVisible: false,
       searchMode: false,
-      //isSwitchOn: false,
       latitude: 0,
       longitude: 0,
-      // withTrainer: false,
-      // withPartner: false,
-      // groupWithTrainer: false,
-      // groupWithPartners: false,
-      // startTime: (moment(new Date()).format('YYYY-MM-DD HH:mm:ss')),
-      // endTime: (moment(new Date()).format('YYYY-MM-DD HH:mm:ss')),
       coupleResults: [],
       groupResults: [],
       pendingRequestsOn: false,
@@ -61,7 +45,7 @@ export default class HomeTrainee extends Component {
       approvedRequests: []
 
     };
-    //this.setSearchMode=this.setSearchMode.bind(this);
+    
     this.setSearchLocation = this.setSearchLocation.bind(this);
     this.searchModalVisible = this.searchModalVisible.bind(this);
     this.getCoupleResults = this.getCoupleResults.bind(this);
@@ -130,8 +114,8 @@ export default class HomeTrainee extends Component {
     });
   }
 
-  setSearchMode=(mode)=>{
-      this.setState({searchMode: mode});
+  setSearchMode = (mode) => {
+    this.setState({ searchMode: mode });
   }
 
   getRequests(IsApproved) {
@@ -175,7 +159,6 @@ export default class HomeTrainee extends Component {
       .catch(error => console.warn('Error:', error.message));
   }
 
-
   //userCode={this.props.navigation.getParam('userCode', '0')}
   render() {
     return (
@@ -184,6 +167,7 @@ export default class HomeTrainee extends Component {
         {this.state.status == 1 ?
 
           <View style={{ flex: 1, width: SCREEN_WIDTH, backgroundColor: 'white', height: SCREEN_HEIGHT, alignItems: 'center' }}>
+
             {this.state.searchModalVisible ?
               <SearchModal setSearchMode={this.setSearchMode} setSearchLocation={this.setSearchLocation} userCode={1} searchModalVisible={this.searchModalVisible} getCoupleResults={this.getCoupleResults} getGroupResults={this.getGroupResults} style={{ zIndex: 1000 }}></SearchModal>
               : null}
@@ -194,11 +178,12 @@ export default class HomeTrainee extends Component {
 
             </View>
 
-
-
             {this.state.fontLoaded ?
+
               <View style={{ flex: 1, zIndex: 1000, position: 'absolute', left: 0, top: 20, width: SCREEN_WIDTH, }}>
+
                 <View style={styles.container}>
+
                   <IconNew
                     name="menu"
                     size={30}
@@ -206,6 +191,7 @@ export default class HomeTrainee extends Component {
                     containerStyle={{ marginLeft: 10 }}
                     onPress={() => this.props.navigation.navigate('DrawerOpen')}
                   />
+
                   <View style={{ flex: 1, marginLeft: 55 }}>
 
                     <Avatar
@@ -274,9 +260,10 @@ export default class HomeTrainee extends Component {
                     />
 
                   </View>
-                </View>
-                {this.state.pendingRequestsOn ?
 
+                </View>
+
+                {this.state.pendingRequestsOn ?
                   <PendingRequests PendingRequests={this.state.pendingRequests} UserCode={this.props.navigation.getParam('userCode', '0')}></PendingRequests>
                   : null}
 
@@ -285,131 +272,137 @@ export default class HomeTrainee extends Component {
                   : null
                 }
 
-
                 {this.state.futureTrainingsOn ?
                   //{this.props.navigation.getParam('userCode', '0')}
                   <FutureTrainings FutureCoupleTrainings={this.state.futureCoupleTrainings} FutureGroupTrainings={this.state.futureGroupTrainings} UserCode={this.props.navigation.getParam('userCode', '0')}></FutureTrainings>
                   : null}
 
                 <View style={{ flex: 1, flexDirection: "column", justifyContent: 'center', top: 500, height: 200 }}>
+
                   <View style={styles.searchButtonsContainer}>
 
-                      {this.state.searchMode ? 
+                    {this.state.searchMode ?
                       <ActionButton
-
-                      renderIcon={active => active ? (<Icon1
-                        name="search"
-                        size={30}
-                        style={styles.uploadImageIcon}
-                      />) :
-                        (<Icon1
+                        renderIcon={active => active ? (<Icon1
                           name="search"
                           size={30}
                           style={styles.uploadImageIcon}
-                        />)
+                        />) :
+                          (<Icon1
+                            name="search"
+                            size={30}
+                            style={styles.uploadImageIcon}
+                          />)
 
-                      }
-                      verticalOrientation='up'
-                      buttonColor='rgba(71, 224, 135,0.7)'
-                      size={60}
-                    >
-                      <ActionButton.Item
-                        buttonColor='rgba(237,29,26,0.7)'
-                        onPress={()=>this.setSearchMode(false)}
+                        }
+                        verticalOrientation='up'
+                        buttonColor='rgba(71, 224, 135,0.7)'
+                        size={60}
                       >
-                        <Icon2
-                          name="poweroff"
-                          size={30}
-                          style={styles.uploadImageIcon}
-                        />
-                      </ActionButton.Item>
+
                         <ActionButton.Item
-                        buttonColor='rgba(255,255,255,0.7)'
-                        onPress={() => {
-                          this.props.navigation.navigate('CreateGroup', { creatorCode: this.props.navigation.getParam('userCode', '0'), isTrainer: 0 })
-                        }}
-                      >
-                        <Icon2
-                          name="addusergroup"
-                          size={30}
-                          style={styles.uploadImageIcon}
-                        />
-                      </ActionButton.Item>
-                      <ActionButton.Item
-                        buttonColor='rgba(255,255,255,0.7)'
-                        onPress={() => this.searchModalVisible()}
-                      >
-                        <Icon3
-                          name="account-search-outline"
-                          size={30}
-                          style={styles.uploadImageIcon}
-                        />
-                      </ActionButton.Item>
+                          buttonColor='rgba(237,29,26,0.7)'
+                          onPress={() => this.setSearchMode(false)}
+                        >
+                          <Icon2
+                            name="poweroff"
+                            size={30}
+                            style={styles.uploadImageIcon}
+                          />
+                        </ActionButton.Item>
+
+                        <ActionButton.Item
+                          buttonColor='rgba(255,255,255,0.7)'
+                          onPress={() => {
+                            this.props.navigation.navigate('CreateGroup', { creatorCode: this.props.navigation.getParam('userCode', '0'), isTrainer: 0 })
+                          }}
+                        >
+                          <Icon2
+                            name="addusergroup"
+                            size={30}
+                            style={styles.uploadImageIcon}
+                          />
+                        </ActionButton.Item>
+
+                        <ActionButton.Item
+                          buttonColor='rgba(255,255,255,0.7)'
+                          onPress={() => this.searchModalVisible()}
+                        >
+                          <Icon3
+                            name="account-search-outline"
+                            size={30}
+                            style={styles.uploadImageIcon}
+                          />
+                        </ActionButton.Item>
                       </ActionButton>
-                       : 
-                       <ActionButton
 
-                       renderIcon={active => active ? (<Icon1
-                         name="search"
-                         size={30}
-                         style={styles.uploadImageIcon}
-                       />) :
-                         (<Icon1
-                           name="search"
-                           size={30}
-                           style={styles.uploadImageIcon}
-                         />)
- 
-                       }
-                       verticalOrientation='up'
-                       buttonColor='rgba(255,255,255,0.7)'
-                       size={60}
-                     >
-                      
-                         <ActionButton.Item
-                         buttonColor='rgba(255,255,255,0.7)'
-                         onPress={() => {
-                           this.props.navigation.navigate('CreateGroup', { creatorCode: this.props.navigation.getParam('userCode', '0'), isTrainer: 0 })
-                         }}
-                       >
-                         <Icon2
-                           name="addusergroup"
-                           size={30}
-                           style={styles.uploadImageIcon}
-                         />
-                       </ActionButton.Item>
-                       <ActionButton.Item
-                         buttonColor='rgba(255,255,255,0.7)'
-                         onPress={() => this.searchModalVisible()}
-                       >
-                         <Icon3
-                           name="account-search-outline"
-                           size={30}
-                           style={styles.uploadImageIcon}
-                         />
-                       </ActionButton.Item>
-                       </ActionButton>
+                      :
 
-                       }
+                      <ActionButton
+                        renderIcon={active => active ? (<Icon1
+                          name="search"
+                          size={30}
+                          style={styles.uploadImageIcon}
+                        />) :
+                          (<Icon1
+                            name="search"
+                            size={30}
+                            style={styles.uploadImageIcon}
+                          />)
+                        }
+                        verticalOrientation='up'
+                        buttonColor='rgba(255,255,255,0.7)'
+                        size={60}
+                      >
 
-                    
-                   
+                        <ActionButton.Item
+                          buttonColor='rgba(255,255,255,0.7)'
+                          onPress={() => {
+                            this.props.navigation.navigate('CreateGroup', { creatorCode: this.props.navigation.getParam('userCode', '0'), isTrainer: 0 })
+                          }}
+                        >
+                          <Icon2
+                            name="addusergroup"
+                            size={30}
+                            style={styles.uploadImageIcon}
+                          />
+                        </ActionButton.Item>
+
+                        <ActionButton.Item
+                          buttonColor='rgba(255,255,255,0.7)'
+                          onPress={() => this.searchModalVisible()}
+                        >
+                          <Icon3
+                            name="account-search-outline"
+                            size={30}
+                            style={styles.uploadImageIcon}
+                          />
+                        </ActionButton.Item>
+
+                      </ActionButton>
+                    }
                   </View>
+
                 </View>
-
-
 
               </View>
               :
+
               null
+
             }
 
           </View > :
+
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+
             <ActivityIndicator style={{ flex: 1 }}
               size='large'
             ></ActivityIndicator>
-          </View>}
+
+          </View>
+        }
+
       </KeyboardAvoidingView>
     );
   }

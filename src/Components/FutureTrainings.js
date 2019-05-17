@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
-import { Text, View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { Text, View, StyleSheet, ScrollView, TouchableOpacity,Dimensions } from 'react-native';
 import { Avatar, } from 'react-native-elements';
 import Icon2 from 'react-native-vector-icons/AntDesign';
 import Icon3 from 'react-native-vector-icons/Foundation';
+
+const SCREEN_WIDTH = Dimensions.get('window').width;
+const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 export default class FutureTrainings extends Component {
     constructor(props) {
@@ -94,7 +97,6 @@ export default class FutureTrainings extends Component {
                         >
                             {x.WithTrainer == 1 ? "Trainer: " : null} {x.PartnerFirstName + ' ' + x.PartnerLastName + ', ' + x.PartnerAge}
                         </Text>
-
 
                         {x.WithTrainer ?
                             <View
@@ -282,7 +284,7 @@ export default class FutureTrainings extends Component {
 
     render() {
         return (
-            <View style={{ flex: 4, flexDirection: 'column', backgroundColor: 'rgba(222,222,222,1)', alignContent: "center" }}>
+            <View style={{ flex: 1, flexDirection: 'column', backgroundColor: 'rgba(255,255,255,0.9)', alignContent: "center", position:'absolute', zIndex:2, top:90, width:SCREEN_WIDTH }}>
                 <View style={{ flex: 0.2, flexDirection: 'column', alignContent: 'center' }}>
                     <Text style={style = styles.trainingsHeadline}>
                         Your Future Trainings
