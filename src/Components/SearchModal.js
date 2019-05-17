@@ -82,10 +82,11 @@ export default class SearchModal extends Component {
     }
 
     search() {
+        console.warn(this.state.startTime , this.state.endTime);
         if (!this.state.withPartner && !this.state.withTrainer && !this.state.groupWithPartners && !this.state.groupWithTrainer)
             alert("Please choose who to want to train with");
         else {
-            if (this.state.startTime < this.state.endTime)
+            if (this.state.startTime > this.state.endTime)
                 alert("Start time cannot be before end time");
             else {
                 if (this.state.latitude == 0 && this.state.longitude == 0) {
