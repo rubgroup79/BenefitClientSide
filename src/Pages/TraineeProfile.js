@@ -46,7 +46,7 @@ class CustomButton extends Component {
         buttonStyle={
           selected
             ? {
-              backgroundColor: 'rgba(213, 100, 140, 1)',
+              backgroundColor: '#75cac3',
               borderRadius: 100,
               width: 127,
             }
@@ -115,7 +115,7 @@ export default class TraineeProfile extends Component {
       <SafeAreaView style={{ flex: 1 }}>
         <StatusBar barStyle="light-content" />
         {this.state.fontLoaded ? (
-          <View style={{ flex: 1, backgroundColor: 'rgba(47,44,60,1)' }}>
+          <View style={{ flex: 1, backgroundColor: '#293046' }}>
             <View>
               <Button
                 buttonStyle={
@@ -226,7 +226,7 @@ export default class TraineeProfile extends Component {
                   style={{
                     flex: 1,
                     fontSize: 15,
-                    color: 'rgba(216, 121, 112, 1)',
+                    color: '#FCFCD4',
                     fontFamily: 'regular',
                     marginLeft: 40,
                   }}
@@ -374,7 +374,7 @@ const styles = StyleSheet.create({
     alignContent: 'center',
   },
   nameHeader: {
-    color: 'white',
+    color: '#ECECEC',
     fontSize: 26,
     textAlign: 'center',
     fontFamily: 'bold',

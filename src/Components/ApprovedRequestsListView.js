@@ -3,11 +3,12 @@ import { Text, View, StyleSheet, ScrollView, TouchableOpacity,Dimensions } from 
 import { Avatar, } from 'react-native-elements';
 import Icon2 from 'react-native-vector-icons/AntDesign';
 import Icon3 from 'react-native-vector-icons/Foundation';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
-export default class ApprovedRequests extends Component {
+export default class ApprovedRequestsListView extends Component {
   constructor(props) {
     super(props);
 
@@ -134,12 +135,12 @@ export default class ApprovedRequests extends Component {
   render() {
     return (
       <View style={{ flex: 1, flexDirection: 'column', backgroundColor: 'rgba(255,255,255,0.9)', alignContent: "center", position:'absolute', zIndex:2, top:90, width:SCREEN_WIDTH }}>
-        <View style={{ flex: 0.2, flexDirection: 'column', alignContent: 'center' }}>
 
-          <Text style={style = styles.trainingsHeadline}>
-            Your Approved Requests
-         </Text>
-        </View>
+
+<View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                    <Icon name='close' style={styles.closeIcon} size={20} color='gray' onPress={() => this.props.closeListView()}></Icon>
+                    <Text style={styles.headline}>Approved Requests</Text>
+                </View>
         <ScrollView style={{ flex: 1, marginBottom: 20 }}>
           {this.props.ApprovedRequests.map((x) => {
             return (<View>{this.renderApprovedSuggestions(x)}</View>)
@@ -167,4 +168,14 @@ const styles = StyleSheet.create({
     color: 'rgba(216, 121, 112, 1)',
     fontFamily: 'regular',
   },
+  closeIcon: {
+    left: 20,
+    flex:1
+},
+headline: {
+    flex: 3,
+    fontSize: 23,
+    color: '#f34573',
+    fontFamily: 'regular',
+},
 })

@@ -43,7 +43,7 @@ export default class TimePickerNew extends Component {
                         backgroundColor: 'transparent'
                     }}
                     titleStyle={{
-                        color: 'rgba(216, 121, 112, 1)',
+                        color: 'gray',
                         fontFamily: 'regular'
                     }}
                     backgroundColor='transparent'
@@ -77,7 +77,7 @@ export default class TimePickerNew extends Component {
             justifyContent: 'center',
             alignItems: "center",
             paddingTop: 0,
-            marginTop: -30
+            top:-17
         },
 
     })

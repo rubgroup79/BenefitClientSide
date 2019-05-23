@@ -12,7 +12,6 @@ import {
 } from 'react-native';
 import { Button, Input, Slider } from 'react-native-elements';
 import { Font } from 'expo';
-import GenderButton from '../../Components/genderButton';
 import NumericInput from 'react-native-numeric-input';
 import Icon from "react-native-vector-icons/Entypo";
 import Icon1 from "react-native-vector-icons/Ionicons";

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Dimensions, ActivityIndicator, KeyboardAvoidingView } from 'react-native';
-import { Avatar, Badge } from 'react-native-elements';
+import { View, StyleSheet, Dimensions, ActivityIndicator, KeyboardAvoidingView, TouchableOpacity, Text } from 'react-native';
+import { Avatar, Badge, Image } from 'react-native-elements';
 import Map from '../Components/Map';
 import { Font } from 'expo';
 import ActionButton from 'react-native-action-button';
@@ -8,13 +8,16 @@ import Icon1 from 'react-native-vector-icons/Feather';
 import Icon2 from 'react-native-vector-icons/AntDesign';
 import Icon3 from 'react-native-vector-icons/MaterialCommunityIcons';
 import IconNew from 'react-native-vector-icons/Entypo';
-import PendingRequests from '../Components/PendingRequests';
-import ApprovedRequests from '../Components/ApprovedRequests';
-import FutureTrainings from '../Components/FutureTrainings';
+import PendingRequestsListView from '../Components/PendingRequestsListView';
+import ApprovedRequestsListView from '../Components/ApprovedRequestsListView';
+import FutureTrainingsListView from '../Components/FutureTrainingsListView';
 import SearchModal from '../Components/SearchModal';
+import CreateGroupModal from '../Components/CreateGroupModal';
 
+const LOADING=require('../../Images/LoadingLogo.gif');
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
+const SEARCH_VIEW = require('../../Images/SearchView.png');
 const APPROVED_REQUESTS = require('../../Images/ApprovedRequests.png');
 const PENDING_REQUESTS = require('../../Images/PendingRequests.png');
 const FUTURE_TRAININGS = require('../../Images/FutureTrainings.png');
@@ -31,32 +34,44 @@ export default class HomeTrainee extends Component {
       status: 0,
       fontLoaded: false,
       searchModalVisible: false,
+      createGroupModalVisible: false,
       searchMode: false,
       latitude: 0,
       longitude: 0,
       coupleResults: [],
       groupResults: [],
-      pendingRequestsOn: false,
       pendingRequests: [],
-      futureTrainingsOn: false,
       futureCoupleTrainings: [],
       futureGroupTrainings: [],
-      approvedRequestsOn: false,
-      approvedRequests: []
+      approvedRequests: [],
+      searchResultsMapView: false,
+      pendingRequestsMapView: false,
+      approvedRequestsMapView: false,
+      futureTrainingsMapView: false,
+      listView: false
 
     };
+
     
+    this.closeListView = this.closeListView.bind(this);
     this.setSearchLocation = this.setSearchLocation.bind(this);
     this.searchModalVisible = this.searchModalVisible.bind(this);
+    this.createGroupModalVisible = this.createGroupModalVisible.bind(this);
     this.getCoupleResults = this.getCoupleResults.bind(this);
     this.getGroupResults = this.getGroupResults.bind(this);
+    this.checkIfUserOnline = this.checkIfUserOnline.bind(this);
   }
 
   searchModalVisible() {
     this.setState({ searchModalVisible: !this.state.searchModalVisible })
   }
 
+  createGroupModalVisible() {
+    this.setState({ createGroupModalVisible: !this.state.createGroupModalVisible })
+  }
+
   async componentDidMount() {
+
     await Font.loadAsync({
       georgia: require('../../assets/fonts/Georgia.ttf'),
       regular: require('../../assets/fonts/Montserrat-Regular.ttf'),
@@ -67,6 +82,7 @@ export default class HomeTrainee extends Component {
     this.setState({
       fontLoaded: true,
     });
+
   }
 
   UNSAFE_componentWillMount() {
@@ -74,7 +90,33 @@ export default class HomeTrainee extends Component {
     this.getFutureTrainings();
     this.getRequests(true);
     this.getRequests(false);
+    this.checkIfUserOnline();
+  }
 
+
+  checkIfUserOnline() {
+    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/CheckIfUserOnline?UserCode=' + this.props.navigation.getParam('userCode', '0') + '&IsTrainer=0', {
+
+      method: 'GET',
+      headers: { "Content-type": "application/json; charset=UTF-8" },
+    })
+      .then(res => res.json())
+      .then(response => {
+        if (response) this.setState({ searchMode: true })
+      })
+      .catch(error => console.warn('Error:', error.message));
+  }
+
+  goOffline() {
+    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GoOffline?UserCode=' + this.props.navigation.getParam('userCode', '0') + '&IsTrainer=0', {
+      method: 'POST',
+      body: JSON.stringify({}),
+      headers: { "Content-type": "application/json; charset=UTF-8" },
+    })
+      .then(response => { alert('Youre now Offline'); })
+      .catch(error => console.warn('Error:', error.message));
+
+    this.setState({ searchMode: false });
   }
 
   getCurrentLocation = () => {
@@ -114,8 +156,15 @@ export default class HomeTrainee extends Component {
     });
   }
 
+  closeListView(){
+    this.setState({listView:false});
+  }
+
   setSearchMode = (mode) => {
     this.setState({ searchMode: mode });
+    this.setState({searchResultsMapView:mode});
+    if (!mode)
+      this.setState({pendingRequestsMapView:false, approvedRequestsMapView:false, futureTrainingsMapView:false})
   }
 
   getRequests(IsApproved) {
@@ -146,7 +195,7 @@ export default class HomeTrainee extends Component {
         this.setState({ futureCoupleTrainings: response })
       })
       .catch(error => console.warn('Error:', error.message));
-    //+ this.props.navigation.getParam('userCode', '0')
+
     fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetFutureGroupTrainings?UserCode=' + this.props.navigation.getParam('userCode', '0'), {
 
       method: 'GET',
@@ -159,247 +208,305 @@ export default class HomeTrainee extends Component {
       .catch(error => console.warn('Error:', error.message));
   }
 
-  //userCode={this.props.navigation.getParam('userCode', '0')}
   render() {
     return (
 
       <KeyboardAvoidingView behavior='position' style={styles.formContainer} keyboardVerticalOffset={-70}>
-        {this.state.status == 1 ?
+        {this.state.status == 1 && this.state.fontLoaded ?
 
           <View style={{ flex: 1, width: SCREEN_WIDTH, backgroundColor: 'white', height: SCREEN_HEIGHT, alignItems: 'center' }}>
+            {this.state.createGroupModalVisible ?
+              <CreateGroupModal createGroupModalVisible={this.createGroupModalVisible} CreatorCode={this.props.navigation.getParam('userCode', '0')} IsTrainer={0} ></CreateGroupModal>
+              : null}
 
             {this.state.searchModalVisible ?
               <SearchModal setSearchMode={this.setSearchMode} setSearchLocation={this.setSearchLocation} userCode={1} searchModalVisible={this.searchModalVisible} getCoupleResults={this.getCoupleResults} getGroupResults={this.getGroupResults} style={{ zIndex: 1000 }}></SearchModal>
               : null}
 
             <View style={{ flex: 6, zIndex: 0, width: SCREEN_WIDTH, height: SCREEN_HEIGHT }} >
-
-              <Map style={{ zIndex: 0 }} SenderCode={this.props.navigation.getParam('userCode', '0')} coupleResults={this.state.coupleResults} groupResults={this.state.groupResults} longitude={this.state.longitude} latitude={this.state.latitude}></Map>
-
+              <Map style={{ zIndex: 0 }} SenderCode={this.props.navigation.getParam('userCode', '0')} HomeTraineeStates={this.state}></Map>
             </View>
 
-            {this.state.fontLoaded ?
 
-              <View style={{ flex: 1, zIndex: 1000, position: 'absolute', left: 0, top: 20, width: SCREEN_WIDTH, }}>
 
-                <View style={styles.container}>
+            <View style={{ flex: 1, zIndex: 1000, position: 'absolute', left: 0, top: 20, width: SCREEN_WIDTH, }}>
+
+              <View style={styles.container}>
+                {/* <View style={{ flex: 1, }}>
 
                   <IconNew
                     name="menu"
-                    size={30}
-                    //type="entypo"
+                    size={23}
                     containerStyle={{ marginLeft: 10 }}
                     onPress={() => this.props.navigation.navigate('DrawerOpen')}
                   />
+                </View> */}
 
-                  <View style={{ flex: 1, marginLeft: 55 }}>
 
-                    <Avatar
-                      rounded
-                      source={
-                        PENDING_REQUESTS
-                      }
-                      size="medium"
+                <View style={{ flex: 8, flexDirection: 'row', alignItems: 'center', marginLeft: 25, marginTop: 15 }}>
+                  {this.state.searchMode ?
+                    <View style={{ flex: 1, }}>
+
+                      <TouchableOpacity
+                        onPress={() => {
+                          this.setState({ searchResultsMapView: !this.state.searchResultsMapView, pendingRequestsMapView:false, approvedRequestsMapView:false,futureTrainingsMapView:false});
+                          
+                        }}
+                      >
+                        {this.state.searchResultsMapView ?<Image
+                          source={
+                            PENDING_REQUESTS
+                          }
+                          style={{ width: 60, height: 60 }}
+
+                        /> : <Image
+                          source={
+                            SEARCH_VIEW
+                          }
+                          style={{ width: 60, height: 60 }}
+
+                        />}
+                      </TouchableOpacity>
+                      <View style={{ left: -5, top: -58, width: 18, height: 18, borderRadius: 10, borderColor: '#82d7ed', borderWidth: 2, backgroundColor: 'white', alignItems: "center", justifyContent: 'center' }}>
+                        <Text
+                          style={{ color: 'black', fontFamily: 'regular', fontSize: 11, position: 'absolute' }}
+                        >{this.state.coupleResults.length + this.state.groupResults.length}
+                        </Text>
+                      </View>
+                    </View> : null}
+
+                  <View style={{ flex: 1, }}>
+                    <TouchableOpacity
                       onPress={() => {
-                        this.setState({ pendingRequestsOn: !this.state.pendingRequestsOn, approvedRequestsOn: false, futureTrainingsOn: false, isSwitchOn: false });
+                        this.setState({ pendingRequestsMapView: !this.state.pendingRequestsMapView, approvedRequestsMapView: false, futureTrainingsMapView: false, searchResultsMapView: false });
                         this.getRequests(false);
                       }}
-                    />
+                    >
+                      <Image
+                        source={
+                          PENDING_REQUESTS
+                        }
+                        style={{ width: 60, height: 60 }}
 
-                    <Badge
-                      status="warning"
-                      color='red'
-                      containerStyle={{ position: 'absolute', top: -3, }}
-                      value={this.state.pendingRequests.length}
-                    />
+                      />
+                    </TouchableOpacity>
+                    <View style={{ left: -5, top: -58, width: 18, height: 18, borderRadius: 10, borderColor: '#82d7ed', borderWidth: 2, backgroundColor: 'white', alignItems: "center", justifyContent: 'center' }}>
+                      <Text
+                        style={{ color: 'black', fontFamily: 'regular', fontSize: 11, position: 'absolute' }}
+                      >{this.state.pendingRequests.length}
+                      </Text>
+                    </View>
 
                   </View>
 
-                  <View style={{ flex: 1 }}>
-
-                    <Avatar
-                      rounded
-                      source={
-                        APPROVED_REQUESTS
-                      }
-                      size="medium"
+                  <View style={{ flex: 1, }}>
+                    <TouchableOpacity
                       onPress={() => {
-                        this.setState({ approvedRequestsOn: !this.state.approvedRequestsOn, pendingRequestsOn: false, futureTrainingsOn: false, isSwitchOn: false })
+                        this.setState({ approvedRequestsMapView: !this.state.approvedRequestsMapView, pendingRequestsMapView: false, futureTrainingsMapView: false, searchResultsMapView: false})
                         this.getRequests(true);
                       }}
+                    >
+                      <Image
+                        source={
+                          APPROVED_REQUESTS
+                        }
+                        style={{ width: 60, height: 60 }}
+                      />
 
-                    />
-
-                    <Badge
-                      status="primary"
-                      containerStyle={{ position: 'absolute', top: -3, }}
-                      value={this.state.approvedRequests.length}
-                    />
-
+                    </TouchableOpacity>
+                    <View style={{ left: -5, top: -58, width: 18, height: 18, borderRadius: 10, borderColor: '#82d7ed', borderWidth: 2, backgroundColor: 'white', alignItems: "center", justifyContent: 'center' }}>
+                      <Text
+                        style={{ color: 'black', fontFamily: 'regular', fontSize: 11, position: 'absolute' }}
+                      >{this.state.approvedRequests.length}
+                      </Text>
+                    </View>
                   </View>
-
-                  <View style={{ flex: 1 }}>
-
-                    <Avatar
-                      rounded
-                      source={
-                        FUTURE_TRAININGS
-                      }
-                      size="medium"
+                  <View style={{ flex: 1, }}>
+                    <TouchableOpacity
                       onPress={() => {
-                        this.setState({ futureTrainingsOn: !this.state.futureTrainingsOn, approvedRequestsOn: false, pendingRequestsOn: false, isSwitchOn: false });
+                        this.setState({ futureTrainingsMapView: !this.state.futureTrainingsMapView, approvedRequestsMapView: false, pendingRequestsMapView: false,searchResultsMapView: false });
                         this.getFutureTrainings();
-                      }
-                      }
-                    />
+                      }}
+                    >
+                      <Image
+                        source={
+                          FUTURE_TRAININGS
+                        }
+                        style={{ width: 60, height: 60 }}
 
-                    <Badge
-                      status="success"
-                      containerStyle={{ position: 'absolute', top: -3, }}
-                      value={this.state.futureCoupleTrainings.length + this.state.futureGroupTrainings.length}
-                    />
+                      />
+                    </TouchableOpacity>
+                    <View style={{ left: -5, top: -58, width: 18, height: 18, borderRadius: 10, borderColor: '#82d7ed', borderWidth: 2, backgroundColor: 'white', alignItems: "center", justifyContent: 'center' }}>
+                      <Text
+                        style={{ color: 'black', fontFamily: 'regular', fontSize: 11, position: 'absolute' }}
+                      >{this.state.futureCoupleTrainings.length + this.state.futureGroupTrainings.length}
+                      </Text>
+                    </View>
 
                   </View>
-
-                </View>
-
-                {this.state.pendingRequestsOn ?
-                  <PendingRequests PendingRequests={this.state.pendingRequests} UserCode={this.props.navigation.getParam('userCode', '0')}></PendingRequests>
-                  : null}
-
-                {this.state.approvedRequestsOn ?
-                  <ApprovedRequests ApprovedRequests={this.state.approvedRequests} UserCode={this.props.navigation.getParam('userCode', '0')} ></ApprovedRequests>
-                  : null
-                }
-
-                {this.state.futureTrainingsOn ?
-                  //{this.props.navigation.getParam('userCode', '0')}
-                  <FutureTrainings FutureCoupleTrainings={this.state.futureCoupleTrainings} FutureGroupTrainings={this.state.futureGroupTrainings} UserCode={this.props.navigation.getParam('userCode', '0')}></FutureTrainings>
-                  : null}
-
-                <View style={{ flex: 1, flexDirection: "column", justifyContent: 'center', top: 500, height: 200 }}>
-
-                  <View style={styles.searchButtonsContainer}>
-
-                    {this.state.searchMode ?
-                      <ActionButton
-                        renderIcon={active => active ? (<Icon1
-                          name="search"
-                          size={30}
-                          style={styles.uploadImageIcon}
-                        />) :
-                          (<Icon1
-                            name="search"
-                            size={30}
-                            style={styles.uploadImageIcon}
-                          />)
-
-                        }
-                        verticalOrientation='up'
-                        buttonColor='rgba(71, 224, 135,0.7)'
-                        size={60}
-                      >
-
-                        <ActionButton.Item
-                          buttonColor='rgba(237,29,26,0.7)'
-                          onPress={() => this.setSearchMode(false)}
-                        >
-                          <Icon2
-                            name="poweroff"
-                            size={30}
-                            style={styles.uploadImageIcon}
-                          />
-                        </ActionButton.Item>
-
-                        <ActionButton.Item
-                          buttonColor='rgba(255,255,255,0.7)'
-                          onPress={() => {
-                            this.props.navigation.navigate('CreateGroup', { creatorCode: this.props.navigation.getParam('userCode', '0'), isTrainer: 0 })
-                          }}
-                        >
-                          <Icon2
-                            name="addusergroup"
-                            size={30}
-                            style={styles.uploadImageIcon}
-                          />
-                        </ActionButton.Item>
-
-                        <ActionButton.Item
-                          buttonColor='rgba(255,255,255,0.7)'
-                          onPress={() => this.searchModalVisible()}
-                        >
-                          <Icon3
-                            name="account-search-outline"
-                            size={30}
-                            style={styles.uploadImageIcon}
-                          />
-                        </ActionButton.Item>
-                      </ActionButton>
-
-                      :
-
-                      <ActionButton
-                        renderIcon={active => active ? (<Icon1
-                          name="search"
-                          size={30}
-                          style={styles.uploadImageIcon}
-                        />) :
-                          (<Icon1
-                            name="search"
-                            size={30}
-                            style={styles.uploadImageIcon}
-                          />)
-                        }
-                        verticalOrientation='up'
-                        buttonColor='rgba(255,255,255,0.7)'
-                        size={60}
-                      >
-
-                        <ActionButton.Item
-                          buttonColor='rgba(255,255,255,0.7)'
-                          onPress={() => {
-                            this.props.navigation.navigate('CreateGroup', { creatorCode: this.props.navigation.getParam('userCode', '0'), isTrainer: 0 })
-                          }}
-                        >
-                          <Icon2
-                            name="addusergroup"
-                            size={30}
-                            style={styles.uploadImageIcon}
-                          />
-                        </ActionButton.Item>
-
-                        <ActionButton.Item
-                          buttonColor='rgba(255,255,255,0.7)'
-                          onPress={() => this.searchModalVisible()}
-                        >
-                          <Icon3
-                            name="account-search-outline"
-                            size={30}
-                            style={styles.uploadImageIcon}
-                          />
-                        </ActionButton.Item>
-
-                      </ActionButton>
-                    }
-                  </View>
-
                 </View>
 
               </View>
-              :
 
-              null
+              {this.state.pendingRequestsMapView && this.state.listView ?
+                <PendingRequestsListView closeListView={this.closeListView} PendingRequests={this.state.pendingRequests} UserCode={this.props.navigation.getParam('userCode', '0')}></PendingRequestsListView>
+                : null}
 
-            }
+              {this.state.approvedRequestsMapView && this.state.listView ?
+                <ApprovedRequestsListView closeListView={this.closeListView} ApprovedRequests={this.state.approvedRequests} UserCode={this.props.navigation.getParam('userCode', '0')} ></ApprovedRequestsListView>
+                : null
+              }
 
-          </View > :
+              {this.state.futureTrainingsMapView && this.state.listView ?
+                //{this.props.navigation.getParam('userCode', '0')}
+                <FutureTrainingsListView closeListView={this.closeListView} FutureCoupleTrainings={this.state.futureCoupleTrainings} FutureGroupTrainings={this.state.futureGroupTrainings} UserCode={this.props.navigation.getParam('userCode', '0')}></FutureTrainingsListView>
+                : null}
+              
+              
+              {!this.state.listView &&((this.state.searchResultsMapView && (this.state.coupleResults.length!=0 || this.state.groupResults.length!=0)) || (this.state.pendingRequestsMapView && this.state.pendingRequests.length!=0) || (this.state.approvedRequestsMapView && this.state.approvedRequests.length!=0) || (this.state.futureTrainingsMapView && (this.state.futureCoupleTrainings.length!=0 || this.state.futureGroupTrainings.length!=0)))
+                ?
+                <View style={{ flex: 1, top:80 }}>
+                 
+                  <ActionButton
+                    onPress={() => this.setState({listView:!this.state.listView})}
+                    renderIcon={() =>
+                      (<IconNew
+                        name="list"
+                        size={20}
+                      />)
+                    }
+                    buttonColor='rgba(255,255,255,0.7)'
+                    size={35}
+                  >
+                  </ActionButton>
+                </View>
+                : null}
+
+
+
+              <View style={styles.searchButtonsContainer}>
+                <View style={{ flex: 1, left: -85 }}>
+                  <ActionButton
+                    onPress={() => {
+                      this.getCurrentLocation()}}
+                    renderIcon={() =>
+                      (<Icon1
+                        name="navigation"
+                        size={30}
+                      />)
+                    }
+                    buttonColor='rgba(255,255,255,0.7)'
+                    size={60}
+                  >
+                  </ActionButton>
+                </View>
+                <View style={{ flex: 1 }}>
+                  {this.state.searchMode ?
+
+                    <ActionButton
+                      renderIcon={active => active ? (<Icon1
+                        name="search"
+                        size={30}
+                      />) :
+                        (<Icon1
+                          name="search"
+                          size={30}
+                        />)
+                      }
+                      verticalOrientation='up'
+                      buttonColor='rgba(71, 224, 135,0.7)'
+                      size={60}
+                    >
+
+                      <ActionButton.Item
+                        buttonColor='rgba(237,29,26,0.7)'
+                        onPress={() => {
+                          this.goOffline();
+                        }}
+                      >
+                        <Icon2
+                          name="poweroff"
+                          size={30}
+                        />
+                      </ActionButton.Item>
+
+                      <ActionButton.Item
+                        buttonColor='rgba(255,255,255,0.7)'
+                        onPress={() => {
+                          this.createGroupModalVisible();
+                        }}
+                      >
+                        <Icon2
+                          name="addusergroup"
+                          size={30}
+                        />
+                      </ActionButton.Item>
+
+                      <ActionButton.Item
+                        buttonColor='rgba(255,255,255,0.7)'
+                        onPress={() => this.searchModalVisible()}
+                      >
+                        <Icon3
+                          name="account-search-outline"
+                          size={30}
+                        />
+                      </ActionButton.Item>
+                    </ActionButton>
+                    :
+                    <ActionButton
+                      renderIcon={active => active ? (<Icon1
+                        name="search"
+                        size={30}
+                      />) :
+                        (<Icon1
+                          name="search"
+                          size={30}
+                        />)
+                      }
+                      verticalOrientation='up'
+                      buttonColor='rgba(255,255,255,0.7)'
+                      size={60}
+                    >
+
+                      <ActionButton.Item
+                        buttonColor='rgba(255,255,255,0.7)'
+                        onPress={() => {
+                          this.createGroupModalVisible();
+                        }}
+                      >
+                        <Icon2
+                          name="addusergroup"
+                          size={30}
+                        />
+                      </ActionButton.Item>
+
+                      <ActionButton.Item
+                        buttonColor='rgba(255,255,255,0.7)'
+                        onPress={() => this.searchModalVisible()}
+                      >
+                        <Icon3
+                          name="account-search-outline"
+                          size={30}
+                        />
+                      </ActionButton.Item>
+
+                    </ActionButton>
+
+                  }
+                </View>
+              </View>
+            </View>
+
+          </View>
+
+          :
 
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
 
-            <ActivityIndicator style={{ flex: 1 }}
+            {/* <ActivityIndicator style={{ flex: 1 }}
               size='large'
-            ></ActivityIndicator>
-
+            ></ActivityIndicator> */}
+<Image source={LOADING}></Image>
           </View>
         }
 
@@ -416,20 +523,24 @@ const styles = StyleSheet.create({
     position: 'absolute',
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     height: 80,
     padding: 10,
-    backgroundColor: 'rgba(255, 255, 255,0.9)',
+    backgroundColor: 'rgba(255, 255, 255,0.5)',
     width: SCREEN_WIDTH,
-    paddingLeft: 30
+    paddingLeft: 30,
+    marginTop: 10,
+
 
   },
 
   searchButtonsContainer: {
     flex: 1,
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingRight: 60,
-    paddingLeft: 60
+    justifyContent: 'center',
+    top: 480,
+    width: SCREEN_WIDTH,
+    height: 200
 
   },
 

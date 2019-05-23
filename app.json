@@ -9,9 +9,8 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "primaryColor": "#cccccc",
-    "icon": "./assets/icons/icon.png",
     "splash": {
-      "image": "./assets/icons/loading.png"
+      "image": "./Images/LogoWithName.png"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -22,3 +21,4 @@
     }
   }
 }
+  // "icon": "./assets/images/LogoWithName.png",

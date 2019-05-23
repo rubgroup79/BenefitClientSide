@@ -11,8 +11,8 @@ import {
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
-const GenderButton = props => {
-    const { image, label, labelColor, selected, ...attributes } = props;
+const AvatarImage = props => {
+    const { image, label, labelColor, selected,height, width, selectedHeight, selectedWidth,lableFontSize, ...attributes } = props;
     return (
         <TouchableOpacity {...attributes}>
             <View
@@ -21,14 +21,14 @@ const GenderButton = props => {
                     selected && styles.userTypeItemContainerSelected,
                 ]}
             >
-                <Text style={[styles.userTypeLabel, { color: labelColor }]}>
+                <Text style={[styles.lable, { color: labelColor, fontSize: lableFontSize, fontFamily: 'bold', }]}>
                     {label}
                 </Text>
                 <Image
                     source={image}
                     style={[
-                        styles.userTypeMugshot,
-                        selected && styles.userTypeMugshotSelected,
+                        styles.userTypeMugshot, { height: height, width: width,},
+                        selected && (styles.userTypeMugshotSelected, {height: selectedHeight, width: selectedWidth,}),
                     ]}
                 />
             </View>
@@ -49,20 +49,19 @@ const styles = StyleSheet.create({
     },
     userTypeMugshot: {
         margin: 15,
-        height: 40,
-        width: 40,
+        // height: height,
+        // width: width,
     },
-    userTypeMugshotSelected: {
-        height: 50,
-        width: 50,
-    },
+    // userTypeMugshotSelected: {
+    //     height: selectedHeight,
+    //     width: selectedWidth,
+    // },
 
-    userTypeLabel: {
-        color: 'yellow',
+    label: {
         fontFamily: 'bold',
-        fontSize: 11,
+        // fontSize: lableFontSize,
     },
 
 })
 
-export default GenderButton;
+export default AvatarImage;

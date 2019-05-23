@@ -11,11 +11,9 @@ import {
 } from 'react-native';
 import { Font } from 'expo';
 import { Input, Button, withTheme } from 'react-native-elements';
-import MyDatePicker from '../../Components/datePicker';
+import MyDatePicker from '../../Components/DatePicker';
 import Icon from 'react-native-vector-icons/SimpleLineIcons';
-import UserTypeItem from '../../Components/userTypeItem';
-import GenderButton from '../../Components/genderButton';
-
+import AvatarImage from '../../Components/AvatarImage';
 // Enable LayoutAnimation on Android
 
 const MALE_AVATAR = require('../../../Images/MaleAvatar.png');
@@ -109,7 +107,7 @@ class CustomButton extends Component {
         buttonStyle={
           selected
             ? {
-              backgroundColor: 'rgba(213, 100, 140, 1)',
+              backgroundColor: '#75cac3',
               borderRadius: 100,
               width: 127,
             }
@@ -197,8 +195,8 @@ export default class SignIn1 extends Component {
         if (this.state.isTrainer == 0)
           this.props.navigation.navigate('SigninTrainee', { email: this.props.navigation.getParam('email', null), password: this.props.navigation.getParam('password', null), firstName: this.state.firstName, lastName: this.state.lastName, gender: this.state.gender, dateOfBirth: this.state.dateOfBirth, sportCategories: this.state.sportCategories });
         // USER IS TRAINER
-          else {
-            this.props.navigation.navigate('SigninTrainer', { email: this.props.navigation.getParam('email', null), password: this.props.navigation.getParam('password', null), firstName: this.state.firstName, lastName: this.state.lastName, gender: this.state.gender, dateOfBirth: this.state.dateOfBirth, sportCategories: this.state.sportCategories });
+        else {
+          this.props.navigation.navigate('SigninTrainer', { email: this.props.navigation.getParam('email', null), password: this.props.navigation.getParam('password', null), firstName: this.state.firstName, lastName: this.state.lastName, gender: this.state.gender, dateOfBirth: this.state.dateOfBirth, sportCategories: this.state.sportCategories });
 
           console.warn(this.state);
         }
@@ -333,20 +331,31 @@ export default class SignIn1 extends Component {
 
               <View style={styles.userTypesContainer}>
 
-                <UserTypeItem
+                <AvatarImage
                   label="Trainee"
-                  labelColor="#ECC841"
+                  lableFontSize={11}
+                  labelColor={'#75cac3'}
+                  image={FEMALE_AVATAR}
+                  height={70}
+                  width={70}
+                  selectedHeight={90}
+                  selectedWidth={90}
                   image={TRAINEE_AVATAR}
-                  onPress={() => {  
+                  onPress={() => {
                     this.setSelectedType('Trainee');
                     this.setState({ isTrainer: 0 });
                   }}
                   selected={selectedType === 'Trainee'}
                 />
 
-                <UserTypeItem
+                <AvatarImage
                   label="Trainer"
-                  labelColor="#2CA75E"
+                  labelColor="#f34573"
+                  lableFontSize={11}
+                  height={70}
+                  width={70}
+                  selectedHeight={90}
+                  selectedWidth={90}
                   image={TRAINER_AVATAR}
                   onPress={() => {
                     this.setSelectedType('Trainer');
@@ -401,7 +410,15 @@ export default class SignIn1 extends Component {
 
                     <View style={styles.genderContainer}>
 
-                      <GenderButton
+                      <AvatarImage
+                        label={"Male"}
+                        lableFontSize={11}
+                        labelColor={'#ffffff'}
+                        image={FEMALE_AVATAR}
+                        height={40}
+                        width={40}
+                        selectedHeight={50}
+                        selectedWidth={50}
                         image={MALE_AVATAR}
                         onPress={
                           () => {
@@ -411,8 +428,15 @@ export default class SignIn1 extends Component {
                         selected={selectedGender === 'Male'}
                       />
 
-                      <GenderButton
+                      <AvatarImage
+                        label={'Female'}
+                        lableFontSize={11}
+                        labelColor={'#ffffff'}
                         image={FEMALE_AVATAR}
+                        height={40}
+                        width={40}
+                        selectedHeight={50}
+                        selectedWidth={50}
                         onPress={
                           () => {
                             this.setSelectedGender('Female')
@@ -518,7 +542,7 @@ export default class SignIn1 extends Component {
                   alignItems: 'center',
                 }}
                 linearGradientProps={{
-                  colors: ['rgba(216, 121, 112, 1)', 'rgba(216, 121, 112, 1)'],
+                  colors: ['#f34573', '#f34573'],
                   start: [1, 0],
                   end: [0.2, 0],
                 }}
@@ -566,7 +590,7 @@ export const FormInput = props => {
 
 
 const styles = StyleSheet.create({
-  
+
   container: {
     flex: 1,
     paddingBottom: 20,
@@ -632,7 +656,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#F44336',
   },
-  
+
   signUpButtonText: {
     fontFamily: 'bold',
     fontSize: 13,
@@ -674,7 +698,7 @@ const styles = StyleSheet.create({
 
   dateOfBirthLabel: {
     marginTop: 9,
-    color: 'rgba(216, 121, 112, 1)',
+    color: '#75cac3',
     fontSize: 16,
     marginLeft: -33,
     fontFamily: 'light',
@@ -685,7 +709,7 @@ const styles = StyleSheet.create({
   textHeadlines: {
     flex: 1,
     fontSize: 15,
-    color: 'rgba(216, 121, 112, 1)',
+    color: '#75cac3',
     fontFamily: 'regular',
     marginLeft: 40,
     marginTop: 30
@@ -694,16 +718,16 @@ const styles = StyleSheet.create({
   partnersGenderHeadline: {
     flex: 1,
     fontSize: 15,
-    color: 'rgba(216, 121, 112, 1)',
+    color: '#75cac3',
     fontFamily: 'regular',
     marginLeft: 40,
     marginTop: 30
   },
-  
+
   genderHeadline: {
     flex: 1,
     fontSize: 15,
-    color: 'rgba(216, 121, 112, 1)',
+    color: '#75cac3',
     fontFamily: 'regular',
     marginTop: 30
   },
@@ -721,7 +745,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginTop: 10
   },
-  
+
   partnerPreferencesContainerStyle: {
     flex: 1,
     alignItems: 'center',

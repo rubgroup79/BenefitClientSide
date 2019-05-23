@@ -3,7 +3,7 @@ import React from 'react';
 import { registerRootComponent, AppLoading, Asset, Font } from 'expo';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { View, Image, Dimensions } from 'react-native';
-import { DrawerNavigator, DrawerItems} from 'react-navigation';
+import { DrawerNavigator, DrawerItems } from 'react-navigation';
 
 import Login from "./src/views/login/login";
 import SignIn1 from "./src/views/login/signIn1";
@@ -18,8 +18,8 @@ import Settings from './src/drawer/settings';
 import HomeTrainee from './src/Pages/HomeTrainee';
 import HomeTrainer from './src/Pages/HomeTrainer';
 import TraineeProfile from './src/Pages/TraineeProfile';
+import BottomNavigation from './src/Navigation/BottomNavigation';
 
-import CreateGroup from './src/Pages/createGroup';
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
 const CustomDrawerContentComponent = props => (
@@ -42,6 +42,7 @@ const CustomDrawerContentComponent = props => (
 
 const MainRoot = DrawerNavigator(
   {
+    
     HomeTrainee: {
       path: '/homeTrainee',
       screen: HomeTrainee,
@@ -60,13 +61,13 @@ const MainRoot = DrawerNavigator(
       path: '/traineeProfile',
       screen: TraineeProfile,
     },
-    CreateGroup: {
-      path: '/createGroup',
-      screen: CreateGroup,
-      // navigationOptions: {
-      //   drawerLabel:()=>null
-      // }
-    },
+    // CreateGroup: {
+    //   path: '/createGroup',
+    //   screen: CreateGroup,
+    //   // navigationOptions: {
+    //   //   drawerLabel:()=>null
+    //   // }
+    // },
     SignIn1: {
       path: '/signIn1',
       screen: SignIn1,
@@ -100,11 +101,19 @@ const MainRoot = DrawerNavigator(
       path: '/lists',
       screen: Lists,
     },
-   
+
     Components: {
       path: '/components',
       screen: Components,
     },
+
+    
+    BottomNavigation: {
+      path: '/bottomNavigation',
+      screen: BottomNavigation,
+    },
+
+    
     Ratings: {
       path: '/ratings',
       screen: Ratings,
@@ -113,13 +122,13 @@ const MainRoot = DrawerNavigator(
       path: '/pricing',
       screen: Pricing,
     },
-    Settings: {
-      path: '/settings',
-      screen: Settings,
-    },
+    // Settings: {
+    //   path: '/settings',
+    //   screen: Settings,
+    // },
   },
   {
-    initialRouteName: 'HomeTrainee',
+    initialRouteName: 'BottomNavigation',
     contentOptions: {
       activeTintColor: '#548ff7',
       activeBackgroundColor: 'transparent',
@@ -178,14 +187,18 @@ export default class AppContainer extends React.Component {
   render() {
     if (!this.state.isReady) {
       return (
-        <AppLoading
+          <AppLoading
           startAsync={this._loadAssetsAsync}
           onFinish={() => this.setState({ isReady: true })}
         />
+        
+        
       );
     }
 
-    return (<MainRoot />)
+    return (
+     <MainRoot />
+    )
 
   }
 }

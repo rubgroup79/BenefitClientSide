@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { Text, View, StyleSheet, Dimensions, LayoutAnimation, ScrollView} from 'react-native';
+import { Text, View, StyleSheet, Dimensions, LayoutAnimation, ScrollView } from 'react-native';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { Button, } from 'react-native-elements';
-import GenderButton from './genderButton';
+import AvatarImage from './AvatarImage';
 import { Font } from 'expo';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Icon4 from 'react-native-vector-icons/Entypo';
@@ -11,10 +11,10 @@ import moment from 'moment';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
-const MALE_AVATAR = require('../../Images/MaleAvatar.png');
-const FEMALE_AVATAR = require('../../Images/FemaleAvatar.png');
-const TRAINER_AVATAR = require('../../Images/TrainerAvatar.png');
-const TRAINEE_AVATAR = require('../../Images/TraineeAvatar.png');
+const TRAINER = require('../../Images/Trainer.png');
+const PARTNER = require('../../Images/Partner.png');
+const GROUP_WITH_TRAINER = require('../../Images/GroupWithTrainer.png');
+const GROUP_WITH_PARTNERS = require('../../Images/GroupWithPartners.png');
 
 var hours_now = new Date().getHours();
 var minutes_now = new Date().getMinutes();
@@ -82,16 +82,16 @@ export default class SearchModal extends Component {
     }
 
     search() {
-        console.warn(this.state.startTime , this.state.endTime);
         if (!this.state.withPartner && !this.state.withTrainer && !this.state.groupWithPartners && !this.state.groupWithTrainer)
             alert("Please choose who to want to train with");
         else {
             if (this.state.startTime > this.state.endTime)
                 alert("Start time cannot be before end time");
             else {
-                if (this.state.latitude == 0 && this.state.longitude == 0) {
+                if (this.state.latitude != 0 && this.state.longitude != 0) {
+                    //this.props.userCode
                     var OnlineDetails = {
-                        UserCode: this.props.userCode,
+                        UserCode: 1,
                         Latitude: this.state.latitude,
                         Longitude: this.state.longitude,
                         StartTime: this.state.startTime,
@@ -106,11 +106,17 @@ export default class SearchModal extends Component {
                     this.props.searchModalVisible();
                     this.props.setSearchMode(true);
 
+                    //הכנסה של מתאמן לחיפוש
+                    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/InsertOnlineTrainee', {
+                        method: 'POST',
+                        headers: { "Content-type": "application/json; charset=UTF-8" },
+                        body: JSON.stringify(OnlineDetails),
+                    })
+                        .catch(error => console.warn('Error1:', error.message));
+
                     //נכנס רק אם משתמש חיפש אימון זוגי עם מאמן או מתאמן
-
                     if (OnlineDetails.WithPartner == 1 || OnlineDetails.WithTrainer == 1) {
-
-                        fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/InsertOnlineTrainee', {
+                        fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/SearchCoupleTraining', {
                             method: 'POST',
                             headers: { "Content-type": "application/json; charset=UTF-8" },
                             body: JSON.stringify(OnlineDetails),
@@ -123,8 +129,10 @@ export default class SearchModal extends Component {
                                 }
                             })
 
-                            .catch(error => console.warn('Error:', error.message));
+                            .catch(error => console.warn('Error2:', error.message));
                     }
+
+
 
                     //נכנס רק אם משתמש חיפש אימון קבוצתי עם מאמן או בלי מאמן
 
@@ -145,9 +153,9 @@ export default class SearchModal extends Component {
 
                             })
 
-                            .catch(error => console.warn('Error:', error.message));
+                            .catch(error => console.warn('Error3:', error.message));
                     }
-                    
+
                 }
                 else alert("Please select location");
             }
@@ -155,70 +163,86 @@ export default class SearchModal extends Component {
     }
 
 
+
     render() {
         return (
 
             <ScrollView style={styles.mainContainer}>
-
-                <Icon name='close' style={styles.closeIcon} size={20} color='gray' onPress={() => this.props.searchModalVisible()}></Icon>
-
+                <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                    <Icon name='close' style={styles.closeIcon} size={20} color='gray' onPress={() => this.props.searchModalVisible()}></Icon>
+                    <Text style={styles.headline}>Find Your BeneFIT</Text>
+                </View>
                 {this.state.fontLoaded ?
 
                     <View style={styles.searchContainer}>
 
-                        <Text style={styles.headline}>Find Your BeneFIT</Text>
+                        <View style={styles.trainWithContainer} >
 
-                            <View style={styles.trainWithContainer} >
+                            <AvatarImage
+                                label={"Partner"}
+                                lableFontSize={9}
+                                labelColor={'#75cac3'}
+                                image={PARTNER}
+                                height={65}
+                                width={65}
+                                selectedHeight={70}
+                                selectedWidth={70}
+                                onPress={() => { this.setPartnerTraining(); }}
+                                selected={this.state.withPartner == true}
+                            />
 
-                                <GenderButton 
-                                    label={"Partner"} 
-                                    labelColor={'gray'} 
-                                    style={styles.trainWith}
-                                    image={TRAINEE_AVATAR}
-                                    onPress={ () => {this.setPartnerTraining();}}
-                                    selected={this.state.withPartner == true}
-                                />
- 
-                                <GenderButton 
-                                    label={"Trainer"} 
-                                    labelColor={'gray'}  
-                                    style={styles.trainWith}
-                                    image={TRAINER_AVATAR}
-                                    onPress={ () => {this.setTrainerTraining();}}
-                                    selected={this.state.withTrainer == true}
-                                />
+                            <AvatarImage
+                                label={"Trainer"}
+                                lableFontSize={9}
+                                labelColor={'#75cac3'}
+                                image={TRAINER}
+                                height={65}
+                                width={65}
+                                selectedHeight={70}
+                                selectedWidth={70}
+                                onPress={() => { this.setTrainerTraining(); }}
+                                selected={this.state.withTrainer == true}
+                            />
 
-                                <GenderButton 
-                                    label={"Partners"} 
-                                    labelColor={'gray'}  
-                                    style={styles.trainWith}
-                                    image={MALE_AVATAR}
-                                    onPress={ () => {this.setPartnersGroupTraining();}}
-                                    selected={this.state.groupWithPartners == true}
-                                />
+                            <AvatarImage
+                                label={"Group"}
+                                lableFontSize={9}
+                                labelColor={'#75cac3'}
+                                image={GROUP_WITH_PARTNERS}
+                                height={65}
+                                width={65}
+                                selectedHeight={70}
+                                selectedWidth={70}
+                                onPress={() => { this.setPartnersGroupTraining(); }}
+                                selected={this.state.groupWithPartners == true}
+                            />
 
-                                <GenderButton 
-                                    label={"Partners & Trainer"} 
-                                    labelColor={'gray'}  
-                                    style={styles.trainWith}
-                                    image={FEMALE_AVATAR}
-                                    onPress={() => {this.setTrainerGroupTraining();}}
-                                    selected={this.state.groupWithTrainer == true}
-                                />
+                            <AvatarImage
+                                label={"Group&Trainer"}
+                                lableFontSize={9}
+                                labelColor={'#75cac3'}
+                                image={GROUP_WITH_TRAINER}
+                                height={65}
+                                width={65}
+                                selectedHeight={70}
+                                selectedWidth={70}
+                                onPress={() => { this.setTrainerGroupTraining(); }}
+                                selected={this.state.groupWithTrainer == true}
+                            />
 
-                            </View>
+                        </View>
 
-                                <View style={styles.timePickerContainer  }>
+                        <View style={styles.timePickerContainer}>
 
-                                    <TimePickerNew setTime={this.onConfirmStartTime} title={'From: '}></TimePickerNew>
+                            <TimePickerNew setTime={this.onConfirmStartTime} title={'From: '}></TimePickerNew>
 
-                                    <TimePickerNew setTime={this.onConfirmEndTime} title={'To: '}></TimePickerNew>
+                            <TimePickerNew setTime={this.onConfirmEndTime} title={'To: '}></TimePickerNew>
 
-                                </View>
+                        </View>
 
-                        <View style={styles.locationContainer }>
+                        <View style={styles.locationContainer}>
 
-                            <GooglePlacesAutocomplete 
+                            <GooglePlacesAutocomplete
                                 MODE_OVERLAY={true}
                                 placeholder="Location"
                                 minLength={1} // minimum length of text to search
@@ -294,11 +318,11 @@ export default class SearchModal extends Component {
                                     borderRadius: 30,
                                     justifyContent: 'center',
                                     alignItems: 'center',
-                                    backgroundColor:'rgba(216, 121, 112, 1)'
+                                    backgroundColor: '#f34573'
                                 }}
                                 title="Go"
                                 titleStyle={{
-                                    fontFamily: 'regular',
+                                    fontFamily: 'bold',
                                     fontSize: 15,
                                     color: 'white',
                                     textAlign: 'center',
@@ -333,24 +357,26 @@ const styles = StyleSheet.create({
         zIndex: 1,
     },
 
-    closeIcon:{
+    closeIcon: {
         top: 20,
-        left: 20
+        left: 20,
+        flex: 1
     },
 
-    searchContainer:{ 
-        flex: 1, 
-        flexDirection: 'column', 
-        alignItems: 'center', 
-        marginBottom: 15, 
-        marginTop: 30 
+    searchContainer: {
+        flex: 1,
+        flexDirection: 'column',
+        alignItems: 'center',
+        marginBottom: 15,
+        marginTop: 30
     },
 
     headline: {
-        flex: 1,
+        flex: 3,
         fontSize: 23,
-        color: 'rgba(216, 121, 112, 1)',
+        color: '#f34573',
         fontFamily: 'regular',
+        top: 20,
     },
 
     trainWithContainer: {
@@ -358,26 +384,23 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
     },
 
-    trainWith:{
-        margin: 10 
-    },
-    
-    timePickerContainer:{
-        flex: 1, 
-        flexDirection: 'row', 
+
+    timePickerContainer: {
+        flex: 1,
+        flexDirection: 'row',
         marginTop: 10
     },
-    
-    locationContainer:{
-        flex: 2, 
-        width: SCREEN_WIDTH - 100, 
-        marginTop: 10 
+
+    locationContainer: {
+        flex: 2,
+        width: SCREEN_WIDTH - 100,
+        marginTop: 10
     },
 
-    locationIcon:{
+    locationIcon: {
         top: 5,
-        left: 5, 
-        color: 'gray' 
+        left: 5,
+        color: 'gray'
     }
 
 })

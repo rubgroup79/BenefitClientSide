@@ -10,12 +10,11 @@ import {
   StatusBar,
 
 } from 'react-native';
-import { Button, Input, Slider } from 'react-native-elements';
+import { Slider } from 'react-native-elements';
 import { Font } from 'expo';
-import GenderButton from '../../Components/genderButton';
+import AvatarImage from '../../Components/AvatarImage'
 import NumericInput from 'react-native-numeric-input';
 import Icon from "react-native-vector-icons/Entypo";
-import Icon1 from "react-native-vector-icons/Ionicons";
 import ActionButton from 'react-native-action-button';
 import ImageUpload from '../../Components/ImagePicker';
 
@@ -25,53 +24,6 @@ const BOTH_AVATAR = require('../../../Images/BothAvatar.png');
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SLIDER_SIZE = SCREEN_WIDTH - 150;
 
-// class CustomButton extends Component {
-//   constructor() {
-//     super();
-
-//     this.state = {
-//       selected: false,
-
-//     };
-//   }
-
-//   componentDidMount() {
-//     const { selected } = this.props;
-
-//     this.setState({
-//       selected,
-//     });
-//   }
-
-//   render() {
-//     const { title } = this.props;
-//     const { selected } = this.state;
-
-//     return (
-//       <Button
-//         title={title}
-//         titleStyle={{ fontSize: 15, color: 'white', fontFamily: 'regular' }}
-//         buttonStyle={
-//           selected
-//             ? {
-//               backgroundColor: 'rgba(213, 100, 140, 1)',
-//               borderRadius: 100,
-//               width: 127,
-//             }
-//             : {
-//               borderWidth: 1,
-//               borderColor: 'white',
-//               borderRadius: 30,
-//               width: 127,
-//               backgroundColor: 'transparent',
-//             }
-//         }
-//         containerStyle={{ marginRight: 10 }}
-//         onPress={() => this.setState({ selected: !selected })}
-//       />
-//     );
-//   }
-// }
 
 export default class SigninTrainee extends Component {
   constructor(props) {
@@ -79,14 +31,6 @@ export default class SigninTrainee extends Component {
 
     this.state = {
       fontLoaded: false,
-      // email: '',
-      // password: '',
-      // firstName: '',
-      // lastName: '',
-      // dateOfBirth: '',
-      // sportCategories: [],
-      // gender: null,
-      // isTrainer: null,
       searchRadius: 5,
       picture: '',
       partnerGender: null,
@@ -171,8 +115,6 @@ export default class SigninTrainee extends Component {
         .catch(error => console.warn('Error:', error.message));
     }
 
-
-
   }
 
   validatePicture() {
@@ -209,22 +151,6 @@ export default class SigninTrainee extends Component {
   setSelectedGenderTrainer = selectedType =>
     LayoutAnimation.easeInEaseOut() || this.setState({ trainerGender: selectedType });
 
-  // //choose image from camera roll
-  //     _pickImage = async () => {
-  //       const {
-  //         status: cameraRollPerm
-  //       } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-
-  //       // only if user allows permission to camera roll
-  //       if (cameraRollPerm === 'granted') {
-  //         let pickerResult = await ImagePicker.launchImageLibraryAsync({
-  //           allowsEditing: true,
-  //           aspect: [4, 3],
-  //         });
-
-  //         this._handleImagePicked(pickerResult);
-  //       }
-  //     };
 
 setPicturePath(path){
   this.setState({picture:path});
@@ -238,7 +164,7 @@ setPicturePath(path){
         <StatusBar barStyle="light-content" />
 
         {this.state.fontLoaded ? (
-          <View style={{ flex: 1, backgroundColor: 'rgba(47,44,60,1)' }}>
+          <View style={{ flex: 1, backgroundColor: '#293046' }}>
 
             <View style={styles.statusBar} />
 
@@ -255,55 +181,6 @@ setPicturePath(path){
                 <ImageUpload setPicturePath={this.setPicturePath} gender={this.props.navigation.getParam('gender')}></ImageUpload>
 
               </View>
-
-              {/* <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                <Image
-                  source={this.props.navigation.getParam('gender') == 'Male' ? MalePicture : FemalePicture}
-                  style={{
-                    width: IMAGE_SIZE,
-                    height: IMAGE_SIZE,
-                    borderRadius: 10,
-                  }}
-                />
-                <ActionButton style={styles.editImageButton} 
-                renderIcon={ active => active ? (  <Icon1
-                      name="md-create"
-                      size={15}
-                      style={styles.uploadImageIcon}
-                    />) : 
-                    (  <Icon1
-                      name="md-create"
-                      size={15}
-                      style={styles.uploadImageIcon}
-                    />)
-                
-                }
-                verticalOrientation='down'
-                buttonColor='#d0d6e0'
-                size={33}
-                >
-                
-                <ActionButton.Item
-                buttonColor= 'white'
-            
-                >
-                    <Icon
-                      name="upload"
-                      size={15}
-                      style={styles.uploadImageIcon}
-                    />
-                </ActionButton.Item>
-                <ActionButton.Item
-                buttonColor= 'white'
-                >
-                    <Icon
-                      name="camera"
-                      size={15}
-                      style={styles.uploadImageIcon}
-                    />
-                </ActionButton.Item>
-                </ActionButton> 
-            </View>  */}
 
               {this.state.step == 1 ?
                 <View>
@@ -324,7 +201,7 @@ setPicturePath(path){
                       <Slider
                         minimumTrackTintColor='white'
                         maximumTrackTintColor='gray'
-                        thumbTintColor='rgba(213, 100, 140, 1)'
+                        thumbTintColor='#75cac3'
                         style={styles.sliderStyle}
                         minimumValue={0}
                         step={1}
@@ -337,7 +214,7 @@ setPicturePath(path){
 
                     </View>
 
-                    <Text style={{ color: 'rgba(216, 121, 112, 1)', textAlign: 'center', fontSize: 13 }}>Radius: {this.state.searchRadius} km</Text>
+                    <Text style={{ color: '#75cac3', textAlign: 'center', fontSize: 13 }}>Radius: {this.state.searchRadius} km</Text>
 
                   </View>
 
@@ -355,7 +232,15 @@ setPicturePath(path){
 
                         <View style={styles.userTypesContainer}>
 
-                          <GenderButton
+                          <AvatarImage
+                            label={"Male"}
+                            lableFontSize={11}
+                            labelColor={'#ffffff'}
+                            image={FEMALE_AVATAR}
+                            height={40}
+                            width={40}
+                            selectedHeight={50}
+                            selectedWidth={50}
                             image={MALE_AVATAR}
                             onPress={
                               () => {
@@ -366,7 +251,15 @@ setPicturePath(path){
                             selected={this.state.partnerGender === 'Male'}
                           />
 
-                          <GenderButton
+                          <AvatarImage
+                          label={"Female"}
+                          lableFontSize={11}
+                          labelColor={'#ffffff'}
+                          image={FEMALE_AVATAR}
+                          height={40}
+                          width={40}
+                          selectedHeight={50}
+                          selectedWidth={50}
                             image={FEMALE_AVATAR}
                             onPress={
                               () => {
@@ -377,7 +270,15 @@ setPicturePath(path){
                             selected={this.state.partnerGender === 'Female'}
                           />
 
-                          <GenderButton
+                          <AvatarImage
+                          label={"Both"}
+                          lableFontSize={11}
+                          labelColor={'#ffffff'}
+                          image={FEMALE_AVATAR}
+                          height={40}
+                          width={40}
+                          selectedHeight={50}
+                          selectedWidth={50}
                             image={BOTH_AVATAR}
                             onPress={
                               () => {
@@ -438,7 +339,7 @@ setPicturePath(path){
                   <View style={{ flex: 1 }}>
 
                     <ActionButton
-                      buttonColor='rgba(216, 121, 112, 1)'
+                      buttonColor='#75cac3'
                       size={50}
                       renderIcon={active => active ? null :
                         (<Icon
@@ -469,7 +370,15 @@ setPicturePath(path){
 
                       <View style={styles.userTypesContainer}>
 
-                        <GenderButton
+                        <AvatarImage
+                        label={"Male"}
+                        lableFontSize={11}
+                        labelColor={'#ffffff'}
+                        image={FEMALE_AVATAR}
+                        height={40}
+                        width={40}
+                        selectedHeight={50}
+                        selectedWidth={50}
                           image={MALE_AVATAR}
                           onPress={
                             () => {
@@ -480,7 +389,15 @@ setPicturePath(path){
                           selected={this.state.trainerGender === 'Male'}
                         />
 
-                        <GenderButton
+                        <AvatarImage
+                        label={"Female"}
+                        lableFontSize={11}
+                        labelColor={'#ffffff'}
+                        image={FEMALE_AVATAR}
+                        height={40}
+                        width={40}
+                        selectedHeight={50}
+                        selectedWidth={50}
                           image={FEMALE_AVATAR}
                           onPress={
                             () => {
@@ -491,7 +408,15 @@ setPicturePath(path){
                           selected={this.state.trainerGender === 'Female'}
                         />
 
-                        <GenderButton
+                        <AvatarImage
+                        label={"Both"}
+                        lableFontSize={11}
+                        labelColor={'#ffffff'}
+                        image={FEMALE_AVATAR}
+                        height={40}
+                        width={40}
+                        selectedHeight={50}
+                        selectedWidth={50}
                           image={BOTH_AVATAR}
                           onPress={
                             () => {
@@ -523,7 +448,7 @@ setPicturePath(path){
                       <Slider
                         minimumTrackTintColor='white'
                         maximumTrackTintColor='gray'
-                        thumbTintColor='rgba(213, 100, 140, 1)'
+                        thumbTintColor='#75cac3'
                         style={styles.sliderStyle}
                         minimumValue={0}
                         step={10}
@@ -537,7 +462,7 @@ setPicturePath(path){
 
                     </View>
 
-                    <Text style={{ color: 'rgba(216, 121, 112, 1)', textAlign: 'center', fontSize: 13 }}>Budget: {this.state.maxBudget} $</Text>
+                    <Text style={{ color: '#75cac3', textAlign: 'center', fontSize: 13 }}>Budget: {this.state.maxBudget} $</Text>
 
                   </View>
 
@@ -546,7 +471,7 @@ setPicturePath(path){
                     <View style={{ flex: 1, marginRight: 170 }}>
 
                       <ActionButton
-                        buttonColor='rgba(216, 121, 112, 1)'
+                        buttonColor='#75cac3'
                         size={50}
                         renderIcon={active => active ? null :
                           (<Icon
@@ -563,7 +488,7 @@ setPicturePath(path){
 
                     <View style={{ flex: 1 }}>
                       <ActionButton
-                        buttonColor='#46db93'
+                        buttonColor='#f34573'
                         size={50}
                         renderIcon={active => active ? null :
                           (<Icon
@@ -601,45 +526,24 @@ const styles = StyleSheet.create({
   statusBar: {
     height: 10,
   },
+
   navBar: {
     height: 60,
     width: SCREEN_WIDTH,
     justifyContent: 'center',
     alignContent: 'center',
   },
+
   nameHeader: {
     color: 'white',
     fontSize: 22,
     textAlign: 'center',
+    fontFamily:'bold'
   },
-  infoTypeLabel: {
-    fontSize: 15,
-    textAlign: 'right',
-    color: 'rgba(126,123,138,1)',
-    fontFamily: 'regular',
-    paddingBottom: 10,
-  },
-  infoAnswerLabel: {
-    fontSize: 15,
-    color: 'white',
-    fontFamily: 'regular',
-    paddingBottom: 10,
-  },
-  inputStyle: {
-    flex: 1,
-    marginLeft: 10,
-    color: 'white',
-    fontFamily: 'light',
-    fontSize: 16,
-    height: 100,
 
-  },
-  inputContainer: {
-    marginTop: 25
-  },
   sliderStyle: {
     width: SLIDER_SIZE,
-    marginTop: 25,
+    marginTop: 35,
   },
 
 
@@ -657,11 +561,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-around',
     margin: 10,
-    //alignItems: 'center',
     flexDirection: 'row',
     marginRight: 40
 
   },
+
   sliderRangeText: {
     flex: 1,
     color: 'white',
@@ -669,18 +573,20 @@ const styles = StyleSheet.create({
     marginTop: 37,
     textAlign: 'center'
   },
+
   textHeadlines: {
     flex: 1,
     fontSize: 15,
-    color: 'rgba(216, 121, 112, 1)',
+    color: '#75cac3',
     fontFamily: 'regular',
     marginLeft: 40,
     marginTop: 30
   },
+
   partnersGenderHeadline: {
     flex: 1,
     fontSize: 15,
-    color: 'rgba(216, 121, 112, 1)',
+    color: '#75cac3',
     fontFamily: 'regular',
     marginLeft: 40,
     marginTop: 30
@@ -689,7 +595,7 @@ const styles = StyleSheet.create({
   partnersAgeHeadline: {
     flex: 2,
     fontSize: 15,
-    color: 'rgba(216, 121, 112, 1)',
+    color: '#75cac3',
     fontFamily: 'regular',
     marginLeft: 40,
     marginTop: 10
@@ -702,23 +608,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: -18,
   },
+
   partnerPreferencesStyle: {
     flex: 1,
     flexDirection: 'row',
     marginTop: 30
   },
-  uploadImageIcon: {
-    fontSize: 20,
-    height: 22,
-    color: 'black'
-  },
-  editImageButton: {
-    marginRight: 95,
-    marginTop: -30
-  },
+
   numericInput: {
     flex: 1,
   },
+
   preferencesHeadlines: {
     color: 'white',
     textAlign: 'center',

@@ -1,29 +1,25 @@
 import React, { Component } from 'react';
-import {
-    LayoutAnimation,
-    Dimensions,
-    UIManager,
-    StyleSheet,
-    ScrollView,
-    Text,
-    View,
-} from 'react-native';
-import { Font } from 'expo';
+import { Text, View, StyleSheet, Dimensions, LayoutAnimation, ScrollView, UIManager } from 'react-native';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { Input, Button, withTheme } from 'react-native-elements';
-import Icon from 'react-native-vector-icons/SimpleLineIcons';
-import Icon1 from 'react-native-vector-icons/FontAwesome';
+import { Font } from 'expo';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon4 from 'react-native-vector-icons/Entypo';
+import TimePickerNew from './TimePicker';
 import NumericInput from 'react-native-numeric-input';
 import moment from 'moment';
-
-
-// Enable LayoutAnimation on Android
-import TimePickerNew from '../Components/TimePicker';
-import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import ActionButton from 'react-native-action-button';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
+const MALE_AVATAR = require('../../Images/MaleAvatar.png');
+const FEMALE_AVATAR = require('../../Images/FemaleAvatar.png');
+const TRAINER_AVATAR = require('../../Images/TrainerAvatar.png');
+const TRAINEE_AVATAR = require('../../Images/TraineeAvatar.png');
 
+var hours_now = new Date().getHours();
+var minutes_now = new Date().getMinutes();
+var timeNow = hours_now + ":" + minutes_now;
 var MaxDate = "01-01-" + (new Date().getFullYear() - 18);
 
 var Categories = [
@@ -77,6 +73,7 @@ var Categories = [
 UIManager.setLayoutAnimationEnabledExperimental &&
     UIManager.setLayoutAnimationEnabledExperimental(true);
 
+
 class CustomButton extends Component {
     constructor() {
         super();
@@ -102,23 +99,35 @@ class CustomButton extends Component {
         return (
             <Button
                 title={title}
-                titleStyle={{ fontSize: 15, color: 'white', fontFamily: 'regular' }}
+                titleStyle={
+                    selected
+                        ? { 
+                            color:'white', 
+                            fontSize: 12,  
+                            fontFamily: 'regular' 
+                        } 
+                        : {
+                            fontSize: 12, 
+                            color: 'gray', 
+                            fontFamily: 'regular'
+                        }
+                    }
                 buttonStyle={
                     selected
                         ? {
-                            backgroundColor: 'rgba(213, 100, 140, 1)',
+                            backgroundColor: '#f34573',
                             borderRadius: 100,
-                            width: 127,
+                            width: 105
                         }
                         : {
                             borderWidth: 1,
-                            borderColor: 'white',
+                            borderColor: 'gray',
                             borderRadius: 30,
-                            width: 127,
+                            width: 105,
                             backgroundColor: 'transparent',
                         }
                 }
-                containerStyle={{ marginRight: 10 }}
+                containerStyle={{ marginRight: 7 }}
                 onPress={() => {
                     this.setState({ selected: !selected });
                     this.props.setCategories(title);
@@ -128,7 +137,7 @@ class CustomButton extends Component {
     }
 }
 
-export default class CreateGroup extends Component {
+export default class CreateGroupModal extends Component {
     constructor(props) {
         super(props);
 
@@ -141,7 +150,7 @@ export default class CreateGroup extends Component {
             minParticipants: 3,
             maxParticipants: 7,
             sportCategory: 0,
-            price:0
+            price: 0
         };
 
         this.validateCategories = this.validateCategories.bind(this);
@@ -166,7 +175,7 @@ export default class CreateGroup extends Component {
         this.setState({ groupTime: moment(new Date()).format('YYYY-MM-DD') + " " + time + ":00.000" });
     }
 
-    CreateGroup() {
+    createGroup() {
         const isCategoriesValid = this.validateCategories();
         const isLocationValid = this.validateLocation();
         var Group = null;
@@ -184,26 +193,27 @@ export default class CreateGroup extends Component {
                 });
 
                 Group = {
-                    CreatorCode: this.props.navigation.getParam('creatorCode', '0'),
+                    CreatorCode: this.props.CreatorCode,
                     Latitude: this.state.latitude,
                     Longitude: this.state.longitude,
                     TrainingTime: this.state.groupTime,
                     MinParticipants: this.state.minParticipants,
                     MaxParticipants: this.state.maxParticipants,
-                    WithTrainer: this.props.navigation.getParam('isTrainer'),
+                    WithTrainer: this.props.IsTrainer,
                     SportCategoryCode: this.state.sportCategory,
-                    StatusCode: 1,
-                    CurrentParticipants: 1,
                     Price: this.state.price
                 }
-                console.warn(Group);
+
                 fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/InsertGroupTraining', {
                     method: 'POST',
                     headers: { "Content-type": "application/json; charset=UTF-8" },
                     body: JSON.stringify(Group),
                 })
-                    .then(res => res.json())
-                    .then(response => { alert('success') })
+                  
+                    .then(response => { 
+                        alert('Your group is now open for partners!');
+                        this.props.createGroupModalVisible();
+                     })
                     .catch(error => console.warn('Error:', error.message));
 
             }, 1500);
@@ -255,55 +265,38 @@ export default class CreateGroup extends Component {
         }
     }
 
+
+
     render() {
-        const {
-            isLoading,
-            fontLoaded,
-        } = this.state;
+        return (
 
-        return !this.state.fontLoaded ? (
-            <Text> Loading... </Text>
+            <ScrollView style={styles.mainContainer}>
+                <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                    <Icon name='close' style={styles.closeIcon} size={20} color='gray' onPress={() => {alert('click');this.props.createGroupModalVisible()}}></Icon>
+                    <Text style={styles.headline}>Create Your Group</Text>
+                </View>
 
-        ) : (
-                <ScrollView
-                    keyboardShouldPersistTaps="handled"
-                    contentContainerStyle={styles.container}
-                >
+                {this.state.fontLoaded ?
 
-                    <ScrollView style={{
-                        flex: 1,
-                        paddingBottom: 20,
-                        paddingTop: 30,
-                        backgroundColor: '#293046',
-                        width: SCREEN_WIDTH,
-                        height: SCREEN_HEIGHT,
-                        textAlign: 'center',
-                        alignContent: "center"
-                    }}>
-
-                        <View style={{ flex: 2, alignContent: 'center', justifyContent: 'center', textAlign: 'center', marginBottom: 40 }}>
-
-                            <Text style={styles.signUpText}>Create new BeneFIT group</Text>
-
-                            <Text style={styles.whoAreYouText}>Your group</Text>
-
+                    <View style={styles.searchContainer}>
+                        <View style={styles.timePickerContainer}>
+                            <Text style={styles.subHeadline}>
+                                When?
+                            </Text>
+                            <View style={{ flex: 1, marginLeft: -600, marginTop:6 }}>
+                                <TimePickerNew setTime={this.onConfirmStartTime} title={''}></TimePickerNew>
+                            </View>
                         </View>
 
-                        <View style={{ flex: 3, width: SCREEN_WIDTH, marginBottom: 30 }}>
+                        <View style={styles.locationContainer}>
 
-                            <GooglePlacesAutocomplete style={{ flex: 1, }}
-
-                                //MODE_OVERLAY={true}
-                                placeholder="Choose location for the group training"
+                            <GooglePlacesAutocomplete
+                                MODE_OVERLAY={true}
+                                placeholder="Location"
                                 minLength={1} // minimum length of text to search
                                 autoFocus={false}
                                 returnKeyType={'search'}
                                 listViewDisplayed="false"
-                                styles={{
-                                    listViewDisplayed: { backgroundColor: 'blue' }
-
-                                }
-                                }
                                 fetchDetails={true}
                                 renderDescription={row => row.description || row.formatted_address || row.name}
                                 onPress={(data, details = null) => {
@@ -317,13 +310,28 @@ export default class CreateGroup extends Component {
                                     language: 'en', // language of the results
                                     //types: '(regions)', // default: 'geocode',
                                 }}
+
                                 styles={{
                                     description: {
-                                        fontWeight: 'bold',
-                                        color: 'white'
+                                        color: 'black',
                                     },
                                     predefinedPlacesDescription: {
-                                        color: '#1faadb',
+                                        color: '#f34573',
+                                    },
+                                    textInput: {
+                                        backgroundColor: 'rgba(0,0,0,0)',
+                                        borderTopWidth: 1.5,
+                                        borderBottomWidth: 1.5,
+                                        borderLeftWidth: 1,
+                                        borderRightWidth: 1,
+                                        borderColor: 'gray',
+                                        borderRadius: 10
+                                    },
+                                    textInputContainer: {
+                                        backgroundColor: 'rgba(255,255,255,0)',
+                                        borderBottomColor: 'rgba(255,255,255,0)',
+                                        borderTopColor: 'rgba(255,255,255,0)',
+                                        borderColor: 'rgba(255,255,255,0)'
                                     },
                                 }}
                                 enablePoweredByContainer={true}
@@ -339,120 +347,60 @@ export default class CreateGroup extends Component {
                                     'administrative_area_level_3',
                                     'street_address'
                                 ]}
+
                                 debounce={200}
+                                renderLeftButton={() => <Icon4 size={25} style={styles.locationIcon} name='location-pin'></Icon4>}
                             />
+
+
 
                         </View>
 
-                        <View style={{ flex: 1, flexDirection: 'row', marginLeft: 15 }}>
-                            <Icon1
-                                size={40}
-                                color='rgba(216, 121, 112, 1)'
-                                name='clock-o'
-                            ></Icon1>
-
-                            <View style={{ flex: 1, flexDirection: 'row', left: 0 }}>
-
-                                <TimePickerNew setTime={this.onConfirmStartTime} title={'When? '}></TimePickerNew>
-
-                            </View>
-
-                        </View >
-
-                        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignContent: "center", marginTop: 20 }}>
-
-                            <Text style={style = styles.partnersAgeHeadline}>
-                                Age
+                        <View style={{flex:1, flexDirection:'column', marginTop:15}}>
+                            <Text style={styles.subHeadline}>
+                                Participants
                             </Text>
-
-                            <View style={{ flex: 5, justifyContent: 'center', flexDirection: 'row', marginRight: 25 }}>
+                            <View style={styles.trainWithContainer} >
 
                                 <NumericInput
-                                    style={styles.numericInput}
                                     value={this.state.minParticipants}
                                     onChange={value => this.setState({ minParticipants: value })}
                                     type='up-down'
                                     initValue={this.state.minParticipants}
                                     totalWidth={100}
-                                    textColor='white'
+                                    textColor='gray'
                                     minValue={3}
                                     maxValue={this.state.maxParticipants}
                                     rounded
                                 />
 
-                                <Text style={{ flex: 1, color: 'white', textAlign: 'center', marginTop: 10, fontWeight: 'bold' }}>to</Text>
+                                <Text style={{ flex: 1, color: 'gray', textAlign: 'center', marginTop: 10, fontWeight: 'bold' }}>to</Text>
 
                                 <NumericInput
-                                    style={styles.numericInput}
                                     value={this.state.maxParticipants}
                                     onChange={value => this.setState({ maxParticipants: value })}
                                     type='up-down'
                                     initValue={this.state.maxParticipants}
                                     totalWidth={100}
-                                    textColor='white'
+                                    textColor='gray'
                                     minValue={this.state.minParticipants}
                                     maxValue={20}
                                     rounded
                                 />
+
                             </View>
+
 
                         </View>
 
-
-{(this.props.navigation.getParam('isTrainer', '0')==1) ?
-<View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignContent: "center", marginTop: 20 }}>
-
-<Text style={style = styles.partnersAgeHeadline}>
-    Price
-</Text>
-
-<View style={{ flex: 5, justifyContent: 'center', flexDirection: 'row', marginRight: 25 }}>
-
-    <Text style={{ flex: 1, color: 'white', textAlign: 'center', marginTop: 10, fontWeight: 'bold' }}>$</Text>
-
-    <NumericInput
-        style={styles.numericInput}
-        value={this.state.maxParticipants}
-        onChange={value => this.setState({ maxParticipants: value })}
-        type='up-down'
-        initValue={this.state.maxParticipants}
-        totalWidth={100}
-        textColor='white'
-        minValue={this.state.minParticipants}
-        maxValue={20}
-        rounded
-    />
-</View>
-
-</View>
- : null
-
-
-}
-                       
-
-                        <View style={{ flex: 1 }}>
-
-                            <Text
-                                style={styles.textHeadlines}
-                            >
-                                Choose one sport type for the group
-                            </Text>
-
-                            <View style={{ flex: 1, width: SCREEN_WIDTH, marginTop: 20, }}>
-
-                                <ScrollView
-                                    style={{ flex: 1 }}
-                                    horizontal
-                                    showsHorizontalScrollIndicator={false}
-                                >
+                        <View style={{ flex: 1, marginTop: 20, }}>
 
                                     <View
                                         style={{
                                             flex: 1,
                                             flexDirection: 'column',
-                                            height: 170,
-                                            marginLeft: 40,
+                                            height: 150,
+                                            marginLeft: 20,
                                             marginRight: 10,
                                         }}
                                     >
@@ -481,12 +429,7 @@ export default class CreateGroup extends Component {
                                         </View>
 
                                     </View>
-
-                                </ScrollView>
-
                             </View>
-
-                        </View>
 
                         <Button
                             containerStyle={{ marginVertical: 20 }}
@@ -494,64 +437,114 @@ export default class CreateGroup extends Component {
                                 flex: 1,
                                 justifyContent: 'center',
                                 alignItems: 'center',
-                                marginBottom: 10
+                                //marginBottom: 10,
+                                marginTop:-10
                             }}
                             buttonStyle={{
-                                height: 55,
-                                width: SCREEN_WIDTH - 250,
+                                height: 40,
+                                width: 65,
                                 borderRadius: 30,
                                 justifyContent: 'center',
                                 alignItems: 'center',
+                                backgroundColor: '#f34573'
                             }}
-                            linearGradientProps={{
-                                colors: ['rgba(216, 121, 112, 1)', 'rgba(216, 121, 112, 1)'],
-                                start: [1, 0],
-                                end: [0.2, 0],
-                            }}
-                            title="Ok"
+                            title="Go"
                             titleStyle={{
                                 fontFamily: 'regular',
-                                fontSize: 20,
+                                fontSize: 15,
                                 color: 'white',
                                 textAlign: 'center',
                             }}
-                            onPress={() => this.CreateGroup()}
+                            onPress={() => {
+                                this.createGroup();
+                            }}
                             activeOpacity={0.5}
                         />
 
-                    </ScrollView>
 
+                    </View>
 
-                </ScrollView>
+                    : null}
 
-            );
+            </ScrollView>
+
+        );
     }
+
 }
 
-export const FormInput = props => {
-    const { icon, refInput, ...otherProps } = props;
-    return (
-        <Input
-            {...otherProps}
-            ref={refInput}
-            inputContainerStyle={styles.inputContainer}
-            leftIcon={<Icon name={icon} color="#7384B4" size={18} />}
-            inputStyle={styles.inputStyle}
-            autoFocus={false}
-            autoCapitalize="none"
-            keyboardAppearance="dark"
-            errorStyle={styles.errorInputStyle}
-            autoCorrect={false}
-            blurOnSubmit={false}
-            placeholderTextColor="#7384B4"
-        />
-    );
-};
-
-
-
 const styles = StyleSheet.create({
+    mainContainer: {
+        width: SCREEN_WIDTH - 40,        
+        height: SCREEN_HEIGHT - 370,
+        backgroundColor: 'rgba(255,255,255,0.9)',
+        position: 'absolute',
+        borderRadius: 40,
+        top: 200,
+        zIndex: 1,
+    },
 
+    closeIcon: {
+        flex: 1,
+        top: 20,
+        left: 20
+    },
+
+    searchContainer: {
+        flex: 1,
+        flexDirection: 'column',
+        marginBottom: 15,
+        marginTop: 30
+    },
+
+    headline: {
+        flex: 3,
+        fontSize: 23,
+        color: '#f34573',
+        fontFamily: 'regular',
+        top: 20,
+    },
+
+    trainWithContainer: {
+        flex: 1,
+        flexDirection: 'row',
+        marginRight: 50,
+        marginLeft: 50,
+        marginTop: 15,
+        justifyContent: 'center',
+    },
+
+    trainWith: {
+        margin: 10
+    },
+
+    timePickerContainer: {
+        flex: 1,
+        flexDirection: 'row',
+        marginTop: 20,
+        justifyContent: 'center'
+    },
+
+    locationContainer: {
+        flex: 2,
+        width: SCREEN_WIDTH - 100,
+        justifyContent: 'center',
+        marginLeft:20
+    },
+
+    locationIcon: {
+        top: 5,
+        left: 5,
+        color: 'gray'
+    },
+
+    subHeadline: {
+        flex: 1,
+        fontSize: 15,
+        color: 'gray',
+        fontFamily: 'regular',
+        marginLeft: 30,
+    },
     container: {
         flex: 1,
         paddingBottom: 20,
@@ -716,4 +709,4 @@ const styles = StyleSheet.create({
         marginRight: 40
     },
 
-});
+})

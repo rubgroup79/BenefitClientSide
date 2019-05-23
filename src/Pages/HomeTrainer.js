@@ -3,7 +3,6 @@ import { Text, View, Switch, StyleSheet, Dimensions, LayoutAnimation, ActivityIn
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { Avatar, Badge, Divider } from 'react-native-elements';
 import Map from '../Components/Map';
-import GenderButton from '../Components/genderButton';
 import { Font } from 'expo';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import ActionButton from 'react-native-action-button';

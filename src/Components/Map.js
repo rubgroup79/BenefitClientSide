@@ -3,6 +3,7 @@ import { Text, View, Dimensions, Image, StyleSheet } from 'react-native';
 import { MapView } from 'expo';
 import CoupleResultCallOut from '../Components/CoupleResultCallOut';
 
+
 const { Marker } = MapView;
 
 _Latitude = 0;
@@ -24,16 +25,15 @@ export default class LocationPage extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-
         <MapView
           //provider = { MapView.PROVIDER_GOOGLE }
           style={{
             flex: 1,
-            width: SCREEN_WIDTH +30
+            width: SCREEN_WIDTH + 30
           }}
           region={{
-            latitude: this.props.latitude,
-            longitude: this.props.longitude,
+            latitude: this.props.HomeTraineeStates.latitude,
+            longitude: this.props.HomeTraineeStates.longitude,
             latitudeDelta: 0.01322,
             longitudeDelta: 0.01321,
           }}
@@ -41,39 +41,39 @@ export default class LocationPage extends React.Component {
         >
           <MapView.Marker
             coordinate={{
-              latitude: this.props.latitude,
-              longitude: this.props.longitude
+              latitude: this.props.HomeTraineeStates.latitude,
+              longitude: this.props.HomeTraineeStates.longitude
             }}
-            
+
           // title='my place:)'
           // description='here i am'
           >
-          <Image source={require('../../Images/MapMarker.png')} style={{ width: 40, height: 40 }} />
-          <MapView.Callout>
-                  <CoupleResultCallOut ReceiverCode={2} SenderCode={1} FirstName={'dana'} Distance={8} Age={26} Picture={'http://proj.ruppin.ac.il/bgroup79/test1/tar6/uploadFiles/photo_4_11_2019_6-22-00_PM.png'}></CoupleResultCallOut>
-                </MapView.Callout>
+            <Image source={require('../../Images/MapMarker.png')} style={{ width: 40, height: 40 }} />
+            <MapView.Callout>
+              <CoupleResultCallOut ReceiverCode={2} SenderCode={1} FirstName={'dana'} Distance={8} Age={26} Picture={'http://proj.ruppin.ac.il/bgroup79/test1/tar6/uploadFiles/photo_5_17_2019_9-56-07_PM.jpg'}></CoupleResultCallOut>
+            </MapView.Callout>
           </MapView.Marker>
-          {this.props.coupleResults == null || this.props.coupleResults.length == 0 ? null :
-            this.props.coupleResults.map(data => (
-              <MapView.Marker
-                coordinate={{
-                  latitude: data.Latitude,
-                  longitude: data.Longitude
-                }}
-              //  title={data.FirstName + ' ' + data.LastName + ', ' + data.Age.toString()}
-              //  description={(Math.floor(data.Distance * 10) / 10).toString() + ' KM away from you'}
-              //image={require('../assets/icon.png')}
-
-              >
+          {(this.props.HomeTraineeStates.coupleResults != null || this.props.HomeTraineeStates.coupleResults.length != 0) && this.props.HomeTraineeStates.searchResultsMapView  ? 
+           
+           this.props.HomeTraineeStates.coupleResults.map(data => (
+            <MapView.Marker
+              coordinate={{
+                latitude: data.Latitude,
+                longitude: data.Longitude
+              }}
+            //  title={data.FirstName + ' ' + data.LastName + ', ' + data.Age.toString()}
+            //  description={(Math.floor(data.Distance * 10) / 10).toString() + ' KM away from you'}
+            //image={require('../assets/icon.png')}
+            >
               <Image source={require('../../Images/MapMarker.png')} style={{ width: 40, height: 40 }} />
-                <MapView.Callout>
-                  <CoupleResultCallOut ReceiverCode={data.UserCode} SenderCode={this.props.SenderCode} FirstName={data.FirstName} Distance={data.Distance} Age={data.Age} Picture={data.Picture}></CoupleResultCallOut>
-                </MapView.Callout>
-              </MapView.Marker>
-            )
-            )}
-          {this.props.groupResults == null ? null :
-            this.props.groupResults.map(data => (
+              <MapView.Callout>
+                <CoupleResultCallOut ReceiverCode={data.UserCode} SenderCode={this.props.HomeTraineeStates.SenderCode} FirstName={data.FirstName} Distance={data.Distance} Age={data.Age} Picture={data.Picture}></CoupleResultCallOut>
+              </MapView.Callout>
+            </MapView.Marker>
+          )
+          ) : null }
+
+          {this.props.HomeTraineeStates.groupResults != null && this.props.HomeTraineeStates.searchResultsMapView ? this.props.HomeTraineeStates.groupResults.map(data => (
               <MapView.Marker
                 coordinate={{
                   latitude: data.Latitude,
@@ -83,10 +83,83 @@ export default class LocationPage extends React.Component {
               //description={'Time: '+data.TrainingTime}
               //image={require('../assets/icon.png')}
               >
-              <Image source={require('../../Images/MapMarker.png')} style={{ width: 40, height: 40 }} />
+                <Image source={require('../../Images/MapMarker.png')} style={{ width: 40, height: 40 }} />
               </MapView.Marker>
             )
-            )}
+            ) : null
+            }
+
+          {this.props.HomeTraineeStates.pendingRequestsMapView && this.props.HomeTraineeStates.pendingRequests != null ?
+            this.props.HomeTraineeStates.pendingRequests.map(data => (
+              <MapView.Marker
+                coordinate={{
+                  latitude: data.Latitude,
+                  longitude: data.Longitude
+                }}
+                title={'Pending'}
+              //description={'Time: '+data.TrainingTime}
+              //image={require('../assets/icon.png')}
+              >
+                <Image source={require('../../Images/MapMarker.png')} style={{ width: 40, height: 40 }} />
+              </MapView.Marker>
+            )
+            )
+            : null
+          }
+
+          {this.props.HomeTraineeStates.approvedRequestsMapView && this.props.HomeTraineeStates.approvedRequests != null ?
+            this.props.HomeTraineeStates.approvedRequests.map(data => (
+              <MapView.Marker
+                coordinate={{
+                  latitude: data.Latitude,
+                  longitude: data.Longitude
+                }}
+                title={'Approved'}
+              //description={'Time: '+data.TrainingTime}
+              //image={require('../assets/icon.png')}
+              >
+                <Image source={require('../../Images/MapMarker.png')} style={{ width: 40, height: 40 }} />
+              </MapView.Marker>
+            )
+            )
+            : null
+          }
+
+          {this.props.HomeTraineeStates.futureTrainingsMapView && this.props.HomeTraineeStates.futureCoupleTrainings != null ?
+            this.props.HomeTraineeStates.futureCoupleTrainings.map(data => (
+              <MapView.Marker
+                coordinate={{
+                  latitude: data.Latitude,
+                  longitude: data.Longitude
+                }}
+                title={'Future Couple'}
+              //description={'Time: '+data.TrainingTime}
+              //image={require('../assets/icon.png')}
+              >
+                <Image source={require('../../Images/MapMarker.png')} style={{ width: 40, height: 40 }} />
+              </MapView.Marker>
+            )
+            )
+            : null
+          }
+
+          {this.props.HomeTraineeStates.futureTrainingsMapView && this.props.HomeTraineeStates.futureGroupTrainings != null ?
+            this.props.HomeTraineeStates.futureGroupTrainings.map(data => (
+              <MapView.Marker
+                coordinate={{
+                  latitude: data.Latitude,
+                  longitude: data.Longitude
+                }}
+                title={'Future Group'}
+              //description={'Time: '+data.TrainingTime}
+              //image={require('../assets/icon.png')}
+              >
+                <Image source={require('../../Images/MapMarker.png')} style={{ width: 40, height: 40 }} />
+              </MapView.Marker>
+            )
+            )
+            : null
+          }
 
         </MapView>
 
@@ -109,7 +182,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
 
   },
-
   textBig: {
     fontSize: 35,
     color: 'red',
@@ -119,28 +191,6 @@ const styles = StyleSheet.create({
     fontSize: 30,
     color: 'blue'
   },
-  Button: {
-    backgroundColor: 'lightgray',
-    padding: 20,
-    borderRadius: 15
-  },
-  TxtInp: {
-    height: 50,
-    width: 200,
-    borderColor: 'gray',
-    borderWidth: 2,
-    margin: 15,
-    fontSize: 30,
-    padding: 5,
-    borderRadius: 5
-  },
-  Err: {
-    color: 'red',
-    margin: 15,
 
-  },
-  lblText: {
-    fontSize: 30
-  }
 });
 

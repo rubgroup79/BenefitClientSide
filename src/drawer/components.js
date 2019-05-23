@@ -6,6 +6,7 @@ import ButtonsTab from '../tabs/buttons';
 import ListsTab from '../tabs/lists';
 import InputTab from '../tabs/input';
 import FontsTab from '../tabs/fonts';
+import HomeTrainee from '../Pages/HomeTrainee';
 
 const Components = TabNavigator(
   {
@@ -54,6 +55,21 @@ const Components = TabNavigator(
       path: '/fonts',
       navigationOptions: {
         tabBarLabel: 'Fonts',
+        tabBarIcon: ({ tintColor, focused }) => (
+          <Icon
+            name={focused ? 'font' : 'font'}
+            size={30}
+            type="font-awesome"
+            color={tintColor}
+          />
+        ),
+      },
+    },
+    HomeTrainee: {
+      screen: HomeTrainee,
+      path: '/homeTrainee',
+      navigationOptions: {
+        tabBarLabel: 'HomeTrainee',
         tabBarIcon: ({ tintColor, focused }) => (
           <Icon
             name={focused ? 'font' : 'font'}

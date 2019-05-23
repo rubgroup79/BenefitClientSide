@@ -17,11 +17,28 @@ export default class CoupleResultCallOut extends React.Component {
     constructor(props) {
         super(props);
 
+        // this.state = {
+        //     fontLoaded: false,
+        // }
+
         this.sendSuggestion = this.sendSuggestion.bind(this);
         this.sendPushNotification = this.sendPushNotification.bind(this);
     }
 
+    // async componentDidMount() {
 
+    //     await Font.loadAsync({
+    //         georgia: require('../../assets/fonts/Georgia.ttf'),
+    //         regular: require('../../assets/fonts/Montserrat-Regular.ttf'),
+    //         light: require('../../assets/fonts/Montserrat-Light.ttf'),
+    //         bold: require('../../assets/fonts/Montserrat-Bold.ttf'),
+    //     });
+
+    //     this.setState({
+    //         fontLoaded: true,
+    //     });
+
+    // }
 
     sendSuggestion() {
         fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/CheckActiveSuggestions?SenderCode=' + this.props.SenderCode + '&ReceiverCode=' + this.props.ReceiverCode, {
@@ -59,7 +76,6 @@ export default class CoupleResultCallOut extends React.Component {
             method: 'POST',
             headers: { "Content-type": "application/json; charset=UTF-8" },
         })
-            // .then(res => res.json())
             .then(response => {
             })
             .catch(error => console.warn('Error:', error.message));
@@ -68,44 +84,50 @@ export default class CoupleResultCallOut extends React.Component {
 
     render() {
         return (
-            <View style={{ flex: 1, flexDirection: 'column', justifyContent: "center", alignItems: "center", width:80, height:80 }}>
-                <View style={{ flex: 2, flexDirection: 'column', justifyContent: "center" }}>
+            <View style={{ flex: 1, flexDirection: 'column', justifyContent: "center", alignItems: "center", width: 120, height: 100 }}>
+                
+                <View style={{ flex: 2, flexDirection: 'row', justifyContent: "center" }}>
+                    
                     <Image
                         source={{ uri: this.props.Picture.toString() }}
-                        style={{ width: 40, height: 40, borderRadius: 18 }}
+                        style={{ top: -8, width: 50, height: 50, borderRadius: 25 }}
                     />
+
                 </View>
+                
                 <View style={{ flex: 1, flexDirection: 'column', justifyContent: "center" }}>
-                    <Text style={{ fontSize: 15 }}>{this.props.FirstName + ", " + this.props.Age}</Text>
-                    <View style={{ flex: 1, flexDirection: 'row', alignContent:'center', justifyContent:'center'}}>
-                        <Icon style={{flex:1}} name='location-pin' color='gray' textAlign='center' size={20}></Icon>
-                        <Text style={{ fontSize: 10, fontWeight:'bold', textAlign:'center', flex:1}}>{(Math.floor(this.props.Distance * 10) / 10).toString() + ' KM'}</Text>
+                    
+                    <Text style={{ fontSize: 15, }}>{this.props.FirstName + ", " + this.props.Age}</Text>
+                    
+                    <View style={{ flex: 1, flexDirection: 'row', alignContent: 'center', justifyContent: 'center' }}>
+                        
+                        <Icon style={{ flex: 1 }} name='location-pin' color='gray' textAlign='center' size={20}></Icon>
+                        
+                        <Text style={{ fontSize: 10, fontWeight: 'bold', textAlign: 'center', flex: 1 }}>{(Math.floor(this.props.Distance * 10) / 10).toString() + ' KM'}</Text>
+                    
                     </View>
+                
                 </View>
+
                 <Button
-                    title="Send Suggestion"
                     titleStyle={{ fontWeight: 'bold', fontSize: 10 }}
                     onPress={() => { this.sendSuggestion() }}
-                    linearGradientProps={{
-                        colors: ['#FF9800', '#F44336'],
-                        start: [1, 0],
-                        end: [0.2, 0],
-                    }}
                     buttonStyle={{
                         borderWidth: 0,
                         borderColor: 'transparent',
                         borderRadius: 20,
+                        backgroundColor: '#f34573'
                     }}
-                    containerStyle={{ marginVertical: 5, height: 30, width: 110 }}
+                    containerStyle={{ marginVertical: 5, height: 30, width: 30, alignItems: 'center' }}
                     icon={{
-                        name: 'arrow-right',
-                        type: 'font-awesome',
-                        size: 10,
+                        name: 'mail',
+                        type: 'Octicons',
+                        size: 15,
                         color: 'white',
                     }}
-                    iconRight
-                    iconContainerStyle={{ marginLeft: 5, marginRight: -10 }}
+                    iconContainerStyle={{ width: 20 }}
                 />
+                
             </View>
         )
     }
