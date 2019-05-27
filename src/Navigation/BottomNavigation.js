@@ -8,8 +8,9 @@ import ListsTab from '../tabs/lists';
 import InputTab from '../tabs/input';
 import FontsTab from '../tabs/fonts';
 import HomeTrainee from '../Pages/HomeTrainee';
+//import Chats from '../Pages/Chats';
+import ChatsTab from '../TabsNavigation/ChatsTab';
 import Chat from '../Pages/Chat';
-
 
 
 const Components = TabNavigator(
@@ -29,6 +30,8 @@ const Components = TabNavigator(
     //     ),
     //   },
     // },
+
+
     ListsTab: {
       screen: ListsTab,
       path: '/lists',
@@ -39,11 +42,11 @@ const Components = TabNavigator(
         ),
       },
     },
-    Chat: {
-      screen: Chat,
-      path: '/chat',
+    ChatsTab: {
+      screen: ChatsTab,
+      path: '/chatsTab',
       navigationOptions: {
-        tabBarLabel: 'Chat',
+        tabBarLabel: 'Chats',
         tabBarIcon: ({ tintColor, focused }) => (
           <Icon1
             name="message1"
@@ -107,7 +110,7 @@ const Components = TabNavigator(
   {
     initialRouteName: 'HomeTrainee',
     animationEnabled: false,
-    swipeEnabled: true,
+    swipeEnabled: false,
     // Android's default option displays tabBars on top, but iOS is bottom
    
     tabBarPosition: 'bottom',
@@ -143,7 +146,7 @@ Components.navigationOptions = {
 // and you were not on the Buttons tab
 export default StackNavigator(
   {
-    ComponentsTabs: { screen: Components },
+    HomeTrainee: { screen: Components },
   },
   {
     headerMode: 'none',

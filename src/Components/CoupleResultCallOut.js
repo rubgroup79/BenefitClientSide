@@ -2,9 +2,10 @@ import React from 'react';
 import { Text, View, Dimensions, Image, StyleSheet } from 'react-native';
 import { MapView, MapMarkerWaypoint, CalloutSubview, Callout } from 'expo';
 import Icon from 'react-native-vector-icons/Entypo';
-import Icon1 from 'react-native-vector-icons/Feather';
+import Icon1 from 'react-native-vector-icons/FontAwesome';
 import Icon2 from 'react-native-vector-icons/AntDesign';
 import { Button, ButtonGroup } from 'react-native-elements';
+import ActionButton from 'react-native-action-button';
 
 const { Marker } = MapView;
 
@@ -84,50 +85,70 @@ export default class CoupleResultCallOut extends React.Component {
 
     render() {
         return (
-            <View style={{ flex: 1, flexDirection: 'column', justifyContent: "center", alignItems: "center", width: 120, height: 100 }}>
-                
-                <View style={{ flex: 2, flexDirection: 'row', justifyContent: "center" }}>
-                    
+            <View style={{ flex: 1, flexDirection: 'column', justifyContent: "center", alignItems: "center", width: 120, }}>
+                <View  style={{flex:1, zIndex:1, top:-35, left:-25}}>
+                <ActionButton
+               
+                    onPress={() => {
+                        
+                    }}
+                    renderIcon={() =>
+                        (<Icon1
+                            name="user-o"
+                            size={15}
+                        />)
+                    }
+                    buttonColor='rgba(255,255,255,0.7)'
+                    size={20}
+                >
+                </ActionButton>
+                </View>
+                <View style={{ flex: 1, flexDirection: 'row', justifyContent: "center", zIndex:0 }}>
+
                     <Image
                         source={{ uri: this.props.Picture.toString() }}
-                        style={{ top: -8, width: 50, height: 50, borderRadius: 25 }}
+                        style={{  width: 60, height: 60, borderRadius: 30 }}
                     />
 
                 </View>
-                
-                <View style={{ flex: 1, flexDirection: 'column', justifyContent: "center" }}>
-                    
-                    <Text style={{ fontSize: 15, }}>{this.props.FirstName + ", " + this.props.Age}</Text>
-                    
-                    <View style={{ flex: 1, flexDirection: 'row', alignContent: 'center', justifyContent: 'center' }}>
-                        
-                        <Icon style={{ flex: 1 }} name='location-pin' color='gray' textAlign='center' size={20}></Icon>
-                        
-                        <Text style={{ fontSize: 10, fontWeight: 'bold', textAlign: 'center', flex: 1 }}>{(Math.floor(this.props.Distance * 10) / 10).toString() + ' KM'}</Text>
-                    
+
+                <View style={{ flex: 1, flexDirection: 'column', justifyContent: "center", alignItems: 'center' }}>
+
+                    <Text style={{ fontSize: 15, flex: 1 }}>{this.props.FirstName + ", " + this.props.Age}</Text>
+
+                    <View style={{ flex: 1, flexDirection: 'row', alignContent: 'center', justifyContent: 'center', alignItems: 'center' }}>
+
+                        <Icon style={{ flex: 1, marginLeft: 30 }} name='location-pin' color='gray' textAlign='center' size={20}></Icon>
+
+                        <Text style={{ fontSize: 12, fontWeight: 'bold', flex: 1, justifyContent: 'center', marginLeft: -35 }}>{(Math.floor(this.props.Distance * 10) / 10).toString() + ' KM'}</Text>
+
+
                     </View>
-                
+                    <Button
+                        style={{ flex: 1 }}
+                        titleStyle={{ fontWeight: 'bold', fontSize: 10 }}
+                        title={'Send Suggestion'}
+                        onPress={() => { this.sendSuggestion() }}
+                        buttonStyle={{
+                            borderWidth: 0,
+                            borderColor: 'transparent',
+                            borderRadius: 20,
+                            backgroundColor: '#f34573'
+                        }}
+                        containerStyle={{ marginVertical: 3, height: 30, width: 115, alignItems: 'center' }}
+                        icon={{
+                            name: 'mail',
+                            type: 'Octicons',
+                            size: 15,
+                            color: 'white',
+                        }}
+                        iconContainerStyle={{ width: 15 }}
+                    />
+
                 </View>
 
-                <Button
-                    titleStyle={{ fontWeight: 'bold', fontSize: 10 }}
-                    onPress={() => { this.sendSuggestion() }}
-                    buttonStyle={{
-                        borderWidth: 0,
-                        borderColor: 'transparent',
-                        borderRadius: 20,
-                        backgroundColor: '#f34573'
-                    }}
-                    containerStyle={{ marginVertical: 5, height: 30, width: 30, alignItems: 'center' }}
-                    icon={{
-                        name: 'mail',
-                        type: 'Octicons',
-                        size: 15,
-                        color: 'white',
-                    }}
-                    iconContainerStyle={{ width: 20 }}
-                />
-                
+
+
             </View>
         )
     }

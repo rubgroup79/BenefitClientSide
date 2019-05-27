@@ -19,6 +19,7 @@ import HomeTrainee from './src/Pages/HomeTrainee';
 import HomeTrainer from './src/Pages/HomeTrainer';
 import TraineeProfile from './src/Pages/TraineeProfile';
 import BottomNavigation from './src/Navigation/BottomNavigation';
+import Chat from './src/Pages/Chat';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
@@ -42,7 +43,7 @@ const CustomDrawerContentComponent = props => (
 
 const MainRoot = DrawerNavigator(
   {
-    
+
     HomeTrainee: {
       path: '/homeTrainee',
       screen: HomeTrainee,
@@ -89,6 +90,13 @@ const MainRoot = DrawerNavigator(
       //   drawerLabel:()=>null
       // }
     },
+    Chat: {
+      path: '/chat',
+      screen: Chat,
+      navigationOptions: {
+        drawerLabel: () => null
+      }
+    },
     Login: {
       path: '/login',
       screen: Login,
@@ -107,13 +115,13 @@ const MainRoot = DrawerNavigator(
       screen: Components,
     },
 
-    
+
     BottomNavigation: {
       path: '/bottomNavigation',
       screen: BottomNavigation,
     },
 
-    
+
     Ratings: {
       path: '/ratings',
       screen: Ratings,
@@ -187,17 +195,17 @@ export default class AppContainer extends React.Component {
   render() {
     if (!this.state.isReady) {
       return (
-          <AppLoading
+        <AppLoading
           startAsync={this._loadAssetsAsync}
           onFinish={() => this.setState({ isReady: true })}
         />
-        
-        
+
+
       );
     }
 
     return (
-     <MainRoot />
+      <MainRoot />
     )
 
   }

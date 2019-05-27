@@ -314,7 +314,7 @@ export default class SignIn1 extends Component {
               flex: 1,
               paddingBottom: 20,
               paddingTop: 30,
-              backgroundColor: '#293046',
+              //backgroundColor: '#cccccc',
               width: SCREEN_WIDTH,
               height: SCREEN_HEIGHT,
               textAlign: 'center',
@@ -595,7 +595,8 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingBottom: 20,
     paddingTop: 30,
-    backgroundColor: '#293046',
+    
+    //backgroundColor: '#293046',
     width: SCREEN_WIDTH,
     height: SCREEN_HEIGHT,
     alignItems: 'center',

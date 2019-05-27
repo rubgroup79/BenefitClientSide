@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "react-native-elements-app",
+    "name": "BeneFIT",
     "slug": "react-native-elements-app",
     "description": "A demo app for React Native Elements UI Library",
     "privacy": "public",
@@ -21,4 +21,3 @@
     }
   }
 }
-  // "icon": "./assets/images/LogoWithName.png",
