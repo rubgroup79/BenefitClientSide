@@ -103,22 +103,34 @@ class CustomButton extends Component {
     return (
       <Button
         title={title}
-        titleStyle={{ fontSize: 15, color: 'white', fontFamily: 'regular' }}
+        titleStyle={
+          selected
+              ? { 
+                  color:'white', 
+                  fontSize: 12,  
+                  fontFamily: 'regular' 
+              } 
+              : {
+                  fontSize: 12, 
+                  color: 'gray', 
+                  fontFamily: 'regular'
+              }
+          }
         buttonStyle={
           selected
-            ? {
-              backgroundColor: '#75cac3',
-              borderRadius: 100,
-              width: 127,
-            }
-            : {
-              borderWidth: 1,
-              borderColor: 'white',
-              borderRadius: 30,
-              width: 127,
-              backgroundColor: 'transparent',
-            }
-        }
+              ? {
+                  backgroundColor: '#f34573',
+                  borderRadius: 100,
+                  width: 105
+              }
+              : {
+                  borderWidth: 1,
+                  borderColor: 'gray',
+                  borderRadius: 30,
+                  width: 105,
+                  backgroundColor: 'transparent',
+              }
+      }
         containerStyle={{ marginRight: 10 }}
         onPress={() => {
           this.setState({ selected: !selected });
@@ -380,7 +392,7 @@ export default class SignIn1 extends Component {
                   }
                   onSubmitEditing={() => {
                     this.validateFirstName();
-                    this.lastNameInput.focus();
+                    this.firstNameInput.focus();
                   }}
                 />
 
@@ -396,7 +408,7 @@ export default class SignIn1 extends Component {
                   }
                   onSubmitEditing={() => {
                     this.validateLastName();
-                    this.emailInput.focus();
+                    this.lastNameInput.focus();
                   }}
                 />
 
@@ -413,7 +425,7 @@ export default class SignIn1 extends Component {
                       <AvatarImage
                         label={"Male"}
                         lableFontSize={11}
-                        labelColor={'#ffffff'}
+                        labelColor={'#75cac3'}
                         image={FEMALE_AVATAR}
                         height={40}
                         width={40}
@@ -431,7 +443,7 @@ export default class SignIn1 extends Component {
                       <AvatarImage
                         label={'Female'}
                         lableFontSize={11}
-                        labelColor={'#ffffff'}
+                        labelColor={'#f34573'}
                         image={FEMALE_AVATAR}
                         height={40}
                         width={40}
@@ -542,7 +554,7 @@ export default class SignIn1 extends Component {
                   alignItems: 'center',
                 }}
                 linearGradientProps={{
-                  colors: ['#f34573', '#f34573'],
+                  colors: ['#75cac3', '#75cac3'],
                   start: [1, 0],
                   end: [0.2, 0],
                 }}
@@ -611,7 +623,7 @@ const styles = StyleSheet.create({
 
   signUpText: {
     flex: 1,
-    color: 'white',
+    color: '#f34573',
     fontSize: 28,
     fontFamily: 'light',
     marginTop: 15,
@@ -647,7 +659,7 @@ const styles = StyleSheet.create({
   inputStyle: {
     flex: 1,
     marginLeft: 10,
-    color: 'white',
+    color: '#7384B4',
     fontFamily: 'light',
     fontSize: 16,
   },
@@ -702,14 +714,14 @@ const styles = StyleSheet.create({
     color: '#75cac3',
     fontSize: 16,
     marginLeft: -33,
-    fontFamily: 'light',
+    fontFamily: 'regular',
     flex: 1,
     textAlign: 'center'
   },
 
   textHeadlines: {
     flex: 1,
-    fontSize: 15,
+    fontSize: 16,
     color: '#75cac3',
     fontFamily: 'regular',
     marginLeft: 40,
@@ -718,7 +730,7 @@ const styles = StyleSheet.create({
 
   partnersGenderHeadline: {
     flex: 1,
-    fontSize: 15,
+    fontSize: 16,
     color: '#75cac3',
     fontFamily: 'regular',
     marginLeft: 40,

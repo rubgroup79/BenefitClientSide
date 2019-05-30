@@ -10,6 +10,8 @@ import FontsTab from '../tabs/fonts';
 import HomeTrainee from '../Pages/HomeTrainee';
 //import Chats from '../Pages/Chats';
 import ChatsTab from '../TabsNavigation/ChatsTab';
+import TrainingsTab from '../TabsNavigation/TrainingsTab';
+import TraineeProfile from '../Pages/TraineeProfile';
 import Chat from '../Pages/Chat';
 
 
@@ -75,9 +77,9 @@ const Components = TabNavigator(
       },
     },
 
-    Profile: {
-      screen: FontsTab,
-      path: '/fonts',
+    TrainingsTab: {
+      screen: TrainingsTab,
+      path: '/trainingsTab',
       navigationOptions: {
         tabBarLabel: 'Trainings',
         tabBarIcon: ({ tintColor, focused }) => (
@@ -90,8 +92,8 @@ const Components = TabNavigator(
         ),
       },
     },
-    FontsTab: {
-      screen: FontsTab,
+    TraineeProfile: {
+      screen: TraineeProfile,
       
       path: '/fonts',
       navigationOptions: {

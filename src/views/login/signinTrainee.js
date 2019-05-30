@@ -10,7 +10,7 @@ import {
   StatusBar,
 
 } from 'react-native';
-import { Slider } from 'react-native-elements';
+import { Slider, Divider } from 'react-native-elements';
 import { Font } from 'expo';
 import AvatarImage from '../../Components/AvatarImage'
 import NumericInput from 'react-native-numeric-input';
@@ -45,7 +45,7 @@ export default class SigninTrainee extends Component {
     this.setSelectedGenderPartner = this.setSelectedGenderPartner.bind(this);
     this.setSelectedGenderTrainer = this.setSelectedGenderTrainer.bind(this);
     this.setPicturePath = this.setPicturePath.bind(this);
-  
+
   }
 
   async componentDidMount() {
@@ -152,9 +152,9 @@ export default class SigninTrainee extends Component {
     LayoutAnimation.easeInEaseOut() || this.setState({ trainerGender: selectedType });
 
 
-setPicturePath(path){
-  this.setState({picture:path});
-}
+  setPicturePath(path) {
+    this.setState({ picture: path });
+  }
 
 
   render() {
@@ -164,7 +164,7 @@ setPicturePath(path){
         <StatusBar barStyle="light-content" />
 
         {this.state.fontLoaded ? (
-          <View style={{ flex: 1, backgroundColor: '#293046' }}>
+          <View style={{ flex: 1, }}>
 
             <View style={styles.statusBar} />
 
@@ -174,7 +174,9 @@ setPicturePath(path){
 
             </View>
 
-            <ScrollView style={{ flex: 1 }}>
+            <ScrollView 
+            scrollEnabled={false}
+            style={{ flex: 1 }}>
 
               <View>
 
@@ -182,45 +184,46 @@ setPicturePath(path){
 
               </View>
 
+              <View style={{ flex: 1, flexDirection: 'column' }}>
+
+                <Text
+                  style={style = styles.textHeadlines}
+                >
+
+                  Search Radius
+                </Text>
+
+                <View style={styles.sliderContainerStyle} >
+
+                  <Text style={styles.sliderRangeText}>0</Text >
+
+                  <Slider
+                    minimumTrackTintColor='#c7c9cc'
+                    maximumTrackTintColor='gray'
+                    thumbTintColor='#f34573'
+                    style={styles.sliderStyle}
+                    minimumValue={0}
+                    step={1}
+                    maximumValue={30}
+                    value={this.state.searchRadius}
+                    onValueChange={value => this.setState({ searchRadius: value })}
+                  />
+
+                  <Text style={style = styles.sliderRangeText}>30</Text>
+
+                </View>
+
+                <Text style={{ color: '#f34573', textAlign: 'center', fontSize: 13, fontFamily: 'light' }}>Radius: {this.state.searchRadius} km</Text>
+
+              </View>
+              <Divider style={{flex:1, marginTop:10}}></Divider>
+
               {this.state.step == 1 ?
                 <View>
 
                   <View style={{ flex: 1, flexDirection: 'column' }}>
 
-                    <Text
-                      style={style = styles.textHeadlines}
-                    >
-
-                      Search Radius
-                </Text>
-
-                    <View style={styles.sliderContainerStyle} >
-
-                      <Text style={styles.sliderRangeText}>0</Text >
-
-                      <Slider
-                        minimumTrackTintColor='white'
-                        maximumTrackTintColor='gray'
-                        thumbTintColor='#75cac3'
-                        style={styles.sliderStyle}
-                        minimumValue={0}
-                        step={1}
-                        maximumValue={30}
-                        value={this.state.searchRadius}
-                        onValueChange={value => this.setState({ searchRadius: value })}
-                      />
-
-                      <Text style={style = styles.sliderRangeText}>30</Text>
-
-                    </View>
-
-                    <Text style={{ color: '#75cac3', textAlign: 'center', fontSize: 13 }}>Radius: {this.state.searchRadius} km</Text>
-
-                  </View>
-
-                  <View style={{ flex: 1, flexDirection: 'column' }}>
-
-                    <Text style={styles.preferencesHeadlines} > Partner Preferences</Text>
+                    <Text style={styles.preferencesHeadlines} > PARTNER PREFERENCES</Text>
 
                     <View style={styles.partnerPreferencesStyle}>
 
@@ -235,7 +238,7 @@ setPicturePath(path){
                           <AvatarImage
                             label={"Male"}
                             lableFontSize={11}
-                            labelColor={'#ffffff'}
+                            labelColor={'#75cac3'}
                             image={FEMALE_AVATAR}
                             height={40}
                             width={40}
@@ -252,14 +255,14 @@ setPicturePath(path){
                           />
 
                           <AvatarImage
-                          label={"Female"}
-                          lableFontSize={11}
-                          labelColor={'#ffffff'}
-                          image={FEMALE_AVATAR}
-                          height={40}
-                          width={40}
-                          selectedHeight={50}
-                          selectedWidth={50}
+                            label={"Female"}
+                            lableFontSize={11}
+                            labelColor={'#f34573'}
+                            image={FEMALE_AVATAR}
+                            height={40}
+                            width={40}
+                            selectedHeight={50}
+                            selectedWidth={50}
                             image={FEMALE_AVATAR}
                             onPress={
                               () => {
@@ -271,14 +274,14 @@ setPicturePath(path){
                           />
 
                           <AvatarImage
-                          label={"Both"}
-                          lableFontSize={11}
-                          labelColor={'#ffffff'}
-                          image={FEMALE_AVATAR}
-                          height={40}
-                          width={40}
-                          selectedHeight={50}
-                          selectedWidth={50}
+                            label={"Both"}
+                            lableFontSize={11}
+                            labelColor={'#7384B4'}
+                            image={FEMALE_AVATAR}
+                            height={40}
+                            width={40}
+                            selectedHeight={50}
+                            selectedWidth={50}
                             image={BOTH_AVATAR}
                             onPress={
                               () => {
@@ -310,7 +313,7 @@ setPicturePath(path){
                           type='up-down'
                           initValue={this.state.minPartnerAge}
                           totalWidth={100}
-                          textColor='white'
+                          textColor='#7384B4'
                           minValue={18}
                           maxValue={this.state.maxPartnerAge}
                           rounded
@@ -325,7 +328,7 @@ setPicturePath(path){
                           type='up-down'
                           initValue={this.state.maxPartnerAge}
                           totalWidth={100}
-                          textColor='white'
+                          textColor='#7384B4'
                           minValue={this.state.minPartnerAge}
                           maxValue={100}
                           rounded
@@ -336,7 +339,7 @@ setPicturePath(path){
 
                   </View>
 
-                  <View style={{ flex: 1 }}>
+                  <View style={{ flex: 1, marginTop:30 }}>
 
                     <ActionButton
                       buttonColor='#75cac3'
@@ -358,7 +361,7 @@ setPicturePath(path){
                 :
                 <View style={{ flex: 1, flexDirection: 'column' }}>
 
-                  <Text style={styles.preferencesHeadlines}>Trainer Preferences</Text>
+                  <Text style={styles.preferencesHeadlines}>TRAINER PREFERENCES</Text>
 
                   <View style={styles.partnerPreferencesStyle}>
 
@@ -371,14 +374,14 @@ setPicturePath(path){
                       <View style={styles.userTypesContainer}>
 
                         <AvatarImage
-                        label={"Male"}
-                        lableFontSize={11}
-                        labelColor={'#ffffff'}
-                        image={FEMALE_AVATAR}
-                        height={40}
-                        width={40}
-                        selectedHeight={50}
-                        selectedWidth={50}
+                          label={"Male"}
+                          lableFontSize={11}
+                          labelColor={'#75cac3'}
+                          image={FEMALE_AVATAR}
+                          height={40}
+                          width={40}
+                          selectedHeight={50}
+                          selectedWidth={50}
                           image={MALE_AVATAR}
                           onPress={
                             () => {
@@ -390,14 +393,14 @@ setPicturePath(path){
                         />
 
                         <AvatarImage
-                        label={"Female"}
-                        lableFontSize={11}
-                        labelColor={'#ffffff'}
-                        image={FEMALE_AVATAR}
-                        height={40}
-                        width={40}
-                        selectedHeight={50}
-                        selectedWidth={50}
+                          label={"Female"}
+                          lableFontSize={11}
+                          labelColor={'#f34573'}
+                          image={FEMALE_AVATAR}
+                          height={40}
+                          width={40}
+                          selectedHeight={50}
+                          selectedWidth={50}
                           image={FEMALE_AVATAR}
                           onPress={
                             () => {
@@ -409,14 +412,14 @@ setPicturePath(path){
                         />
 
                         <AvatarImage
-                        label={"Both"}
-                        lableFontSize={11}
-                        labelColor={'#ffffff'}
-                        image={FEMALE_AVATAR}
-                        height={40}
-                        width={40}
-                        selectedHeight={50}
-                        selectedWidth={50}
+                          label={"Both"}
+                          lableFontSize={11}
+                          labelColor={'#7384B4'}
+                          image={FEMALE_AVATAR}
+                          height={40}
+                          width={40}
+                          selectedHeight={50}
+                          selectedWidth={50}
                           image={BOTH_AVATAR}
                           onPress={
                             () => {
@@ -436,7 +439,7 @@ setPicturePath(path){
                   <View style={{ flex: 1, flexDirection: 'column' }}>
 
                     <Text
-                      style={style = styles.textHeadlines}
+                      style={ [styles.textHeadlines] }
                     >
                       Your Budget
                     </Text>
@@ -446,9 +449,9 @@ setPicturePath(path){
                       <Text style={styles.sliderRangeText}>0</Text >
 
                       <Slider
-                        minimumTrackTintColor='white'
+                        minimumTrackTintColor='#c7c9cc'
                         maximumTrackTintColor='gray'
-                        thumbTintColor='#75cac3'
+                        thumbTintColor='#f34573'
                         style={styles.sliderStyle}
                         minimumValue={0}
                         step={10}
@@ -462,11 +465,11 @@ setPicturePath(path){
 
                     </View>
 
-                    <Text style={{ color: '#75cac3', textAlign: 'center', fontSize: 13 }}>Budget: {this.state.maxBudget} $</Text>
+                    <Text style={{ color: '#f34573', textAlign: 'center', fontSize: 13 }}>Budget: {this.state.maxBudget} $</Text>
 
                   </View>
 
-                  <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', marginTop: 60 }}>
+                  <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center',  }}>
 
                     <View style={{ flex: 1, marginRight: 170 }}>
 
@@ -488,7 +491,7 @@ setPicturePath(path){
 
                     <View style={{ flex: 1 }}>
                       <ActionButton
-                        buttonColor='#f34573'
+                        buttonColor='#75cac3'
                         size={50}
                         renderIcon={active => active ? null :
                           (<Icon
@@ -535,10 +538,10 @@ const styles = StyleSheet.create({
   },
 
   nameHeader: {
-    color: 'white',
-    fontSize: 22,
+    color: '#f34573',
+    fontSize: 28,
     textAlign: 'center',
-    fontFamily:'bold'
+    fontFamily: 'light'
   },
 
   sliderStyle: {
@@ -568,10 +571,10 @@ const styles = StyleSheet.create({
 
   sliderRangeText: {
     flex: 1,
-    color: 'white',
-    fontWeight: 'bold',
+    color: '#f34573',
     marginTop: 37,
-    textAlign: 'center'
+    textAlign: 'center',
+    fontFamily: 'bold'
   },
 
   textHeadlines: {
@@ -580,7 +583,7 @@ const styles = StyleSheet.create({
     color: '#75cac3',
     fontFamily: 'regular',
     marginLeft: 40,
-    marginTop: 30
+    marginTop: 10
   },
 
   partnersGenderHeadline: {
@@ -612,7 +615,7 @@ const styles = StyleSheet.create({
   partnerPreferencesStyle: {
     flex: 1,
     flexDirection: 'row',
-    marginTop: 30
+    marginTop: 15
   },
 
   numericInput: {
@@ -620,11 +623,11 @@ const styles = StyleSheet.create({
   },
 
   preferencesHeadlines: {
-    color: 'white',
+    color: '#7384B4',
     textAlign: 'center',
-    fontSize: 20,
-    fontWeight: "bold",
-    marginTop: 30,
+    fontSize: 14,
+    fontFamily: "bold",
+    marginTop: 20,
   }
 
 

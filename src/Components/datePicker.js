@@ -37,7 +37,7 @@ changeDate(date){
             marginLeft: 0,
           },
             dateText:{
-                color: 'white',
+                color: '#7384B4',
                 justifyContent: 'flex-start'
               },
               placeholderText: {

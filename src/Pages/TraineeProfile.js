@@ -4,66 +4,28 @@ import {
   Text,
   View,
   SafeAreaView,
-  Image,
   ScrollView,
+  LayoutAnimation,
   Dimensions,
   StatusBar,
-} from 'react-native';
-import { Button } from 'react-native-elements';
-import { Font } from 'expo';
+  Image
 
-const SCREEN_WIDTH = Dimensions.get('window').width;
-const IMAGE_SIZE = SCREEN_WIDTH - 80;
+} from 'react-native';
+import { Slider, Divider } from 'react-native-elements';
+import { Font } from 'expo';
+import AvatarImage from '../Components/AvatarImage'
+import NumericInput from 'react-native-numeric-input';
+import Icon from "react-native-vector-icons/Entypo";
+import ActionButton from 'react-native-action-button';
+import ImageUpload from '../Components/ImagePicker';
 
 const MALE_AVATAR = require('../../Images/MaleAvatar.png');
 const FEMALE_AVATAR = require('../../Images/FemaleAvatar.png');
+const BOTH_AVATAR = require('../../Images/BothAvatar.png');
+const STAR= require('../../Images/SelectedStar.png');
+const SCREEN_WIDTH = Dimensions.get('window').width;
+const SLIDER_SIZE = SCREEN_WIDTH - 150;
 
-class CustomButton extends Component {
-  constructor() {
-    super();
-
-    this.state = {
-      selected: false,
-    };
-  }
-
-  componentDidMount() {
-    const { selected } = this.props;
-
-    this.setState({
-      selected,
-    });
-  }
-
-  render() {
-    const { title } = this.props;
-    const { selected } = this.state;
-
-    return (
-      <Button
-        title={title}
-        titleStyle={{ fontSize: 15, color: 'white', fontFamily: 'regular' }}
-        buttonStyle={
-          selected
-            ? {
-              backgroundColor: '#75cac3',
-              borderRadius: 100,
-              width: 127,
-            }
-            : {
-              borderWidth: 1,
-              borderColor: 'white',
-              borderRadius: 30,
-              width: 127,
-              backgroundColor: 'transparent',
-            }
-        }
-        containerStyle={{ marginRight: 10 }}
-        onPress={() => this.setState({ selected: !selected })}
-      />
-    );
-  }
-}
 
 export default class TraineeProfile extends Component {
   constructor(props) {
@@ -71,14 +33,18 @@ export default class TraineeProfile extends Component {
 
     this.state = {
       fontLoaded: false,
-      //userCode: 0,
+      userCode: 0,
       firstName: '',
       lastName: '',
       gender: '',
       picture: '',
-      sportCategories: [],
-      hiddenGenderPic: true
+      rate:0,
+      sportCategories:[],
+      Age:0
+
     };
+
+
   }
 
   async componentDidMount() {
@@ -89,307 +55,501 @@ export default class TraineeProfile extends Component {
       bold: require('../../assets/fonts/Montserrat-Bold.ttf'),
     });
 
-    this.setState({ fontLoaded: true });
+    this.setState({
+      fontLoaded: true,
+    });
   }
 
-  showProfile() {
-    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/ShowProfile?UserCode=29', {
+  componentWillMount() {
+
+     fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/ShowProfile?UserCode=1', {
 
       method: 'GET',
       headers: { "Content-type": "application/json; charset=UTF-8" },
     })
       .then(res => res.json())
       .then(response => {
-        if (response.UserCode != 0) {
-          this.setState({ userCode: response.UserCode, firstName: response.FirstName, lastName: response.LastName, gender: response.Gender, picture: response.Picture })
-          this.setState({hiddenGenderPic: false})
-        }
-        console.warn(response)
+          this.setState({ userCode: response.UserCode, firstName: response.FirstName, lastName: response.LastName, gender: response.Gender, picture: response.Picture, age:response.Age, sportCategories:response.SportCategories, rate: response.Rate })
+          console.warn(this.state);
       })
       .catch(error => console.warn('Error:', error.message));
+
   }
 
   render() {
-    //this.showProfile();
     return (
       <SafeAreaView style={{ flex: 1 }}>
+
         <StatusBar barStyle="light-content" />
+
         {this.state.fontLoaded ? (
-          <View style={{ flex: 1, backgroundColor: '#293046' }}>
-            <View>
-              <Button
-                buttonStyle={
-                  {
-                    backgroundColor: 'yellow',
-                    borderRadius: 100,
-                    width: 127,
-                  }}
-                title='Push'
-                onPress={() => {
-                  this.showProfile()
-                }}
-              >
-              </Button>
-            </View>
+          <View style={{ flex: 1, }}>
+
             <View style={styles.statusBar} />
+
             <View style={styles.navBar}>
-              <Text style={styles.nameHeader}> {this.state.firstName + ' ' + this.state.lastName}</Text>
+
+              <Text style={styles.nameHeader}>{this.state.firstName + ' ' + this.state.lastName + "'s Profile"}</Text>
+
             </View>
-            <ScrollView style={{ flex: 1 }}>
-              <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                <Image
-                  source={{ uri: this.state.picture }}
-                  style={{
-                    width: IMAGE_SIZE,
-                    height: IMAGE_SIZE,
-                    borderRadius: 10,
-                  }}
-                />
-                {this.state.hiddenGenderPic==false?
-                <View style={{ flex: 1, position: "relative" }}>
-                  <Image 
-                    source={this.state.gender == 'Female' ? FEMALE_AVATAR : MALE_AVATAR}
-                    style={{
-                      width: 60,
-                      height: 60,
-                      marginLeft: IMAGE_SIZE,
-                      marginTop: -40
-                    }}
+
+            <ScrollView
+              scrollEnabled={false}
+              style={{ flex: 1, flexDirection: 'column' }}>
+
+              <View style={{ flex: 1, alignItems: 'center', marginTop: 10, flexDirection: 'column', }}>
+                <Image style={{ width: 100, height: 100, borderRadius: 50, }} source={{ uri: this.state.picture }}></Image>
+                <Text style={{ flex: 1, fontFamily: 'regular', color: '#7384B4', fontSize: 18, margin: 5 }}>{this.state.gender}</Text>
+                <Text style={{ flex: 1, fontFamily: 'regular', color: '#7384B4', fontSize: 15, }}>{this.state.age}</Text>
+              </View>
+
+              <View style={{ flex: 1, marginTop: 10, flexDirection: 'row', margin:20, justifyContent:'center' }}>
+                <Image source={STAR}></Image>
+                <Text style={{ flex: 1, fontFamily: 'regular', color: '#f34573', fontSize: 18, margin: 5, alignContent:'center', justifyContent:'center', marginTop:15, marginLeft:10 }}>{this.state.rate}</Text>
+              </View>
+              {/* 
+              <View style={{ flex: 1, flexDirection: 'column' }}>
+
+                <Text
+                  style={style = styles.textHeadlines}
+                >
+
+                  Search Radius
+                </Text>
+
+                <View style={styles.sliderContainerStyle} >
+
+                  <Text style={styles.sliderRangeText}>0</Text >
+
+                  <Slider
+                    minimumTrackTintColor='#c7c9cc'
+                    maximumTrackTintColor='gray'
+                    thumbTintColor='#f34573'
+                    style={styles.sliderStyle}
+                    minimumValue={0}
+                    step={1}
+                    maximumValue={30}
+                    value={this.state.searchRadius}
+                    onValueChange={value => this.setState({ searchRadius: value })}
                   />
-                </View> : null}
+
+                  <Text style={style = styles.sliderRangeText}>30</Text>
+
+                </View>
+
+                <Text style={{ color: '#f34573', textAlign: 'center', fontSize: 13, fontFamily: 'light' }}>Radius: {this.state.searchRadius} km</Text>
+
               </View>
-              <View
-                style={{
-                  flex: 1,
-                  flexDirection: 'row',
-                  marginTop: 20,
-                  marginHorizontal: 40,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-              >
-                <Text
-                  style={{
-                    flex: 1,
-                    fontSize: 26,
-                    color: 'white',
-                    fontFamily: 'bold',
-                  }}
-                >
-                  Theresa
-                </Text>
-                <Text
-                  style={{
-                    flex: 0.5,
-                    fontSize: 15,
-                    color: 'gray',
-                    textAlign: 'left',
-                    marginTop: 5,
-                  }}
-                >
-                  0.8 mi
-                </Text>
-                <Text
-                  style={{
-                    flex: 1,
-                    fontSize: 26,
-                    color: 'green',
-                    fontFamily: 'bold',
-                    textAlign: 'right',
-                  }}
-                >
-                  84%
-                </Text>
-              </View>
-              <View
-                style={{
-                  flex: 1,
-                  marginTop: 20,
-                  width: SCREEN_WIDTH - 80,
-                  marginLeft: 40,
-                }}
-              >
-                <Text
-                  style={{
-                    flex: 1,
-                    fontSize: 15,
-                    color: 'white',
-                    fontFamily: 'regular',
-                  }}
-                >
-                  100% Italian, fun loving, affectionate, young lady who knows
-                  what it takes to make a relationship work.
-                </Text>
-              </View>
-              <View style={{ flex: 1, marginTop: 30 }}>
-                <Text
-                  style={{
-                    flex: 1,
-                    fontSize: 15,
-                    color: '#FCFCD4',
-                    fontFamily: 'regular',
-                    marginLeft: 40,
-                  }}
-                >
-                  INTERESTS
-                </Text>
-                <View style={{ flex: 1, width: SCREEN_WIDTH, marginTop: 20 }}>
-                  <ScrollView
-                    style={{ flex: 1 }}
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                  >
-                    <View
-                      style={{
-                        flex: 1,
-                        flexDirection: 'column',
-                        height: 170,
-                        marginLeft: 40,
-                        marginRight: 10,
-                      }}
+              <Divider style={{ flex: 1, marginTop: 10 }}></Divider>
+
+              {this.state.step == 1 ?
+                <View>
+
+                  <View style={{ flex: 1, flexDirection: 'column' }}>
+
+                    <Text style={styles.preferencesHeadlines} > PARTNER PREFERENCES</Text>
+
+                    <View style={styles.partnerPreferencesStyle}>
+
+                      <Text style={style = styles.partnersGenderHeadline}>
+                        Gender
+                    </Text>
+
+                      <View style={styles.partnerPreferencesContainerStyle} >
+
+                        <View style={styles.userTypesContainer}>
+
+                          <AvatarImage
+                            label={"Male"}
+                            lableFontSize={11}
+                            labelColor={'#ffffff'}
+                            image={FEMALE_AVATAR}
+                            height={40}
+                            width={40}
+                            selectedHeight={50}
+                            selectedWidth={50}
+                            image={MALE_AVATAR}
+                            onPress={
+                              () => {
+                                this.setSelectedGenderPartner('Male')
+                                this.setState({ partnerGender: 'Male' })
+                              }
+                            }
+                            selected={this.state.partnerGender === 'Male'}
+                          />
+
+                          <AvatarImage
+                            label={"Female"}
+                            lableFontSize={11}
+                            labelColor={'#ffffff'}
+                            image={FEMALE_AVATAR}
+                            height={40}
+                            width={40}
+                            selectedHeight={50}
+                            selectedWidth={50}
+                            image={FEMALE_AVATAR}
+                            onPress={
+                              () => {
+                                this.setSelectedGenderPartner('Female')
+                                this.setState({ partnerGender: 'Female' })
+                              }
+                            }
+                            selected={this.state.partnerGender === 'Female'}
+                          />
+
+                          <AvatarImage
+                            label={"Both"}
+                            lableFontSize={11}
+                            labelColor={'#ffffff'}
+                            image={FEMALE_AVATAR}
+                            height={40}
+                            width={40}
+                            selectedHeight={50}
+                            selectedWidth={50}
+                            image={BOTH_AVATAR}
+                            onPress={
+                              () => {
+                                this.setSelectedGenderPartner('Both')
+                                this.setState({ partnerGender: 'Both' })
+                              }
+                            }
+                            selected={this.state.partnerGender === 'Both'}
+                          />
+
+                        </View>
+
+                      </View>
+
+                    </View>
+
+                    <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignContent: "center", marginTop: 20 }}>
+
+                      <Text style={style = styles.partnersAgeHeadline}>
+                        Age
+                      </Text>
+
+                      <View style={{ flex: 5, justifyContent: 'center', flexDirection: 'row', marginRight: 25 }}>
+
+                        <NumericInput
+                          style={styles.numericInput}
+                          value={this.state.minPartnerAge}
+                          onChange={value => this.setState({ minPartnerAge: value })}
+                          type='up-down'
+                          initValue={this.state.minPartnerAge}
+                          totalWidth={100}
+                          textColor='#7384B4'
+                          minValue={18}
+                          maxValue={this.state.maxPartnerAge}
+                          rounded
+                        />
+
+                        <Text style={{ flex: 1, color: 'white', textAlign: 'center', marginTop: 10, fontWeight: 'bold' }}>to</Text>
+
+                        <NumericInput
+                          style={styles.numericInput}
+                          value={this.state.maxPartnerAge}
+                          onChange={value => this.setState({ maxPartnerAge: value })}
+                          type='up-down'
+                          initValue={this.state.maxPartnerAge}
+                          totalWidth={100}
+                          textColor='#7384B4'
+                          minValue={this.state.minPartnerAge}
+                          maxValue={100}
+                          rounded
+                        />
+                      </View>
+
+                    </View>
+
+                  </View>
+
+                  <View style={{ flex: 1, marginTop: 30 }}>
+
+                    <ActionButton
+                      buttonColor='#75cac3'
+                      size={50}
+                      renderIcon={active => active ? null :
+                        (<Icon
+                          name='chevron-right'
+                          color='white'
+                          size={35}
+                        />)
+                      }
+                      onPress={() => this.nextStep()}
+                    ></ActionButton>
+
+                  </View>
+
+                </View>
+
+                :
+                <View style={{ flex: 1, flexDirection: 'column' }}>
+
+                  <Text style={styles.preferencesHeadlines}>TRAINER PREFERENCES</Text>
+
+                  <View style={styles.partnerPreferencesStyle}>
+
+                    <Text style={style = styles.partnersGenderHeadline}>
+                      Gender
+                    </Text>
+
+                    <View style={styles.partnerPreferencesContainerStyle} >
+
+                      <View style={styles.userTypesContainer}>
+
+                        <AvatarImage
+                          label={"Male"}
+                          lableFontSize={11}
+                          labelColor={'#ffffff'}
+                          image={FEMALE_AVATAR}
+                          height={40}
+                          width={40}
+                          selectedHeight={50}
+                          selectedWidth={50}
+                          image={MALE_AVATAR}
+                          onPress={
+                            () => {
+                              this.setSelectedGenderTrainer('Male')
+                              this.setState({ trainerGender: 'Male' })
+                            }
+                          }
+                          selected={this.state.trainerGender === 'Male'}
+                        />
+
+                        <AvatarImage
+                          label={"Female"}
+                          lableFontSize={11}
+                          labelColor={'#ffffff'}
+                          image={FEMALE_AVATAR}
+                          height={40}
+                          width={40}
+                          selectedHeight={50}
+                          selectedWidth={50}
+                          image={FEMALE_AVATAR}
+                          onPress={
+                            () => {
+                              this.setSelectedGenderTrainer('Female')
+                              this.setState({ trainerGender: 'Female' })
+                            }
+                          }
+                          selected={this.state.trainerGender === 'Female'}
+                        />
+
+                        <AvatarImage
+                          label={"Both"}
+                          lableFontSize={11}
+                          labelColor={'#ffffff'}
+                          image={FEMALE_AVATAR}
+                          height={40}
+                          width={40}
+                          selectedHeight={50}
+                          selectedWidth={50}
+                          image={BOTH_AVATAR}
+                          onPress={
+                            () => {
+                              this.setSelectedGenderTrainer('Both')
+                              this.setState({ trainerGender: 'Both' })
+                            }
+                          }
+                          selected={this.state.trainerGender === 'Both'}
+                        />
+
+                      </View>
+
+                    </View>
+
+                  </View>
+
+                  <View style={{ flex: 1, flexDirection: 'column' }}>
+
+                    <Text
+                      style={[styles.textHeadlines]}
                     >
-                      <View style={{ flex: 1, flexDirection: 'row' }}>
-                        <CustomButton title="Philosophy" selected={true} />
-                        <CustomButton title="Sport" />
-                        <CustomButton title="Swimming" selected={true} />
-                        <CustomButton title="Religion" />
-                      </View>
-                      <View style={{ flex: 1, flexDirection: 'row' }}>
-                        <CustomButton title="Music" />
-                        <CustomButton title="Soccer" selected={true} />
-                        <CustomButton title="Radiohead" selected={true} />
-                        <CustomButton title="Micheal Jackson" />
-                      </View>
-                      <View style={{ flex: 1, flexDirection: 'row' }}>
-                        <CustomButton title="Travelling" selected={true} />
-                        <CustomButton title="Rock'n'Roll" />
-                        <CustomButton title="Dogs" selected={true} />
-                        <CustomButton title="France" selected={true} />
-                      </View>
+                      Your Budget
+                    </Text>
+
+                    <View style={styles.sliderContainerStyle} >
+
+                      <Text style={styles.sliderRangeText}>0</Text >
+
+                      <Slider
+                        minimumTrackTintColor='#c7c9cc'
+                        maximumTrackTintColor='gray'
+                        thumbTintColor='#f34573'
+                        style={styles.sliderStyle}
+                        minimumValue={0}
+                        step={10}
+                        maximumValue={500}
+                        value={this.state.maxBudget}
+                        onValueChange={value => this.setState({ maxBudget: value })}
+                      />
+
+                      <Text style={style = styles.sliderRangeText}>500</Text>
+
+
                     </View>
-                  </ScrollView>
-                </View>
-              </View>
-              <View style={{ flex: 1, marginTop: 30 }}>
-                <Text
-                  style={{
-                    flex: 1,
-                    fontSize: 15,
-                    color: 'rgba(216, 121, 112, 1)',
-                    fontFamily: 'regular',
-                    marginLeft: 40,
-                  }}
-                >
-                  INFO
-                </Text>
-                <View
-                  style={{
-                    flex: 1,
-                    flexDirection: 'row',
-                    marginTop: 20,
-                    marginHorizontal: 30,
-                  }}
-                >
-                  <View style={{ flex: 1, flexDirection: 'row' }}>
-                    <View style={{ flex: 1 }}>
-                      <Text style={styles.infoTypeLabel}>Age</Text>
-                      <Text style={styles.infoTypeLabel}>Height</Text>
-                      <Text style={styles.infoTypeLabel}>Ethnicity</Text>
-                      <Text style={styles.infoTypeLabel}>Sign</Text>
-                      <Text style={styles.infoTypeLabel}>Religion</Text>
-                    </View>
-                    <View style={{ flex: 1, marginLeft: 10 }}>
-                      <Text style={styles.infoAnswerLabel}>26</Text>
-                      <Text style={styles.infoAnswerLabel}>5'4"</Text>
-                      <Text style={styles.infoAnswerLabel}>White</Text>
-                      <Text style={styles.infoAnswerLabel}>Pisces</Text>
-                      <Text style={styles.infoAnswerLabel}>Catholic</Text>
-                    </View>
+
+                    <Text style={{ color: '#f34573', textAlign: 'center', fontSize: 13 }}>Budget: {this.state.maxBudget} $</Text>
+
                   </View>
-                  <View style={{ flex: 1, flexDirection: 'row' }}>
+
+                  <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', }}>
+
+                    <View style={{ flex: 1, marginRight: 170 }}>
+
+                      <ActionButton
+                        buttonColor='#75cac3'
+                        size={50}
+                        renderIcon={active => active ? null :
+                          (<Icon
+                            name='chevron-left'
+                            color='white'
+                            size={35}
+                          />)
+                        }
+                        onPress={() => this.setState({ step: 1 })}
+                      >
+                      </ActionButton>
+
+                    </View>
+
                     <View style={{ flex: 1 }}>
-                      <Text style={styles.infoTypeLabel}>Body Type</Text>
-                      <Text style={styles.infoTypeLabel}>Diet</Text>
-                      <Text style={styles.infoTypeLabel}>Smoke</Text>
-                      <Text style={styles.infoTypeLabel}>Drink</Text>
-                      <Text style={styles.infoTypeLabel}>Drugs</Text>
+                      <ActionButton
+                        buttonColor='#75cac3'
+                        size={50}
+                        renderIcon={active => active ? null :
+                          (<Icon
+                            name='check'
+                            color='white'
+                            size={35}
+                          />)
+                        }
+                        onPress={() => this.submit()}
+                      ></ActionButton>
+
                     </View>
-                    <View style={{ flex: 1, marginLeft: 10, marginRight: -20 }}>
-                      <Text style={styles.infoAnswerLabel}>Fit</Text>
-                      <Text style={styles.infoAnswerLabel}>Vegan</Text>
-                      <Text style={styles.infoAnswerLabel}>No</Text>
-                      <Text style={styles.infoAnswerLabel}>No</Text>
-                      <Text style={styles.infoAnswerLabel}>Never</Text>
-                    </View>
+
                   </View>
-                </View>
-              </View>
-              <Button
-                containerStyle={{ marginVertical: 20 }}
-                style={{
-                  flex: 1,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-                buttonStyle={{
-                  height: 55,
-                  width: SCREEN_WIDTH - 40,
-                  borderRadius: 30,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-                linearGradientProps={{
-                  colors: ['rgba(214,116,112,1)', 'rgba(233,174,87,1)'],
-                  start: [1, 0],
-                  end: [0.2, 0],
-                }}
-                title="Message Theresa"
-                titleStyle={{
-                  fontFamily: 'regular',
-                  fontSize: 20,
-                  color: 'white',
-                  textAlign: 'center',
-                }}
-                onPress={() => console.log('Message Theresa')}
-                activeOpacity={0.5}
-              />
+
+                </View>} */}
+
             </ScrollView>
+
           </View>
-        ) : (
-            <Text>Loading...</Text>
-          )}
+        ) : null}
+
       </SafeAreaView>
     );
   }
 }
 
+
+
 const styles = StyleSheet.create({
   statusBar: {
     height: 10,
   },
+
   navBar: {
     height: 60,
     width: SCREEN_WIDTH,
     justifyContent: 'center',
     alignContent: 'center',
+    marginTop: 10
   },
+
   nameHeader: {
-    color: '#ECECEC',
-    fontSize: 26,
+    color: '#f34573',
+    fontSize: 28,
     textAlign: 'center',
-    fontFamily: 'bold',
+    fontFamily: 'light'
   },
-  infoTypeLabel: {
+
+  sliderStyle: {
+    width: SLIDER_SIZE,
+    marginTop: 35,
+  },
+
+
+  sliderContainerStyle: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginTop: -18
+  },
+
+  partnerPreferencesContainerStyle: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    margin: 10,
+    flexDirection: 'row',
+    marginRight: 40
+
+  },
+
+  sliderRangeText: {
+    flex: 1,
+    color: '#f34573',
+    marginTop: 37,
+    textAlign: 'center',
+    fontFamily: 'bold'
+  },
+
+  textHeadlines: {
+    flex: 1,
     fontSize: 15,
-    textAlign: 'right',
-    color: 'rgba(126,123,138,1)',
+    color: '#75cac3',
     fontFamily: 'regular',
-    paddingBottom: 10,
+    marginLeft: 40,
+    marginTop: 10
   },
-  infoAnswerLabel: {
+
+  partnersGenderHeadline: {
+    flex: 1,
     fontSize: 15,
-    color: 'white',
+    color: '#75cac3',
     fontFamily: 'regular',
-    paddingBottom: 10,
+    marginLeft: 40,
+    marginTop: 30
   },
+
+  partnersAgeHeadline: {
+    flex: 2,
+    fontSize: 15,
+    color: '#75cac3',
+    fontFamily: 'regular',
+    marginLeft: 40,
+    marginTop: 10
+  },
+
+  userTypesContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    width: SCREEN_WIDTH,
+    alignItems: 'center',
+    marginTop: -18,
+  },
+
+  partnerPreferencesStyle: {
+    flex: 1,
+    flexDirection: 'row',
+    marginTop: 15
+  },
+
+  numericInput: {
+    flex: 1,
+  },
+
+  preferencesHeadlines: {
+    color: '#7384B4',
+    textAlign: 'center',
+    fontSize: 14,
+    fontFamily: "bold",
+    marginTop: 20,
+  }
+
+
 });

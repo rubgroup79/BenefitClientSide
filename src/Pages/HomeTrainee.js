@@ -14,7 +14,7 @@ import FutureTrainingsListView from '../Components/FutureTrainingsListView';
 import SearchModal from '../Components/SearchModal';
 import CreateGroupModal from '../Components/CreateGroupModal';
 
-const LOADING=require('../../Images/LoadingLogo.gif');
+const LOADING = require('../../Images/LoadingLogo.gif');
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 const SEARCH_VIEW = require('../../Images/SearchView.png');
@@ -52,7 +52,7 @@ export default class HomeTrainee extends Component {
 
     };
 
-    
+
     this.closeListView = this.closeListView.bind(this);
     this.setSearchLocation = this.setSearchLocation.bind(this);
     this.searchModalVisible = this.searchModalVisible.bind(this);
@@ -156,19 +156,19 @@ export default class HomeTrainee extends Component {
     });
   }
 
-  closeListView(){
-    this.setState({listView:false});
+  closeListView() {
+    this.setState({ listView: false });
   }
 
   setSearchMode = (mode) => {
     this.setState({ searchMode: mode });
-    this.setState({searchResultsMapView:mode});
+    this.setState({ searchResultsMapView: mode });
     if (!mode)
-      this.setState({pendingRequestsMapView:false, approvedRequestsMapView:false, futureTrainingsMapView:false})
+      this.setState({ pendingRequestsMapView: false, approvedRequestsMapView: false, futureTrainingsMapView: false })
   }
-
+//this.props.navigation.getParam('userCode', '0')
   getRequests(IsApproved) {
-    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetSuggestions?UserCode=' + this.props.navigation.getParam('userCode', '0') + '&IsApproved=' + IsApproved, {
+    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetSuggestions?UserCode=1' + '&IsApproved=' + IsApproved, {
 
       method: 'GET',
       headers: { "Content-type": "application/json; charset=UTF-8" },
@@ -185,7 +185,7 @@ export default class HomeTrainee extends Component {
 
   getFutureTrainings() {
     // + this.props.navigation.getParam('userCode', '0')
-    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetFutureCoupleTrainings?UserCode=' + this.props.navigation.getParam('userCode', '0'), {
+    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetFutureCoupleTrainings?UserCode=1', {
 
       method: 'GET',
       headers: { "Content-type": "application/json; charset=UTF-8" },
@@ -195,8 +195,8 @@ export default class HomeTrainee extends Component {
         this.setState({ futureCoupleTrainings: response })
       })
       .catch(error => console.warn('Error:', error.message));
-
-    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetFutureGroupTrainings?UserCode=' + this.props.navigation.getParam('userCode', '0'), {
+//this.props.navigation.getParam('userCode', '0')
+    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetFutureGroupTrainings?UserCode=1', {
 
       method: 'GET',
       headers: { "Content-type": "application/json; charset=UTF-8" },
@@ -232,48 +232,32 @@ export default class HomeTrainee extends Component {
             <View style={{ flex: 1, zIndex: 1000, position: 'absolute', left: 0, top: 20, width: SCREEN_WIDTH, }}>
 
               <View style={styles.container}>
-                {/* <View style={{ flex: 1, }}>
-
-                  <IconNew
-                    name="menu"
-                    size={23}
-                    containerStyle={{ marginLeft: 10 }}
-                    onPress={() => this.props.navigation.navigate('DrawerOpen')}
-                  />
-                </View> */}
-
 
                 <View style={{ flex: 8, flexDirection: 'row', alignItems: 'center', marginLeft: 25, marginTop: 15 }}>
+
+
+
                   {this.state.searchMode ?
                     <View style={{ flex: 1, }}>
 
                       <TouchableOpacity
                         onPress={() => {
-                          this.setState({ searchResultsMapView: !this.state.searchResultsMapView, pendingRequestsMapView:false, approvedRequestsMapView:false,futureTrainingsMapView:false});
-                          
+                          this.setState({ searchResultsMapView: !this.state.searchResultsMapView, pendingRequestsMapView: false, approvedRequestsMapView: false, futureTrainingsMapView: false });
+
                         }}
                       >
-                        {this.state.searchResultsMapView ?<Image
-                          source={
-                            PENDING_REQUESTS
-                          }
-                          style={{ width: 60, height: 60 }}
-
-                        /> : <Image
-                          source={
-                            SEARCH_VIEW
-                          }
-                          style={{ width: 60, height: 60 }}
-
-                        />}
+                        <Image source={ SEARCH_VIEW } style={{ width: 60, height: 60 }} />
                       </TouchableOpacity>
-                      <View style={{ left: -5, top: -58, width: 18, height: 18, borderRadius: 10, borderColor: '#82d7ed', borderWidth: 2, backgroundColor: 'white', alignItems: "center", justifyContent: 'center' }}>
+                      <View style={{ left: -5, top: -58, width: 18, height: 18, borderRadius: 10, borderColor: '#75cac3', borderWidth: 2, backgroundColor: 'white', alignItems: "center", justifyContent: 'center' }}>
                         <Text
                           style={{ color: 'black', fontFamily: 'regular', fontSize: 11, position: 'absolute' }}
                         >{this.state.coupleResults.length + this.state.groupResults.length}
                         </Text>
                       </View>
                     </View> : null}
+
+
+
 
                   <View style={{ flex: 1, }}>
                     <TouchableOpacity
@@ -290,7 +274,7 @@ export default class HomeTrainee extends Component {
 
                       />
                     </TouchableOpacity>
-                    <View style={{ left: -5, top: -58, width: 18, height: 18, borderRadius: 10, borderColor: '#82d7ed', borderWidth: 2, backgroundColor: 'white', alignItems: "center", justifyContent: 'center' }}>
+                    <View style={{ left: -5, top: -58, width: 18, height: 18, borderRadius: 10, borderColor: '#75cac3', borderWidth: 2, backgroundColor: 'white', alignItems: "center", justifyContent: 'center' }}>
                       <Text
                         style={{ color: 'black', fontFamily: 'regular', fontSize: 11, position: 'absolute' }}
                       >{this.state.pendingRequests.length}
@@ -302,7 +286,7 @@ export default class HomeTrainee extends Component {
                   <View style={{ flex: 1, }}>
                     <TouchableOpacity
                       onPress={() => {
-                        this.setState({ approvedRequestsMapView: !this.state.approvedRequestsMapView, pendingRequestsMapView: false, futureTrainingsMapView: false, searchResultsMapView: false})
+                        this.setState({ approvedRequestsMapView: !this.state.approvedRequestsMapView, pendingRequestsMapView: false, futureTrainingsMapView: false, searchResultsMapView: false })
                         this.getRequests(true);
                       }}
                     >
@@ -314,7 +298,7 @@ export default class HomeTrainee extends Component {
                       />
 
                     </TouchableOpacity>
-                    <View style={{ left: -5, top: -58, width: 18, height: 18, borderRadius: 10, borderColor: '#82d7ed', borderWidth: 2, backgroundColor: 'white', alignItems: "center", justifyContent: 'center' }}>
+                    <View style={{ left: -5, top: -58, width: 18, height: 18, borderRadius: 10, borderColor: '#75cac3', borderWidth: 2, backgroundColor: 'white', alignItems: "center", justifyContent: 'center' }}>
                       <Text
                         style={{ color: 'black', fontFamily: 'regular', fontSize: 11, position: 'absolute' }}
                       >{this.state.approvedRequests.length}
@@ -324,7 +308,7 @@ export default class HomeTrainee extends Component {
                   <View style={{ flex: 1, }}>
                     <TouchableOpacity
                       onPress={() => {
-                        this.setState({ futureTrainingsMapView: !this.state.futureTrainingsMapView, approvedRequestsMapView: false, pendingRequestsMapView: false,searchResultsMapView: false });
+                        this.setState({ futureTrainingsMapView: !this.state.futureTrainingsMapView, approvedRequestsMapView: false, pendingRequestsMapView: false, searchResultsMapView: false });
                         this.getFutureTrainings();
                       }}
                     >
@@ -336,7 +320,7 @@ export default class HomeTrainee extends Component {
 
                       />
                     </TouchableOpacity>
-                    <View style={{ left: -5, top: -58, width: 18, height: 18, borderRadius: 10, borderColor: '#82d7ed', borderWidth: 2, backgroundColor: 'white', alignItems: "center", justifyContent: 'center' }}>
+                    <View style={{ left: -5, top: -58, width: 18, height: 18, borderRadius: 10, borderColor: '#75cac3', borderWidth: 2, backgroundColor: 'white', alignItems: "center", justifyContent: 'center' }}>
                       <Text
                         style={{ color: 'black', fontFamily: 'regular', fontSize: 11, position: 'absolute' }}
                       >{this.state.futureCoupleTrainings.length + this.state.futureGroupTrainings.length}
@@ -361,14 +345,14 @@ export default class HomeTrainee extends Component {
                 //{this.props.navigation.getParam('userCode', '0')}
                 <FutureTrainingsListView closeListView={this.closeListView} FutureCoupleTrainings={this.state.futureCoupleTrainings} FutureGroupTrainings={this.state.futureGroupTrainings} UserCode={this.props.navigation.getParam('userCode', '0')}></FutureTrainingsListView>
                 : null}
-              
-              
-              {!this.state.listView &&((this.state.searchResultsMapView && (this.state.coupleResults.length!=0 || this.state.groupResults.length!=0)) || (this.state.pendingRequestsMapView && this.state.pendingRequests.length!=0) || (this.state.approvedRequestsMapView && this.state.approvedRequests.length!=0) || (this.state.futureTrainingsMapView && (this.state.futureCoupleTrainings.length!=0 || this.state.futureGroupTrainings.length!=0)))
+
+
+              {!this.state.listView && ((this.state.searchResultsMapView && (this.state.coupleResults.length != 0 || this.state.groupResults.length != 0)) || (this.state.pendingRequestsMapView && this.state.pendingRequests.length != 0) || (this.state.approvedRequestsMapView && this.state.approvedRequests.length != 0) || (this.state.futureTrainingsMapView && (this.state.futureCoupleTrainings.length != 0 || this.state.futureGroupTrainings.length != 0)))
                 ?
-                <View style={{ flex: 1, top:80 }}>
-                 
+                <View style={{ flex: 1, top: 80 }}>
+
                   <ActionButton
-                    onPress={() => this.setState({listView:!this.state.listView})}
+                    onPress={() => this.setState({ listView: !this.state.listView })}
                     renderIcon={() =>
                       (<IconNew
                         name="list"
@@ -388,7 +372,8 @@ export default class HomeTrainee extends Component {
                 <View style={{ flex: 1, left: -85 }}>
                   <ActionButton
                     onPress={() => {
-                      this.getCurrentLocation()}}
+                      this.getCurrentLocation()
+                    }}
                     renderIcon={() =>
                       (<Icon1
                         name="navigation"
@@ -503,10 +488,7 @@ export default class HomeTrainee extends Component {
 
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
 
-            {/* <ActivityIndicator style={{ flex: 1 }}
-              size='large'
-            ></ActivityIndicator> */}
-<Image source={LOADING}></Image>
+            <Image source={LOADING}></Image>
           </View>
         }
 
