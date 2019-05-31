@@ -12,15 +12,15 @@ import {
 } from 'react-native';
 import { Slider, Divider } from 'react-native-elements';
 import { Font } from 'expo';
-import AvatarImage from '../../Components/AvatarImage'
+import AvatarImage from '../Components/AvatarImage';
 import NumericInput from 'react-native-numeric-input';
 import Icon from "react-native-vector-icons/Entypo";
 import ActionButton from 'react-native-action-button';
-import ImageUpload from '../../Components/ImagePicker';
+import ImageUpload from '../Components/ImagePicker';
 
-const MALE_AVATAR = require('../../../Images/MaleAvatar.png');
-const FEMALE_AVATAR = require('../../../Images/FemaleAvatar.png');
-const BOTH_AVATAR = require('../../../Images/BothAvatar.png');
+const MALE_AVATAR = require('../../Images/MaleAvatar.png');
+const FEMALE_AVATAR = require('../../Images/FemaleAvatar.png');
+const BOTH_AVATAR = require('../../Images/BothAvatar.png');
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SLIDER_SIZE = SCREEN_WIDTH - 150;
 
@@ -50,10 +50,10 @@ export default class SigninTrainee extends Component {
 
   async componentDidMount() {
     await Font.loadAsync({
-      georgia: require('../../../assets/fonts/Georgia.ttf'),
-      regular: require('../../../assets/fonts/Montserrat-Regular.ttf'),
-      light: require('../../../assets/fonts/Montserrat-Light.ttf'),
-      bold: require('../../../assets/fonts/Montserrat-Bold.ttf'),
+      georgia: require('../../assets/fonts/Georgia.ttf'),
+      regular: require('../../assets/fonts/Montserrat-Regular.ttf'),
+      light: require('../../assets/fonts/Montserrat-Light.ttf'),
+      bold: require('../../assets/fonts/Montserrat-Bold.ttf'),
     });
 
     this.setState({

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, ScrollView, StyleSheet, Image, ListView, Button, Dimensions } from 'react-native';
+import { View, ScrollView, StyleSheet, Image, ListView, Button, Dimensions, AsyncStorage } from 'react-native';
 import Icon from 'react-native-vector-icons/AntDesign';
 import { Font } from 'expo';
 import {
@@ -24,11 +24,15 @@ class Trainings extends Component {
       pastCoupleTrainings: [],
       pastGroupTrainings: [],
       selectedIndex: 0,
+      userCode:0,
+      isTrainer:false
 
 
     };
     this.getAdress = this.getAdress.bind(this);
-    this.updateIndex = this.updateIndex.bind(this)
+    this.updateIndex = this.updateIndex.bind(this);
+    this.getLocalStorage=this.getLocalStorage.bind(this);
+    this.getTrainings= this.getTrainings.bind(this);
 
   }
 
@@ -48,7 +52,29 @@ class Trainings extends Component {
   }
 
   UNSAFE_componentWillMount() {
-    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetPastCoupleTrainings?UserCode=1', {
+this.getLocalStorage();
+  }
+
+  getLocalStorage=async ()=>{
+    await AsyncStorage.getItem('UserCode', (err, result) => {
+      if (result != null) {
+        this.setState({ userCode: result }, this.getTrainings);
+      }
+      else alert('error local storage user code');
+    }
+    )
+
+    await AsyncStorage.getItem('IsTrainer', (err, result) => {
+      if (result != null) {
+        this.setState({ userCode: result });
+      }
+      else alert('error local storage is trainer');
+    }
+    )
+  }
+
+  getTrainings(){
+    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetPastCoupleTrainings?UserCode='+this.state.userCode, {
       method: 'GET',
       headers: { "Content-type": "application/json; charset=UTF-8" },
     })
@@ -58,7 +84,7 @@ class Trainings extends Component {
       })
       .catch(error => console.warn('Error:', error.message));
 
-    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetPastGroupTrainings?UserCode=1', {
+    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetPastGroupTrainings?UserCode='+this.state.userCode, {
       method: 'GET',
       headers: { "Content-type": "application/json; charset=UTF-8" },
     })
@@ -68,7 +94,6 @@ class Trainings extends Component {
       })
       .catch(error => console.warn('Error:', error.message));
   }
-
 
 
   updateIndex(selectedIndex) {
@@ -139,8 +164,8 @@ class Trainings extends Component {
                           rightSubtitle={training.Price == 0 ? null : '$' + training.Price}
                           rightSubtitleStyle={{ textAlign: 'center', fontFamily: 'regular' }}
                           bottomDivider
-                          rightIcon={() => <Icon color='#f7d84c' name='star' size={30} onPress={() => this.props.navigation.navigate('Rate', {UserCode:1, RatedUserCode: training.PartnerUserCode, FullName:training.PartnerFirstName + " " + training.PartnerLastName, Picture:training.PartnerPicture})} />}
-                          onPress={()=> console.warn(training.PartnerUserCode)}
+                          rightIcon={() => <Icon color='#f7d84c' name='star' size={30} onPress={() => this.props.navigation.navigate('Rate', {UserCode:this.state.userCode, RatedUserCode: training.PartnerUserCode, FullName:training.PartnerFirstName + " " + training.PartnerLastName, Picture:training.PartnerPicture})} />}
+                          onPress={()=> this.props.navigation.navigate('UserProfile', {UserCode: training.PartnerUserCode})}
                         />
                     ))}
 

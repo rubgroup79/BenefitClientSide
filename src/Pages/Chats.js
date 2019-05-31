@@ -1,19 +1,15 @@
 import _ from 'lodash';
 
 import React, { Component } from 'react';
-import { View, ScrollView, StyleSheet, Image, ListView } from 'react-native';
+import { View, ScrollView, StyleSheet, Image, ListView, AsyncStorage } from 'react-native';
 import { Font } from 'expo';
-
 import {
-  Text,
-  Card,
-  Tile,
+  Text, Card, Tile,
   Icon,
   ListItem,
   Avatar,
-} from 'react-native-elements';
-import TouchableScale from 'react-native-touchable-scale';
 
+} from 'react-native-elements';
 import colors from '../config/colors';
 
 class Chats extends Component {
@@ -27,11 +23,14 @@ class Chats extends Component {
       selectedIndex: 0,
       value: 0.5,
       chats: [],
-      fontLoaded: false
+      fontLoaded: false,
+      userCode: 0,
+      isTrainer: false
 
     };
 
     this.updateIndex = this.updateIndex.bind(this);
+    this.getChats = this.getChats.bind(this);
   }
 
   async componentDidMount() {
@@ -50,7 +49,30 @@ class Chats extends Component {
   }
 
   UNSAFE_componentWillMount() {
-    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetAllChats?UserCode=1', {
+    this.getLocalStorage();
+  }
+
+
+  getLocalStorage=async ()=>{
+    await AsyncStorage.getItem('UserCode', (err, result) => {
+      if (result != null) {
+        this.setState({ userCode: result }, this.getChats);
+      }
+      else alert('error local storage user code');
+    }
+    )
+
+    await AsyncStorage.getItem('IsTrainer', (err, result) => {
+      if (result != null) {
+        this.setState({ userCode: result });
+      }
+      else alert('error local storage is trainer');
+    }
+    )
+  }
+
+  getChats() {
+    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetAllChats?UserCode=' + this.state.userCode, {
 
       method: 'GET',
       headers: { "Content-type": "application/json; charset=UTF-8" },
@@ -61,8 +83,6 @@ class Chats extends Component {
       })
       .catch(error => console.warn('Error:', error.message));
   }
-
-
 
   updateIndex(selectedIndex) {
     this.setState({ selectedIndex });
@@ -86,11 +106,11 @@ class Chats extends Component {
               <Image style={{ width: 57, height: 38, marginLeft: 18 }} source={require('../../Images/LogoOnly.png')} />
               <Text style={styles.heading}>Chats</Text>
             </View>
-            <View style={{paddingVertical: 8 }}>
+            <View style={{ paddingVertical: 8 }}>
               {this.state.chats.map((chat) => (
                 <ListItem
-                  onPress={() => this.props.navigation.navigate('Chat', {ChatCode: chat.ChatCode, FullName: chat.FirstName + " " + chat.LastName, Picture: chat.Picture, UserCode: chat.UserCode1, PartnerUserCode:chat.UserCode2 })}
-                  
+                  onPress={() => this.props.navigation.navigate('Chat', { ChatCode: chat.ChatCode, FullName: chat.FirstName + " " + chat.LastName, Picture: chat.Picture, UserCode: chat.UserCode1, PartnerUserCode: chat.UserCode2 })}
+
                   //component={TouchableScale}
                   // friction={90}
                   // tension={100}
@@ -99,11 +119,11 @@ class Chats extends Component {
                   key={chat.ChatCode}
                   title={chat.FirstName + " " + chat.LastName}
                   titleStyle={{ color: 'black', fontFamily: 'bold' }}
-                  subtitleStyle={{ color: 'gray', fontFamily:'regular' }}
+                  subtitleStyle={{ color: 'gray', fontFamily: 'regular' }}
                   subtitle={chat.LastMessage}
                   chevronColor="white"
                   chevron
-                  
+
                   containerStyle={{
                     marginHorizontal: 16,
                     marginVertical: 8,
@@ -111,7 +131,7 @@ class Chats extends Component {
                     backgroundColor: 'white',
                     borderColor: '#75cac3',
                     borderWidth: 2,
-                    
+
                   }}
                 />
               ))}
@@ -150,7 +170,7 @@ const styles = StyleSheet.create({
     fontSize: 30,
     flex: 1,
     textAlign: 'center',
-    fontFamily:'bold'
+    fontFamily: 'bold'
   },
   fonts: {
     marginBottom: 8,

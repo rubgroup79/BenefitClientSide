@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Dimensions, ActivityIndicator, KeyboardAvoidingView, TouchableOpacity, Text } from 'react-native';
+import { View, StyleSheet, Dimensions, ActivityIndicator, KeyboardAvoidingView, TouchableOpacity, Text, AsyncStorage , Button} from 'react-native';
 import { Avatar, Badge, Image } from 'react-native-elements';
 import Map from '../Components/Map';
 import { Font } from 'expo';
@@ -48,11 +48,13 @@ export default class HomeTrainee extends Component {
       pendingRequestsMapView: false,
       approvedRequestsMapView: false,
       futureTrainingsMapView: false,
-      listView: false
+      listView: false,
+      userCode:0,
+      isTrainer:false
 
     };
 
-
+    this.getLocalStorage= this.getLocalStorage.bind(this);
     this.closeListView = this.closeListView.bind(this);
     this.setSearchLocation = this.setSearchLocation.bind(this);
     this.searchModalVisible = this.searchModalVisible.bind(this);
@@ -60,6 +62,7 @@ export default class HomeTrainee extends Component {
     this.getCoupleResults = this.getCoupleResults.bind(this);
     this.getGroupResults = this.getGroupResults.bind(this);
     this.checkIfUserOnline = this.checkIfUserOnline.bind(this);
+    this.afterLocalStorageFunctions= this.afterLocalStorageFunctions.bind(this);
   }
 
   searchModalVisible() {
@@ -86,6 +89,29 @@ export default class HomeTrainee extends Component {
   }
 
   UNSAFE_componentWillMount() {
+    this.getLocalStorage();
+
+  }
+
+  getLocalStorage = async () => {
+    await AsyncStorage.getItem('UserCode', (err, result) => {
+      if (result != null) {
+        this.setState({ userCode: result },this.afterLocalStorageFunctions );
+      }
+      else alert('error local storage user code');
+    }
+    )
+
+    await AsyncStorage.getItem('IsTrainer', (err, result) => {
+      if (result != null) {
+        this.setState({ userCode: result });
+      }
+      else alert('error local storage is trainer');
+    }
+    )
+  }
+
+  afterLocalStorageFunctions(){
     this.getCurrentLocation();
     this.getFutureTrainings();
     this.getRequests(true);
@@ -95,7 +121,7 @@ export default class HomeTrainee extends Component {
 
 
   checkIfUserOnline() {
-    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/CheckIfUserOnline?UserCode=' + this.props.navigation.getParam('userCode', '0') + '&IsTrainer=0', {
+    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/CheckIfUserOnline?UserCode=' +this.state.userCode + '&IsTrainer='+this.setState.isTrainer, {
 
       method: 'GET',
       headers: { "Content-type": "application/json; charset=UTF-8" },
@@ -108,7 +134,7 @@ export default class HomeTrainee extends Component {
   }
 
   goOffline() {
-    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GoOffline?UserCode=' + this.props.navigation.getParam('userCode', '0') + '&IsTrainer=0', {
+    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GoOffline?UserCode=' +this.state.userCode  + '&IsTrainer='+this.setState.isTrainer, {
       method: 'POST',
       body: JSON.stringify({}),
       headers: { "Content-type": "application/json; charset=UTF-8" },
@@ -166,9 +192,9 @@ export default class HomeTrainee extends Component {
     if (!mode)
       this.setState({ pendingRequestsMapView: false, approvedRequestsMapView: false, futureTrainingsMapView: false })
   }
-//this.props.navigation.getParam('userCode', '0')
+
   getRequests(IsApproved) {
-    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetSuggestions?UserCode=1' + '&IsApproved=' + IsApproved, {
+    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetSuggestions?UserCode='+this.state.userCode + '&IsApproved=' + IsApproved, {
 
       method: 'GET',
       headers: { "Content-type": "application/json; charset=UTF-8" },
@@ -184,8 +210,7 @@ export default class HomeTrainee extends Component {
   }
 
   getFutureTrainings() {
-    // + this.props.navigation.getParam('userCode', '0')
-    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetFutureCoupleTrainings?UserCode=1', {
+    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetFutureCoupleTrainings?UserCode='+this.state.userCode, {
 
       method: 'GET',
       headers: { "Content-type": "application/json; charset=UTF-8" },
@@ -195,8 +220,7 @@ export default class HomeTrainee extends Component {
         this.setState({ futureCoupleTrainings: response })
       })
       .catch(error => console.warn('Error:', error.message));
-//this.props.navigation.getParam('userCode', '0')
-    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetFutureGroupTrainings?UserCode=1', {
+    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetFutureGroupTrainings?UserCode='+this.state.userCode, {
 
       method: 'GET',
       headers: { "Content-type": "application/json; charset=UTF-8" },
@@ -216,15 +240,15 @@ export default class HomeTrainee extends Component {
 
           <View style={{ flex: 1, width: SCREEN_WIDTH, backgroundColor: 'white', height: SCREEN_HEIGHT, alignItems: 'center' }}>
             {this.state.createGroupModalVisible ?
-              <CreateGroupModal createGroupModalVisible={this.createGroupModalVisible} CreatorCode={this.props.navigation.getParam('userCode', '0')} IsTrainer={0} ></CreateGroupModal>
+              <CreateGroupModal createGroupModalVisible={this.createGroupModalVisible} CreatorCode={this.state.userCode} IsTrainer={this.state.isTrainer} ></CreateGroupModal>
               : null}
 
             {this.state.searchModalVisible ?
-              <SearchModal setSearchMode={this.setSearchMode} setSearchLocation={this.setSearchLocation} userCode={1} searchModalVisible={this.searchModalVisible} getCoupleResults={this.getCoupleResults} getGroupResults={this.getGroupResults} style={{ zIndex: 1000 }}></SearchModal>
+              <SearchModal setSearchMode={this.setSearchMode} setSearchLocation={this.setSearchLocation} userCode={this.state.userCode} searchModalVisible={this.searchModalVisible} getCoupleResults={this.getCoupleResults} getGroupResults={this.getGroupResults} style={{ zIndex: 1000 }}></SearchModal>
               : null}
 
             <View style={{ flex: 6, zIndex: 0, width: SCREEN_WIDTH, height: SCREEN_HEIGHT }} >
-              <Map style={{ zIndex: 0 }} SenderCode={this.props.navigation.getParam('userCode', '0')} HomeTraineeStates={this.state}></Map>
+              <Map style={{ zIndex: 0 }} navigation={this.props.navigation} SenderCode={this.state.userCode} HomeTraineeStates={this.state}></Map>
             </View>
 
 
@@ -246,7 +270,7 @@ export default class HomeTrainee extends Component {
 
                         }}
                       >
-                        <Image source={ SEARCH_VIEW } style={{ width: 60, height: 60 }} />
+                        <Image source={SEARCH_VIEW} style={{ width: 60, height: 60 }} />
                       </TouchableOpacity>
                       <View style={{ left: -5, top: -58, width: 18, height: 18, borderRadius: 10, borderColor: '#75cac3', borderWidth: 2, backgroundColor: 'white', alignItems: "center", justifyContent: 'center' }}>
                         <Text
@@ -333,17 +357,16 @@ export default class HomeTrainee extends Component {
               </View>
 
               {this.state.pendingRequestsMapView && this.state.listView ?
-                <PendingRequestsListView closeListView={this.closeListView} PendingRequests={this.state.pendingRequests} UserCode={this.props.navigation.getParam('userCode', '0')}></PendingRequestsListView>
+                <PendingRequestsListView closeListView={this.closeListView} PendingRequests={this.state.pendingRequests} UserCode={this.state.userCode}></PendingRequestsListView>
                 : null}
 
               {this.state.approvedRequestsMapView && this.state.listView ?
-                <ApprovedRequestsListView closeListView={this.closeListView} ApprovedRequests={this.state.approvedRequests} UserCode={this.props.navigation.getParam('userCode', '0')} ></ApprovedRequestsListView>
+                <ApprovedRequestsListView closeListView={this.closeListView} ApprovedRequests={this.state.approvedRequests} UserCode={this.state.userCode} ></ApprovedRequestsListView>
                 : null
               }
 
               {this.state.futureTrainingsMapView && this.state.listView ?
-                //{this.props.navigation.getParam('userCode', '0')}
-                <FutureTrainingsListView closeListView={this.closeListView} FutureCoupleTrainings={this.state.futureCoupleTrainings} FutureGroupTrainings={this.state.futureGroupTrainings} UserCode={this.props.navigation.getParam('userCode', '0')}></FutureTrainingsListView>
+                <FutureTrainingsListView closeListView={this.closeListView} FutureCoupleTrainings={this.state.futureCoupleTrainings} FutureGroupTrainings={this.state.futureGroupTrainings} UserCode={this.state.userCode}></FutureTrainingsListView>
                 : null}
 
 
@@ -481,7 +504,7 @@ export default class HomeTrainee extends Component {
                 </View>
               </View>
             </View>
-
+           
           </View>
 
           :

@@ -272,7 +272,7 @@ export default class CreateGroupModal extends Component {
 
             <ScrollView style={styles.mainContainer}>
                 <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
-                    <Icon name='close' style={styles.closeIcon} size={20} color='gray' onPress={() => {alert('click');this.props.createGroupModalVisible()}}></Icon>
+                    <Icon name='close' style={styles.closeIcon} size={20} color='gray' onPress={() => {this.props.createGroupModalVisible()}}></Icon>
                     <Text style={styles.headline}>Create Your Group</Text>
                 </View>
 

@@ -50,9 +50,9 @@ export default class LocationPage extends React.Component {
             }}
           >
             <Image source={require('../../Images/MyMarker.png')} style={{ width: 30, height: 36 }} />
-            {/* <MapView.Callout>
-              <CoupleResultCallOut ReceiverCode={2} SenderCode={1} FirstName={'dana'} Distance={8} Age={26} Picture={'http://proj.ruppin.ac.il/bgroup79/test1/tar6/uploadFiles/photo_5_17_2019_9-56-07_PM.jpg'}></CoupleResultCallOut>
-            </MapView.Callout> */}
+             <MapView.Callout>
+              <CoupleResultCallOut navigation ={this.props.navigation} ReceiverCode={2} SenderCode={1} FirstName={'dana'} Distance={8} Age={26} Picture={'http://proj.ruppin.ac.il/bgroup79/test1/tar6/uploadFiles/photo_5_17_2019_9-56-07_PM.jpg'}></CoupleResultCallOut>
+            </MapView.Callout> 
           </MapView.Marker>
           
           

@@ -11,6 +11,7 @@ import {
   LayoutAnimation,
   UIManager,
   KeyboardAvoidingView,
+  AsyncStorage
 } from 'react-native';
 import { Font } from 'expo';
 import { Input, Button } from 'react-native-elements';
@@ -21,7 +22,7 @@ import SimpleIcon from 'react-native-vector-icons/SimpleLineIcons';
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
-const BG_IMAGE = require('../../../assets/images/bg_screen4.jpg');
+const BG_IMAGE = require('../../assets/images/bg_screen4.jpg');
 
 // Enable LayoutAnimation on Android
 UIManager.setLayoutAnimationEnabledExperimental &&
@@ -57,14 +58,33 @@ export default class Login extends Component {
       isPasswordValid: true,
       isConfirmationValid: true,
       token: '',
-      userCode: 0
+      userCode: 0,
+      isTrainer:false
     };
 
     this.selectCategory = this.selectCategory.bind(this);
     this.login = this.login.bind(this);
     this.signUp = this.signUp.bind(this);
+    this._storeData = this._storeData.bind(this);
   }
 
+  _storeData = async () => {
+    try {
+      await AsyncStorage.setItem('UserCode', JSON.stringify(this.state.userCode));
+      await AsyncStorage.setItem('IsTrainer', JSON.stringify(this.state.isTrainer));
+    } catch (error) {
+      console.warn(error);
+      // Error saving data
+    }
+  }
+
+  UNSAFE_componentWillMount() {
+    AsyncStorage.getItem('UserCode', (err, result) => {
+      if(result!=null) alert('hi');
+        //this.props.navigation.navigate('BottomNavigation');
+    }
+    )
+  }
 
 
   async registerForPushNotifications() {
@@ -90,9 +110,9 @@ export default class Login extends Component {
 
   async componentDidMount() {
     await Font.loadAsync({
-      georgia: require('../../../assets/fonts/Georgia.ttf'),
-      regular: require('../../../assets/fonts/Montserrat-Regular.ttf'),
-      light: require('../../../assets/fonts/Montserrat-Light.ttf'),
+      georgia: require('../../assets/fonts/Georgia.ttf'),
+      regular: require('../../assets/fonts/Montserrat-Regular.ttf'),
+      light: require('../../assets/fonts/Montserrat-Light.ttf'),
     });
 
     this.setState({ fontLoaded: true });
@@ -187,6 +207,8 @@ export default class Login extends Component {
           if (response.IsTrainer == 0) // a trainee
             this.props.navigation.navigate('BottomNavigation', { userCode: response.UserCode });
           else this.props.navigation.navigate('HomeTrainer', { userCode: response.UserCode });
+
+          this._storeData();
         }
         else
           alert("Incorrect password");

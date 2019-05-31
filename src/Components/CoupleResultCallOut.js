@@ -90,6 +90,7 @@ export default class CoupleResultCallOut extends React.Component {
                 <ActionButton
                
                     onPress={() => {
+                        this.props.navigation.navigate('UserProfile', {UserCode: this.props.ReceiverCode});
                         
                     }}
                     renderIcon={() =>

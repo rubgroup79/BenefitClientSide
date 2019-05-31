@@ -4,20 +4,19 @@ import { registerRootComponent, AppLoading, Asset, Font } from 'expo';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { View, Image, Dimensions } from 'react-native';
 import { DrawerNavigator, DrawerItems } from 'react-navigation';
-
-import Login from "./src/views/login/login";
-import SignIn1 from "./src/views/login/signIn1";
+import Login from './src/Pages/Login';
+import SignIn1 from "./src/Pages/SignInGeneral";
 import Components from './src/drawer/components';
 import Ratings from './src/drawer/ratings';
 import Pricing from './src/drawer/pricing';
-import SigninTrainee from './src/views/login/signinTrainee';
-import SigninTrainer from './src/views/login/signinTrainer';
+import SigninTrainee from './src/Pages/SignInTrainee';
+import SigninTrainer from './src/Pages/SignInTrainer';
 import Profile from './src/drawer/profile';
 import Lists from './src/drawer/lists';
 import Settings from './src/drawer/settings';
 import HomeTrainee from './src/Pages/HomeTrainee';
 import HomeTrainer from './src/Pages/HomeTrainer';
-import TraineeProfile from './src/Pages/TraineeProfile';
+import UserProfile from './src/Pages/UserProfile';
 import BottomNavigation from './src/Navigation/BottomNavigation';
 import Chat from './src/Pages/Chat';
 
@@ -44,24 +43,24 @@ const CustomDrawerContentComponent = props => (
 const MainRoot = DrawerNavigator(
   {
 
-    HomeTrainee: {
-      path: '/homeTrainee',
-      screen: HomeTrainee,
-      // navigationOptions: {
-      //   drawerLabel:()=>null
-      // }
-    },
-    HomeTrainer: {
-      path: '/homeTrainer',
-      screen: HomeTrainer,
-      // navigationOptions: {
-      //   drawerLabel:()=>null
-      // }
-    },
-    TraineeProfile: {
-      path: '/traineeProfile',
-      screen: TraineeProfile,
-    },
+    // HomeTrainee: {
+    //   path: '/homeTrainee',
+    //   screen: HomeTrainee,
+    //   // navigationOptions: {
+    //   //   drawerLabel:()=>null
+    //   // }
+    // },
+    // HomeTrainer: {
+    //   path: '/homeTrainer',
+    //   screen: HomeTrainer,
+    //   // navigationOptions: {
+    //   //   drawerLabel:()=>null
+    //   // }
+    // },
+    // TraineeProfile: {
+    //   path: '/traineeProfile',
+    //   screen: TraineeProfile,
+    // },
     // CreateGroup: {
     //   path: '/createGroup',
     //   screen: CreateGroup,
@@ -90,21 +89,21 @@ const MainRoot = DrawerNavigator(
       //   drawerLabel:()=>null
       // }
     },
-    Chat: {
-      path: '/chat',
-      screen: Chat,
-      navigationOptions: {
-        drawerLabel: () => null
-      }
-    },
+    // Chat: {
+    //   path: '/chat',
+    //   screen: Chat,
+    //   navigationOptions: {
+    //     drawerLabel: () => null
+    //   }
+    // },
     Login: {
       path: '/login',
       screen: Login,
     },
-    Profile: {
-      path: '/profile',
-      screen: Profile,
-    },
+    // Profile: {
+    //   path: '/profile',
+    //   screen: Profile,
+    // },
     Lists: {
       path: '/lists',
       screen: Lists,

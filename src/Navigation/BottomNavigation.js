@@ -7,11 +7,11 @@ import ButtonsTab from '../tabs/buttons';
 import ListsTab from '../tabs/lists';
 import InputTab from '../tabs/input';
 import FontsTab from '../tabs/fonts';
-import HomeTrainee from '../Pages/HomeTrainee';
+import HomeTraineeTab from '../TabsNavigation/HomeTraineeTab';
 //import Chats from '../Pages/Chats';
 import ChatsTab from '../TabsNavigation/ChatsTab';
 import TrainingsTab from '../TabsNavigation/TrainingsTab';
-import TraineeProfile from '../Pages/TraineeProfile';
+import UserProfile from '../Pages/UserProfile';
 import Chat from '../Pages/Chat';
 
 
@@ -60,9 +60,9 @@ const Components = TabNavigator(
       },
     },
   
-    HomeTrainee: {
-      screen: HomeTrainee,
-      path: '/homeTrainee',
+    HomeTraineeTab: {
+      screen: HomeTraineeTab,
+      path: '/HomeTraineeTab',
       tabBarOptions:{
         showLable:false
       },
@@ -92,9 +92,8 @@ const Components = TabNavigator(
         ),
       },
     },
-    TraineeProfile: {
-      screen: TraineeProfile,
-      
+    FontsTab: {
+      screen: FontsTab,
       path: '/fonts',
       navigationOptions: {
         tabBarLabel: 'Profile',
@@ -110,7 +109,7 @@ const Components = TabNavigator(
     },
   },
   {
-    initialRouteName: 'HomeTrainee',
+    initialRouteName: 'HomeTraineeTab',
     animationEnabled: false,
     swipeEnabled: false,
     // Android's default option displays tabBars on top, but iOS is bottom
@@ -129,7 +128,7 @@ const Components = TabNavigator(
 );
 
 Components.navigationOptions = {
-  drawerLabel: 'Home',
+  drawerLabel: 'BeneFIT Home',
   drawerIcon: ({ tintColor }) => (
     <Icon
       name="settings"

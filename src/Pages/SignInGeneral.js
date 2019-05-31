@@ -11,16 +11,16 @@ import {
 } from 'react-native';
 import { Font } from 'expo';
 import { Input, Button, withTheme } from 'react-native-elements';
-import MyDatePicker from '../../Components/DatePicker';
+import MyDatePicker from '../Components/DatePicker';
 import Icon from 'react-native-vector-icons/SimpleLineIcons';
-import AvatarImage from '../../Components/AvatarImage';
+import AvatarImage from '../Components/AvatarImage';
 // Enable LayoutAnimation on Android
 
-const MALE_AVATAR = require('../../../Images/MaleAvatar.png');
-const FEMALE_AVATAR = require('../../../Images/FemaleAvatar.png');
+const MALE_AVATAR = require('../../Images/MaleAvatar.png');
+const FEMALE_AVATAR = require('../../Images/FemaleAvatar.png');
 
-const TRAINER_AVATAR = require('../../../Images/TrainerAvatar.png');
-const TRAINEE_AVATAR = require('../../../Images/TraineeAvatar.png');
+const TRAINER_AVATAR = require('../../Images/TrainerAvatar.png');
+const TRAINEE_AVATAR = require('../../Images/TraineeAvatar.png');
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -170,9 +170,9 @@ export default class SignIn1 extends Component {
 
   async componentDidMount() {
     await Font.loadAsync({
-      light: require('../../../assets/fonts/Ubuntu-Light.ttf'),
-      bold: require('../../../assets/fonts/Ubuntu-Bold.ttf'),
-      lightitalic: require('../../../assets/fonts/Ubuntu-Light-Italic.ttf'),
+      light: require('../../assets/fonts/Ubuntu-Light.ttf'),
+      bold: require('../../assets/fonts/Ubuntu-Bold.ttf'),
+      lightitalic: require('../../assets/fonts/Ubuntu-Light-Italic.ttf'),
     });
 
     this.setState({
