@@ -64,7 +64,7 @@ class Chats extends Component {
 
     await AsyncStorage.getItem('IsTrainer', (err, result) => {
       if (result != null) {
-        this.setState({ userCode: result });
+        this.setState({ isTrainer: result });
       }
       else alert('error local storage is trainer');
     }

@@ -11,9 +11,8 @@ import HomeTraineeTab from '../TabsNavigation/HomeTraineeTab';
 //import Chats from '../Pages/Chats';
 import ChatsTab from '../TabsNavigation/ChatsTab';
 import TrainingsTab from '../TabsNavigation/TrainingsTab';
-import UserProfile from '../Pages/UserProfile';
-import Chat from '../Pages/Chat';
-
+import ProfileTab from '../TabsNavigation/ProfileTab';
+import RatesTab from '../TabsNavigation/RatesTab';
 
 const Components = TabNavigator(
   {
@@ -34,9 +33,9 @@ const Components = TabNavigator(
     // },
 
 
-    ListsTab: {
-      screen: ListsTab,
-      path: '/lists',
+    RatesTab: {
+      screen: RatesTab,
+      path: '/RatesTab',
       navigationOptions: {
         tabBarLabel: 'Rates',
         tabBarIcon: ({ tintColor, focused }) => (
@@ -92,9 +91,9 @@ const Components = TabNavigator(
         ),
       },
     },
-    FontsTab: {
-      screen: FontsTab,
-      path: '/fonts',
+    ProfileTab: {
+      screen: ProfileTab,
+      path: '/ProfileTab',
       navigationOptions: {
         tabBarLabel: 'Profile',
         tabBarIcon: ({ tintColor, focused }) => (

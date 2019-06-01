@@ -20,7 +20,7 @@ import colors from '../config/colors';
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
-parametersRate = [5, 5, 5, 5, 5]
+parametersRate = [3, 3, 3, 3, 3]
 
 class Rate extends Component {
     constructor() {

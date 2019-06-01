@@ -180,7 +180,7 @@ export default class SigninTrainee extends Component {
 
               <View>
 
-                <ImageUpload setPicturePath={this.setPicturePath} gender={this.props.navigation.getParam('gender')}></ImageUpload>
+                <ImageUpload setPicturePath={this.setPicturePath}  gender={this.props.navigation.getParam('gender')}></ImageUpload>
 
               </View>
 
@@ -198,8 +198,8 @@ export default class SigninTrainee extends Component {
                   <Text style={styles.sliderRangeText}>0</Text >
 
                   <Slider
-                    minimumTrackTintColor='#c7c9cc'
-                    maximumTrackTintColor='gray'
+                    minimumTrackTintColor='gray'
+                    maximumTrackTintColor='#c7c9cc'
                     thumbTintColor='#f34573'
                     style={styles.sliderStyle}
                     minimumValue={0}
@@ -449,8 +449,8 @@ export default class SigninTrainee extends Component {
                       <Text style={styles.sliderRangeText}>0</Text >
 
                       <Slider
-                        minimumTrackTintColor='#c7c9cc'
-                        maximumTrackTintColor='gray'
+                        minimumTrackTintColor='gray'
+                        maximumTrackTintColor='#c7c9cc'
                         thumbTintColor='#f34573'
                         style={styles.sliderStyle}
                         minimumValue={0}

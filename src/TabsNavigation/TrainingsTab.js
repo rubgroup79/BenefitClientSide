@@ -9,12 +9,6 @@ const TrainingsTabView = ({ navigation }) => (
   <Trainings navigation={navigation} />
 );
 
-// const ButtonsDetailTabView = ({ navigation }) => (
-//   <ButtonsDetails
-//     banner={`${navigation.state.params.name}s Profile`}
-//     navigation={navigation}
-//   />
-// );
 
 const TrainingsTab = StackNavigator({
   Trainings: {

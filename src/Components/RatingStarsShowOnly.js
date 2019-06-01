@@ -1,17 +1,12 @@
 import _ from 'lodash';
-
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import Star from './Star'
 
-export default class RatingStars extends Component {
+export default class RatingStarsShowOnly extends Component {
   static defaultProps = {
-    defaultRating: 3,
-    reviews: ["Terrible", "Bad", "Okay", "Good", "Great"],
     count: 5,
-    onFinishRating: () => console.log('Rating selected. Attach a function here.'),
     showRating: true
   };
 
@@ -19,7 +14,7 @@ export default class RatingStars extends Component {
     super()
 
     this.state = {
-      position: 3,
+      position: 0,
       fontLoaded:false
     }
   }
@@ -40,25 +35,13 @@ export default class RatingStars extends Component {
 }
 
   componentDidMount() {
-    const { defaultRating } = this.props
-
-    this.setState({ position: defaultRating })
+    this.setState({ position: this.props.Position })
   }
 
   renderStars(rating_array) {
     return _.map(rating_array, (star, index) => {
       return star
     })
-  }
-
-  starSelectedInPosition(position) {
-    const { onFinishRating } = this.props
-
-    onFinishRating(position);
-
-    this.setState({ position: position })
-
-    this.props.setParameterRate(position);
   }
 
   render() {
@@ -71,7 +54,6 @@ export default class RatingStars extends Component {
         <Star
           key={index}
           position={index + 1}
-          starSelectedInPosition={this.starSelectedInPosition.bind(this)}
           fill={position >= index + 1}
           {...this.props}
         />
@@ -84,11 +66,6 @@ export default class RatingStars extends Component {
         <View style={styles.starContainer}>
           {this.renderStars(rating_array)}
         </View>
-        { showRating && 
-          <Text style={styles.reviewText}>
-            {reviews[position - 1]}
-          </Text>
-        }
       </View>
     );
   }
@@ -100,12 +77,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  reviewText: {
-    fontSize: 8,
-    fontFamily: 'bold',
-    margin: 10,
-    color: 'gray'
   },
   starContainer: {
     flexDirection: 'row',

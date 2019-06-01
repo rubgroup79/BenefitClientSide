@@ -235,7 +235,7 @@ export default class UserProfile extends Component {
     };
 
     this.getProfileDetails = this.getProfileDetails.bind(this);
-    this.setSportCategories = this.setSportCategories.bind(this);
+    this.getSportCategories = this.getSportCategories.bind(this);
     this.setSelectedSportCategories = this.setSelectedSportCategories.bind(this);
     this.getAvarageParametersRate= this.getAvarageParametersRate.bind(this);
   }
@@ -256,7 +256,7 @@ export default class UserProfile extends Component {
   componentWillMount() {
 
     this.getProfileDetails();
-    this.setSportCategories();
+    this.getSportCategories();
     this.getAvarageParametersRate();
 
 
@@ -276,7 +276,7 @@ export default class UserProfile extends Component {
       .catch(error => console.warn('Error:', error.message));
   }
 
-  setSportCategories() {
+  getSportCategories() {
     fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetSportCategories', {
 
       method: 'GET',

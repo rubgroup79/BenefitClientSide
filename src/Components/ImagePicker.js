@@ -34,11 +34,12 @@ export default class ImageUpload extends Component {
         return (
             <View style={styles.container}>
                 <Image
-                    source={this.state.image=="null"? (this.props.gender=='Male' ? Male : Female) :{uri:this.state.image}}
+                     source={this.state.image=="null"? (this.props.gender=='Male' ? Male : Female) :{uri:this.state.image}}
+                    
                     style={{
                         width: IMAGE_SIZE,
                         height: IMAGE_SIZE,
-                        borderRadius: 10,
+                        borderRadius: IMAGE_SIZE/2,
                     }}
                 />
                 <ActionButton style={styles.editImageButton}

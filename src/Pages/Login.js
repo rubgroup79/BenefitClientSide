@@ -80,8 +80,8 @@ export default class Login extends Component {
 
   UNSAFE_componentWillMount() {
     AsyncStorage.getItem('UserCode', (err, result) => {
-      if(result!=null) alert('hi');
-        //this.props.navigation.navigate('BottomNavigation');
+      if(result!=null)
+        this.props.navigation.navigate('BottomNavigation');
     }
     )
   }
