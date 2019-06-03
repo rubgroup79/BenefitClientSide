@@ -2,6 +2,7 @@ import React from 'react';
 import { StackNavigator } from 'react-navigation';
 import { Icon } from 'react-native-elements';
 import UserProfile from '../Pages/UserProfile';
+import GroupProfile from '../Pages/GroupProfile';
 
 import Trainings from '../Pages/Trainings';
 import Rate from '../Pages/Rate';
@@ -27,6 +28,15 @@ const TrainingsTab = StackNavigator({
   UserProfile: {
     screen: UserProfile,
     path: '/UserProfile',
+    navigationOptions:{
+      tabBarVisible:false,
+      
+      drawerNavigationVisible:false
+    }
+  },
+  GroupProfile: {
+    screen: GroupProfile,
+    path: '/GroupProfile',
     navigationOptions:{
       tabBarVisible:false,
       

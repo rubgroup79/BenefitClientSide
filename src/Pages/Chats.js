@@ -107,8 +107,9 @@ class Chats extends Component {
               <Text style={styles.heading}>Chats</Text>
             </View>
             <View style={{ paddingVertical: 8 }}>
-              {this.state.chats.map((chat) => (
+              {this.state.chats.map((chat, index) => (
                 <ListItem
+                key={index}
                   onPress={() => this.props.navigation.navigate('Chat', { ChatCode: chat.ChatCode, FullName: chat.FirstName + " " + chat.LastName, Picture: chat.Picture, UserCode: chat.UserCode1, PartnerUserCode: chat.UserCode2 })}
 
                   //component={TouchableScale}

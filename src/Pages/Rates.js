@@ -1,12 +1,7 @@
 import React, { Component, } from 'react';
 import { View, ScrollView, StyleSheet, Image, ListView, Dimensions, KeyboardAvoidingView, TextInput, AsyncStorage } from 'react-native';
 import { Font } from 'expo';
-import Icon from 'react-native-vector-icons/AntDesign';
-import Icon1 from 'react-native-vector-icons/Ionicons';
-import Icon2 from 'react-native-vector-icons/FontAwesome';
-import CreateNewTrainingModal from '../Components/CreateNewTrainingModal';
 import RatingStarsShowOnly from '../Components/RatingStarsShowOnly';
-import Star from '../Components/Star';
 import {
     Text,
     Card,
@@ -22,7 +17,6 @@ import _ from 'lodash';
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
-parametersRate = [5, 5, 5, 5, 5]
 
 class Rates extends Component {
     constructor() {
@@ -31,50 +25,14 @@ class Rates extends Component {
             fontLoaded: false,
             userCode: 0,
             isTrainer: 0,
-            averageRates: [
-                {
-                    Parameter: {
-                        ParameterCode: 1,
-                        Description: 'Parameter 1'
-                    },
-                    AverageRate: 2.5
-                },
-                {
-                    Parameter: {
-                        ParameterCode: 2,
-                        Description: 'Parameter 2'
-                    },
-                    AverageRate: 4.8
-                },
-                {
-                    Parameter: {
-                        ParameterCode: 1,
-                        Description: 'Parameter 1'
-                    },
-                    AverageRate: 2.5
-                },
-                {
-                    Parameter: {
-                        ParameterCode: 2,
-                        Description: 'Parameter 2'
-                    },
-                    AverageRate: 4.8
-                },
-                {
-                    Parameter: {
-                        ParameterCode: 1,
-                        Description: 'Parameter 1'
-                    },
-                    AverageRate: 2.5
-                }
-            ]
-
+            averageRates: [],
+            totalRate:0
 
         };
         this.getLocalStorage = this.getLocalStorage.bind(this);
         this.getRates = this.getRates.bind(this);
         this.renderRates = this.renderRates.bind(this);
-
+        this.getTotalRate = this.getTotalRate.bind(this);
     }
     async componentDidMount() {
 
@@ -93,6 +51,7 @@ class Rates extends Component {
 
     async UNSAFE_componentWillMount() {
         this.getLocalStorage();
+        
 
     }
 
@@ -115,25 +74,44 @@ class Rates extends Component {
     }
 
     getRates() {
-        // fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetAvarageParametersRate?UserCode=' + this.state.userCode, {
+        fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetAvarageParametersRate?UserCode=' + this.state.userCode, {
 
-        //     method: 'GET',
-        //     headers: { "Content-type": "application/json; charset=UTF-8" },
-        // })
-        //     .then(res => res.json())
-        //     .then(response => {
-        //         this.setState({ averageRates: response });
-        //     })
-        //     .catch(error => console.warn('Error:', error.message));
+            method: 'GET',
+            headers: { "Content-type": "application/json; charset=UTF-8" },
+        })
+            .then(res => res.json())
+            .then(response => {
+                this.setState({ averageRates: response }, this.getTotalRate);
+            })
+            .catch(error => console.warn('Error:', error.message));
     }
+    
+    getTotalRate() {
+        fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/ShowProfile?UserCode='+this.state.userCode, {
+    
+          method: 'GET',
+          headers: { "Content-type": "application/json; charset=UTF-8" },
+        })
+          .then(res => res.json())
+          .then(response => {
+            this.setState({  totalRate: response.Rate})
+          })
+          .catch(error => console.warn('Error:', error.message));
+      }
+
+
 
     renderRates() {
         return (
-            this.state.averageRates.map((rate) => {
+            this.state.averageRates.map((rate, index) => {
                 return (
-                    <View style={{ flex: 1 }}>
-                        <Text style={{ fontFamily: 'bold', color: '#f34573', textAlign: 'center' }}>{rate.Parameter.Description}</Text>
+                    <View style={{ flex: 1 }}
+                    key={index}
+                    >
+                        <Text style={{ fontFamily: 'regular', color: '#f34573', textAlign: 'center' }}>{rate.Parameter.Description}</Text>
                         <RatingStarsShowOnly Position={rate.AverageRate} ></RatingStarsShowOnly>
+                        <Text style={{ fontFamily: 'regular', color: '#7384B4', textAlign: 'center' }}>{rate.AverageRate}</Text>
+
                     </View>)
             })
         )
@@ -143,7 +121,7 @@ class Rates extends Component {
 
         return (
             <View>
-                {/* && this.state.averageRates.length!=0 */}
+                
                 {this.state.fontLoaded ?
                     <View>
                         <View
@@ -155,12 +133,12 @@ class Rates extends Component {
                             <Image style={{ width: 57, height: 38, marginLeft: 18 }} source={require('../../Images/LogoOnly.png')} />
                             <Text style={styles.heading}>Rates</Text>
                         </View>
-                        <View style={{ width: SCREEN_WIDTH, height: SCREEN_HEIGHT-140, alignItems: 'center', marginTop: 20 }}>
+                        <View style={{ width: SCREEN_WIDTH, height: SCREEN_HEIGHT-180, alignItems: 'center', marginTop: 20 }}>
 
                             <View style={{ flex: 1, alignItems: 'center' }}>
                                 <View style={{ flex: 1 }}>
                                     <Image style={{ width: 60, height: 60, alignItems: 'center' }} source={require('../../Images/SelectedStar.png')}></Image>
-                                    <Text style={{ alignItems: 'center', flex: 1, padding: 0, marginLeft: 20, fontSize: 15, fontFamily: 'bold', color: '#7384B4' }}>1.5</Text>
+                                    <Text style={{ alignItems: 'center', flex: 1, padding: 0, marginLeft: 20, fontSize: 15, fontFamily: 'bold', color: '#7384B4' }}>{this.state.totalRate}</Text>
                                 </View>
                                 <View style={{ flex: 5 }}>
                                     {this.renderRates()}

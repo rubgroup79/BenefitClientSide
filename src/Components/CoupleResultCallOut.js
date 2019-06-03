@@ -65,9 +65,9 @@ export default class CoupleResultCallOut extends React.Component {
             .catch(error => console.warn('Error:', error.message));
     }
 
-    sendPushNotification(ReceiverCode) {
+    sendPushNotification(ReceiverToken) {
         var pnd = {
-            to: ReceiverCode,
+            to: ReceiverToken,
             title: 'You have a new suggestion!',
             body: '',
             badge: 1

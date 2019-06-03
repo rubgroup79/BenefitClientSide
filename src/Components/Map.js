@@ -60,8 +60,9 @@ export default class LocationPage extends React.Component {
           
           {(this.props.HomeTraineeStates.coupleResults != null || this.props.HomeTraineeStates.coupleResults.length != 0) && this.props.HomeTraineeStates.searchResultsMapView ?
 
-            this.props.HomeTraineeStates.coupleResults.map(data => (
+            this.props.HomeTraineeStates.coupleResults.map((data, index) => (
               <MapView.Marker
+              key={index}
                 coordinate={{
                   latitude: data.Latitude,
                   longitude: data.Longitude
@@ -69,7 +70,7 @@ export default class LocationPage extends React.Component {
               >
                {data.IsTrainer ? <Image source={require('../../Images/TrainerMarker.png')} style={{ width: 30, height: 36 }} /> : <Image source={require('../../Images/TraineeMarker.png')} style={{ width: 30, height: 36 }} />}
                 <MapView.Callout>
-                  <CoupleResultCallOut ReceiverCode={data.UserCode} SenderCode={this.props.HomeTraineeStates.SenderCode} FirstName={data.FirstName} Distance={data.Distance} Age={data.Age} Picture={data.Picture}></CoupleResultCallOut>
+                  <CoupleResultCallOut navigation ={this.props.navigation} ReceiverCode={data.UserCode} SenderCode={this.props.HomeTraineeStates.userCode} FirstName={data.FirstName} Distance={data.Distance} Age={data.Age} Picture={data.Picture}></CoupleResultCallOut>
                 </MapView.Callout>
               </MapView.Marker>
             )
@@ -80,8 +81,9 @@ export default class LocationPage extends React.Component {
 
 
 
-          {this.props.HomeTraineeStates.groupResults != null && this.props.HomeTraineeStates.searchResultsMapView ? this.props.HomeTraineeStates.groupResults.map(data => (
+          {this.props.HomeTraineeStates.groupResults != null && this.props.HomeTraineeStates.searchResultsMapView ? this.props.HomeTraineeStates.groupResults.map((data, index) => (
             <MapView.Marker
+            key={index}
               coordinate={{
                 latitude: data.Latitude,
                 longitude: data.Longitude

@@ -29,72 +29,6 @@ const SCREEN_WIDTH = Dimensions.get('window').width;
 const SLIDER_SIZE = SCREEN_WIDTH - 150;
 
 
-// class CustomButton extends Component {
-//   constructor() {
-//     super();
-
-//     this.state = {
-//       selected: false,
-//     };
-//   }
-
-//   componentDidMount() {
-//     const { selected } = this.props;
-
-//     this.setState({
-//       selected,
-//     });
-//   }
-
-//   render() {
-//     const { title } = this.props;
-//     const { selected } = this.state;
-
-
-//     return (
-//       <Button
-//         title={title}
-//         titleStyle={
-//           selected
-//             ? {
-//               color: 'white',
-//               fontSize: 12,
-//               fontFamily: 'regular'
-//             }
-//             : {
-//               fontSize: 12,
-//               color: 'gray',
-//               fontFamily: 'regular'
-//             }
-//         }
-//         buttonStyle={
-//           selected
-//             ? {
-//               backgroundColor: '#f34573',
-//               borderRadius: 100,
-//               width: 105
-//             }
-//             : {
-//               borderWidth: 1,
-//               borderColor: 'gray',
-//               borderRadius: 30,
-//               width: 105,
-//               backgroundColor: 'transparent',
-//             }
-//         }
-//         containerStyle={{ marginRight: 10 }}
-//         onPress={() => { 
-//           if(this.props.editMode) {
-//           this.setState({ selected: !selected })
-//           this.props.setCategories(title)
-//         }
-          
-//         }}
-//       />
-//     );
-//   }
-// }
-
 export default class TraineeProfile extends Component {
   constructor(props) {
     super(props);
@@ -223,7 +157,6 @@ export default class TraineeProfile extends Component {
     });
 
     this.setState({ selectedSportCategories: temp });
-    console.warn("temp ", temp);
     
   }
 
@@ -356,7 +289,7 @@ export default class TraineeProfile extends Component {
 
             <ScrollView
               style={{ flex: 1 }}>
-              <View style={{ flexDirection: 'column', alignItems: 'center', alignContent: 'center', justifyContent: 'center', marginBottom: 20, marginTo: 20 }}>
+              <View style={{ flexDirection: 'column', alignItems: 'center', alignContent: 'center', justifyContent: 'center', marginBottom: 20, }}>
                 <View style={{ flex: 1, alignItems: 'center', }}>
 
 

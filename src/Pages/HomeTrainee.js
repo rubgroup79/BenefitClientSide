@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Dimensions, ActivityIndicator, KeyboardAvoidingView, TouchableOpacity, Text, AsyncStorage , Button} from 'react-native';
+import { View, StyleSheet, Dimensions, ActivityIndicator, KeyboardAvoidingView, TouchableOpacity, Text, AsyncStorage, Button } from 'react-native';
 import { Avatar, Badge, Image } from 'react-native-elements';
 import Map from '../Components/Map';
 import { Font } from 'expo';
@@ -11,6 +11,7 @@ import IconNew from 'react-native-vector-icons/Entypo';
 import PendingRequestsListView from '../Components/PendingRequestsListView';
 import ApprovedRequestsListView from '../Components/ApprovedRequestsListView';
 import FutureTrainingsListView from '../Components/FutureTrainingsListView';
+import SearchResultsListView from '../Components/SearchResultsListView';
 import SearchModal from '../Components/SearchModal';
 import CreateGroupModal from '../Components/CreateGroupModal';
 
@@ -18,9 +19,13 @@ const LOADING = require('../../Images/LoadingLogo.gif');
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 const SEARCH_VIEW = require('../../Images/SearchView.png');
+const SELECTED_SEARCH_VIEW = require('../../Images/SearchViewSelected.png');
 const APPROVED_REQUESTS = require('../../Images/ApprovedRequests.png');
 const PENDING_REQUESTS = require('../../Images/PendingRequests.png');
 const FUTURE_TRAININGS = require('../../Images/FutureTrainings.png');
+const SELECTED_APPROVED_REQUESTS = require('../../Images/ApprovedRequestsSelected.png');
+const SELECTED_PENDING_REQUESTS = require('../../Images/PendingRequestsSelected.png');
+const SELECTED_FUTURE_TRAININGS = require('../../Images/FutureTrainingsSelected.png');
 var hours_now = new Date().getHours();
 var minutes_now = new Date().getMinutes();
 var timeNow = hours_now + ":" + minutes_now;
@@ -49,20 +54,20 @@ export default class HomeTrainee extends Component {
       approvedRequestsMapView: false,
       futureTrainingsMapView: false,
       listView: false,
-      userCode:0,
-      isTrainer:false
+      userCode: 0,
+      isTrainer: false,
+      onlineTrainee: []
 
     };
 
-    this.getLocalStorage= this.getLocalStorage.bind(this);
+    this.getLocalStorage = this.getLocalStorage.bind(this);
     this.closeListView = this.closeListView.bind(this);
-    this.setSearchLocation = this.setSearchLocation.bind(this);
     this.searchModalVisible = this.searchModalVisible.bind(this);
     this.createGroupModalVisible = this.createGroupModalVisible.bind(this);
-    this.getCoupleResults = this.getCoupleResults.bind(this);
-    this.getGroupResults = this.getGroupResults.bind(this);
     this.checkIfUserOnline = this.checkIfUserOnline.bind(this);
-    this.afterLocalStorageFunctions= this.afterLocalStorageFunctions.bind(this);
+    this.afterLocalStorageFunctions = this.afterLocalStorageFunctions.bind(this);
+    this.search = this.search.bind(this);
+    this.insertOnlineTrainee = this.insertOnlineTrainee.bind(this);
   }
 
   searchModalVisible() {
@@ -93,10 +98,11 @@ export default class HomeTrainee extends Component {
 
   }
 
+
   getLocalStorage = async () => {
     await AsyncStorage.getItem('UserCode', (err, result) => {
       if (result != null) {
-        this.setState({ userCode: result },this.afterLocalStorageFunctions );
+        this.setState({ userCode: result }, this.afterLocalStorageFunctions);
       }
       else alert('error local storage user code');
     }
@@ -111,8 +117,8 @@ export default class HomeTrainee extends Component {
     )
   }
 
-  afterLocalStorageFunctions(){
-    this.getCurrentLocation();
+  afterLocalStorageFunctions() {
+
     this.getFutureTrainings();
     this.getRequests(true);
     this.getRequests(false);
@@ -121,20 +127,30 @@ export default class HomeTrainee extends Component {
 
 
   checkIfUserOnline() {
-    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/CheckIfUserOnline?UserCode=' +this.state.userCode + '&IsTrainer='+this.setState.isTrainer, {
+    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/CheckIfTraineeOnline?UserCode=' + this.state.userCode, {
 
       method: 'GET',
       headers: { "Content-type": "application/json; charset=UTF-8" },
     })
       .then(res => res.json())
       .then(response => {
-        if (response) this.setState({ searchMode: true })
+        
+        if (response.OnlineCode != 0) {
+          this.search(response);
+          this.setState({ searchMode: true, onlineDetails: response, Longitude: response.Longitude, Latitude: response.Latitude, status: 1 });
+        }
+        else {
+          this.setState({ onlineDetails: [], pendingRequestsMapView:true })
+          this.getCurrentLocation();
+        }
       })
       .catch(error => console.warn('Error:', error.message));
+
+
   }
 
   goOffline() {
-    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GoOffline?UserCode=' +this.state.userCode  + '&IsTrainer='+this.setState.isTrainer, {
+    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GoOffline?UserCode=' + this.state.userCode + '&IsTrainer=' + this.setState.isTrainer, {
       method: 'POST',
       body: JSON.stringify({}),
       headers: { "Content-type": "application/json; charset=UTF-8" },
@@ -162,26 +178,6 @@ export default class HomeTrainee extends Component {
     );
   };
 
-  getCoupleResults(coupleResults) {
-    this.setState({
-      coupleResults: coupleResults,
-    })
-
-  }
-
-  getGroupResults(groupResults) {
-    this.setState({
-      groupResults: groupResults,
-    })
-  }
-
-  setSearchLocation(Latitude, Longitude) {
-    this.setState({
-      latitude: Latitude,
-      longitude: Longitude
-    });
-  }
-
   closeListView() {
     this.setState({ listView: false });
   }
@@ -194,7 +190,7 @@ export default class HomeTrainee extends Component {
   }
 
   getRequests(IsApproved) {
-    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetSuggestions?UserCode='+this.state.userCode + '&IsApproved=' + IsApproved, {
+    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetSuggestions?UserCode=' + this.state.userCode + '&IsApproved=' + IsApproved, {
 
       method: 'GET',
       headers: { "Content-type": "application/json; charset=UTF-8" },
@@ -210,7 +206,7 @@ export default class HomeTrainee extends Component {
   }
 
   getFutureTrainings() {
-    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetFutureCoupleTrainings?UserCode='+this.state.userCode, {
+    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetFutureCoupleTrainings?UserCode=' + this.state.userCode, {
 
       method: 'GET',
       headers: { "Content-type": "application/json; charset=UTF-8" },
@@ -220,7 +216,7 @@ export default class HomeTrainee extends Component {
         this.setState({ futureCoupleTrainings: response })
       })
       .catch(error => console.warn('Error:', error.message));
-    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetFutureGroupTrainings?UserCode='+this.state.userCode, {
+    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetFutureGroupTrainings?UserCode=' + this.state.userCode, {
 
       method: 'GET',
       headers: { "Content-type": "application/json; charset=UTF-8" },
@@ -231,6 +227,83 @@ export default class HomeTrainee extends Component {
       })
       .catch(error => console.warn('Error:', error.message));
   }
+
+
+  insertOnlineTrainee(onlineDetails) {
+    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/InsertOnlineTrainee', {
+      method: 'POST',
+      headers: { "Content-type": "application/json; charset=UTF-8" },
+      body: JSON.stringify(onlineDetails),
+    })
+      .catch(error => console.warn('Error1:', error.message));
+
+    this.search(onlineDetails);
+  }
+
+
+
+  search(onlineDetails) {
+
+    this.setSearchMode(true);
+    this.setState({
+      onlineTrainee: onlineDetails,
+      latitude: onlineDetails.Latitude,
+      longitude: onlineDetails.Longitude
+    });
+
+
+    //נכנס רק אם משתמש חיפש אימון זוגי עם מאמן או מתאמן
+    if (onlineDetails.WithPartner == 1 || onlineDetails.WithTrainer == 1) {
+      fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/SearchCoupleTraining', {
+        method: 'POST',
+        headers: { "Content-type": "application/json; charset=UTF-8" },
+        body: JSON.stringify(onlineDetails),
+      })
+        .then(res => res.json())
+        .then(response => {
+          if (response.length == 0) {
+            this.setState({ coupleResults: [] });
+          }
+          else {
+            this.setState({
+              coupleResults: response,
+            })
+          }
+        })
+
+        .catch(error => console.warn('Error2:', error.message));
+    }
+
+    //נכנס רק אם משתמש חיפש אימון קבוצתי עם מאמן או בלי מאמן
+
+    if (onlineDetails.GroupWithTrainer || onlineDetails.GroupWithPartners) {
+
+      fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/SearchGroups', {
+
+        method: 'POST',
+        headers: { "Content-type": "application/json; charset=UTF-8" },
+        body: JSON.stringify(onlineDetails),
+      })
+        .then(res => res.json())
+        .then(response => {
+          if (response.length == 0) {
+            this.setState({ groupResults: [] });
+
+          }
+
+          else {
+            this.setState({
+              groupResults: response,
+            })
+          }
+
+        })
+
+        .catch(error => console.warn('Error3:', error.message));
+    }
+
+  }
+
 
   render() {
     return (
@@ -244,7 +317,7 @@ export default class HomeTrainee extends Component {
               : null}
 
             {this.state.searchModalVisible ?
-              <SearchModal setSearchMode={this.setSearchMode} setSearchLocation={this.setSearchLocation} userCode={this.state.userCode} searchModalVisible={this.searchModalVisible} getCoupleResults={this.getCoupleResults} getGroupResults={this.getGroupResults} style={{ zIndex: 1000 }}></SearchModal>
+              <SearchModal searchModalVisible={this.searchModalVisible} insertOnlineTrainee={this.insertOnlineTrainee} userCode={this.state.userCode} searchModalVisible={this.searchModalVisible} style={{ zIndex: 1000 }}></SearchModal>
               : null}
 
             <View style={{ flex: 6, zIndex: 0, width: SCREEN_WIDTH, height: SCREEN_HEIGHT }} >
@@ -266,11 +339,11 @@ export default class HomeTrainee extends Component {
 
                       <TouchableOpacity
                         onPress={() => {
-                          this.setState({ searchResultsMapView: !this.state.searchResultsMapView, pendingRequestsMapView: false, approvedRequestsMapView: false, futureTrainingsMapView: false });
-
+                          this.setState({ searchResultsMapView: true, pendingRequestsMapView: false, approvedRequestsMapView: false, futureTrainingsMapView: false });
+                          this.search(this.state.onlineTrainee);
                         }}
                       >
-                        <Image source={SEARCH_VIEW} style={{ width: 60, height: 60 }} />
+                        {this.state.searchResultsMapView ? <Image source={SELECTED_SEARCH_VIEW} style={{ width: 60, height: 60 }} /> : <Image source={SEARCH_VIEW} style={{ width: 60, height: 60 }} />}
                       </TouchableOpacity>
                       <View style={{ left: -5, top: -58, width: 18, height: 18, borderRadius: 10, borderColor: '#75cac3', borderWidth: 2, backgroundColor: 'white', alignItems: "center", justifyContent: 'center' }}>
                         <Text
@@ -286,17 +359,11 @@ export default class HomeTrainee extends Component {
                   <View style={{ flex: 1, }}>
                     <TouchableOpacity
                       onPress={() => {
-                        this.setState({ pendingRequestsMapView: !this.state.pendingRequestsMapView, approvedRequestsMapView: false, futureTrainingsMapView: false, searchResultsMapView: false });
+                        this.setState({ pendingRequestsMapView: true, approvedRequestsMapView: false, futureTrainingsMapView: false, searchResultsMapView: false });
                         this.getRequests(false);
                       }}
                     >
-                      <Image
-                        source={
-                          PENDING_REQUESTS
-                        }
-                        style={{ width: 60, height: 60 }}
-
-                      />
+                      {this.state.pendingRequestsMapView ? <Image source={SELECTED_PENDING_REQUESTS} style={{ width: 60, height: 60 }} /> : <Image source={PENDING_REQUESTS} style={{ width: 60, height: 60 }} />}
                     </TouchableOpacity>
                     <View style={{ left: -5, top: -58, width: 18, height: 18, borderRadius: 10, borderColor: '#75cac3', borderWidth: 2, backgroundColor: 'white', alignItems: "center", justifyContent: 'center' }}>
                       <Text
@@ -310,16 +377,13 @@ export default class HomeTrainee extends Component {
                   <View style={{ flex: 1, }}>
                     <TouchableOpacity
                       onPress={() => {
-                        this.setState({ approvedRequestsMapView: !this.state.approvedRequestsMapView, pendingRequestsMapView: false, futureTrainingsMapView: false, searchResultsMapView: false })
+                        this.setState({ approvedRequestsMapView: true, pendingRequestsMapView: false, futureTrainingsMapView: false, searchResultsMapView: false })
                         this.getRequests(true);
                       }}
                     >
-                      <Image
-                        source={
-                          APPROVED_REQUESTS
-                        }
-                        style={{ width: 60, height: 60 }}
-                      />
+
+                      {this.state.approvedRequestsMapView ? <Image source={SELECTED_APPROVED_REQUESTS} style={{ width: 60, height: 60 }} /> : <Image source={APPROVED_REQUESTS} style={{ width: 60, height: 60 }} />}
+
 
                     </TouchableOpacity>
                     <View style={{ left: -5, top: -58, width: 18, height: 18, borderRadius: 10, borderColor: '#75cac3', borderWidth: 2, backgroundColor: 'white', alignItems: "center", justifyContent: 'center' }}>
@@ -332,17 +396,12 @@ export default class HomeTrainee extends Component {
                   <View style={{ flex: 1, }}>
                     <TouchableOpacity
                       onPress={() => {
-                        this.setState({ futureTrainingsMapView: !this.state.futureTrainingsMapView, approvedRequestsMapView: false, pendingRequestsMapView: false, searchResultsMapView: false });
+                        this.setState({ futureTrainingsMapView: true, approvedRequestsMapView: false, pendingRequestsMapView: false, searchResultsMapView: false });
                         this.getFutureTrainings();
                       }}
                     >
-                      <Image
-                        source={
-                          FUTURE_TRAININGS
-                        }
-                        style={{ width: 60, height: 60 }}
+                      {this.state.futureTrainingsMapView ? <Image source={SELECTED_FUTURE_TRAININGS} style={{ width: 60, height: 60 }} /> : <Image source={FUTURE_TRAININGS} style={{ width: 60, height: 60 }} />}
 
-                      />
                     </TouchableOpacity>
                     <View style={{ left: -5, top: -58, width: 18, height: 18, borderRadius: 10, borderColor: '#75cac3', borderWidth: 2, backgroundColor: 'white', alignItems: "center", justifyContent: 'center' }}>
                       <Text
@@ -355,6 +414,10 @@ export default class HomeTrainee extends Component {
                 </View>
 
               </View>
+
+              {this.state.searchResultsMapView && this.state.listView ?
+                <SearchResultsListView closeListView={this.closeListView} CoupleResults={this.state.coupleResults} GroupResults={this.state.groupResults} UserCode={this.state.userCode}></SearchResultsListView>
+                : null}
 
               {this.state.pendingRequestsMapView && this.state.listView ?
                 <PendingRequestsListView closeListView={this.closeListView} PendingRequests={this.state.pendingRequests} UserCode={this.state.userCode}></PendingRequestsListView>
@@ -370,7 +433,7 @@ export default class HomeTrainee extends Component {
                 : null}
 
 
-              {!this.state.listView && ((this.state.searchResultsMapView && (this.state.coupleResults.length != 0 || this.state.groupResults.length != 0)) || (this.state.pendingRequestsMapView && this.state.pendingRequests.length != 0) || (this.state.approvedRequestsMapView && this.state.approvedRequests.length != 0) || (this.state.futureTrainingsMapView && (this.state.futureCoupleTrainings.length != 0 || this.state.futureGroupTrainings.length != 0)))
+              {!this.state.listView && (this.state.searchResultsMapView || this.state.pendingRequestsMapView || this.state.approvedRequestsMapView || this.state.futureTrainingsMapView)
                 ?
                 <View style={{ flex: 1, top: 80 }}>
 
@@ -504,7 +567,7 @@ export default class HomeTrainee extends Component {
                 </View>
               </View>
             </View>
-           
+
           </View>
 
           :

@@ -173,13 +173,13 @@ export default class PendingRequestsListView extends Component {
                     <Text style={styles.headline}>Pending Requests</Text>
                 </View>
 
-                <ScrollView style={{ flex: 1, marginBottom: 20 }}>
-                    {this.props.PendingRequests.map((x) => {
-                        return (<View>{this.renderPendingSuggestion(x)}</View>)
+                {this.props.PendingRequests.length!=0  ?  <ScrollView style={{ flex: 1, marginBottom: 20 }}>
+                    {this.props.PendingRequests.map((x, index) => {
+                        return (<View key={index}>{this.renderPendingSuggestion(x)}</View>)
                     }
                     )}
 
-                </ScrollView>
+                </ScrollView> : <Text style={{fontFamily:'regular', fontSize:15, textAlign:'center', color:'gray'}}>No Pending Requests</Text>} 
 
             </View>
 

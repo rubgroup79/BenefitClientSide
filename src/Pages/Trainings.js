@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { View, ScrollView, StyleSheet, Image, ListView, Button, Dimensions, AsyncStorage } from 'react-native';
 import Icon from 'react-native-vector-icons/AntDesign';
+import Geocode from "react-geocode";
 import { Font } from 'expo';
 import {
   Text,
@@ -12,9 +13,11 @@ import {
 } from 'react-native-elements';
 import colors from '../config/colors';
 
+var coupleAddresses = [];
+var groupAddresses = [];
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
-
+Geocode.setApiKey("AIzaSyB_OIuPsnUNvJ-CN0z2dir7cVbqJ7Xj3_Q");
 class Trainings extends Component {
   constructor() {
     super();
@@ -24,19 +27,21 @@ class Trainings extends Component {
       pastCoupleTrainings: [],
       pastGroupTrainings: [],
       selectedIndex: 0,
-      userCode:0,
-      isTrainer:false,
-      addresses:[],
+      userCode: 0,
+      isTrainer: false,
+      coupleAddresses: [],
+      groupAddresses: [],
+      status: 0
 
 
     };
     this.getAddress = this.getAddress.bind(this);
     this.updateIndex = this.updateIndex.bind(this);
-    this.getLocalStorage=this.getLocalStorage.bind(this);
-    this.getCoupleTrainings= this.getCoupleTrainings.bind(this);
-    this.renderCoupleTraining =  this.renderCoupleTraining.bind(this);
-    this.getAddresses= this.getAddresses.bind(this);
-    this.getGroupTrainings= this.getGroupTrainings.bind(this);
+    this.getLocalStorage = this.getLocalStorage.bind(this);
+    //this.getCoupleTrainings = this.getCoupleTrainings.bind(this);
+    // this.renderCoupleTraining = this.renderCoupleTraining.bind(this);
+    // this.getAddresses = this.getAddresses.bind(this);
+    // this.getGroupTrainings = this.getGroupTrainings.bind(this);
   }
 
   async componentDidMount() {
@@ -56,9 +61,27 @@ class Trainings extends Component {
 
   UNSAFE_componentWillMount() {
     this.getLocalStorage();
+
+    //     fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetPastCoupleTrainings?UserCode=1', {
+    //   method: 'GET',
+    //   headers: { "Content-type": "application/json; charset=UTF-8" },
+    // })
+    //   .then(res => res.json())
+    //   .then(response => {
+    //     this.setState({ pastCoupleTrainings: response })
+    //     response.map((training)=>{
+    //          this.getAddress(training.Latitude, training.Longitude, true);
+
+    //     })
+
+    //   })
+    //   .catch(error => console.warn('Error:', error.message));
+
+
+
   }
 
-  getLocalStorage=async ()=>{
+  getLocalStorage = async () => {
     await AsyncStorage.getItem('UserCode', (err, result) => {
       if (result != null) {
         this.setState({ userCode: result }, this.getCoupleTrainings);
@@ -76,94 +99,99 @@ class Trainings extends Component {
     )
   }
 
-  getCoupleTrainings(){
-    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetPastCoupleTrainings?UserCode='+this.state.userCode, {
+  getCoupleTrainings() {
+    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetPastCoupleTrainings?UserCode=' + this.state.userCode, {
       method: 'GET',
       headers: { "Content-type": "application/json; charset=UTF-8" },
     })
       .then(res => res.json())
       .then(response => {
-        this.setState({ pastCoupleTrainings: response}, this.getGroupTrainings)
-      })
-      .catch(error => console.warn('Error:', error.message));
+        this.setState({ pastCoupleTrainings: response }, this.getGroupTrainings);
+        response.map((training) => {
+          this.getAddress(training.Latitude, training.Longitude, true);
+        
+         } )})
+          .catch(error => console.warn('Error:', error.message));
+    }
 
-   
-  }
-
-  getGroupTrainings(){
-    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetPastGroupTrainings?UserCode='+this.state.userCode, {
+  getGroupTrainings() {
+    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetPastGroupTrainings?UserCode=' + this.state.userCode, {
       method: 'GET',
       headers: { "Content-type": "application/json; charset=UTF-8" },
     })
       .then(res => res.json())
       .then(response => {
-        this.setState({ pastGroupTrainings: response }, this.getAddresses)
-      })
+        this.setState({ pastGroupTrainings: response });
+        response.map((training) => {
+          this.getAddress(training.Latitude, training.Longitude, false);
+        
+         } )})
       .catch(error => console.warn('Error:', error.message));
   }
 
-  getAddresses(){
-    var addresses =[];
-    addresses=  this.state.pastCoupleTrainings.map((x) => {
 
-        return this.getAddress(x.Latitude, x.Longitude);
-      }
-      )
-      this.setState({ addresses: addresses })
-      console.warn(addresses)
+  //   var promise = new Promise((resolve, reject) => {
+  //     setTimeout(() => {
+  //       console.log('timeout executed after 2s');
+  //       resolve(); // resolve when setTimeout is done.
+  //     }, 2000);
+  // });
 
-    
-    } 
+  //  getAddresses ()  {
+  //     var address = "";
+  //     var addresses = [];
+  //     addresses = this.state.pastCoupleTrainings.map((x) => {
+  //       address =  setTimeout(this.getAddress(x.Latitude, x.Longitude),2000);
+  //       // while (address=="") {
+  //       // }
+  //       console.warn(address)
+  //       return address;
+  //       // setTimeout(()=>
+  //       //  { console.warn(address)
+  //       //   return address;
+  //       // },4000)
+  //     }, this.setState({ addresses: addresses })
+  //     );
+  //   }
+
+
+
 
   updateIndex(selectedIndex) {
     this.setState({ selectedIndex });
   }
 
-     getAddress  (latitude, longitude){
-     var address = '';
-      fetch('https://maps.googleapis.com/maps/api/geocode/json?address=' + latitude + ',' + longitude + '&key=' + 'AIzaSyB_OIuPsnUNvJ-CN0z2dir7cVbqJ7Xj3_Q')
+
+
+  getAddress(latitude, longitude, couple) {
+    var address = '';
+
+    fetch('https://maps.googleapis.com/maps/api/geocode/json?address=' + latitude + ',' + longitude + '&key=' + 'AIzaSyB_OIuPsnUNvJ-CN0z2dir7cVbqJ7Xj3_Q')
       .then((response) => response.json())
       .then((responseJson) => {
         address = JSON.stringify(responseJson.results[0].address_components.filter(x => x.types.filter(t => t == 'route').length > 0)[0].short_name) + ' ' +
           JSON.stringify(responseJson.results[0].address_components.filter(x => x.types.filter(t => t == 'street_number').length > 0)[0].short_name) + ', ' +
           JSON.stringify(responseJson.results[0].address_components.filter(x => x.types.filter(t => t == 'locality').length > 0)[0].short_name);
-   
-      })
-      address = address.replace(/"/g, '');
-      return address;
+        address = address.replace(/"/g, '');
+        
+        if(couple)
+          coupleAddresses.push(address);
+        else groupAddresses.push(address);
+
+        if ((coupleAddresses.length == this.state.pastCoupleTrainings.length) && (groupAddresses.length == this.state.pastGroupTrainings.length) )
+          this.setState({ coupleAddresses: coupleAddresses, groupAddresses: groupAddresses, status:1 });
+
+      });
   }
 
-   renderCoupleTraining (training, index){
-      return (
-        <ListItem
-      style={{ fontFamily: 'regular' }}
-      key={training.TrainingCode}
-      leftIcon={() =>
-        <Image source={{ uri: training.PartnerPicture }} style={{ width: 40, height: 40, borderRadius: 20 }}></Image>}
-      title={training.PartnerFirstName + " " + training.PartnerLastName}
-      titleStyle={{ color: 'black', fontFamily: 'regular' }}
-      subtitle={this.state.addresses[index]}
-      //subtitle={'glgg'}
-      subtitleStyle={{ fontFamily: 'regular' }}
-      //subtitle={l.subtitle}
-      rightTitle={training.TrainingTime.split(" ")[0]}
-      rightTitleStyle={{ color: 'green', fontSize: 15, fontFamily: 'regular' }}
-      rightSubtitle={training.Price == 0 ? null : '$' + training.Price}
-      rightSubtitleStyle={{ textAlign: 'center', fontFamily: 'regular' }}
-      bottomDivider
-      rightIcon={() => <Icon color='#f7d84c' name='star' size={30} onPress={() => this.props.navigation.navigate('Rate', {UserCode:this.state.userCode, RatedUserCode: training.PartnerUserCode, FullName:training.PartnerFirstName + " " + training.PartnerLastName, Picture:training.PartnerPicture})} />}
-      onPress={()=> this.props.navigation.navigate('UserProfile', {UserCode: training.PartnerUserCode})}
-  /> 
-    )
-    
-  }
 
   render() {
+    //&& this.state.addresses.length != 0
     const { selectedIndex } = this.state;
     const buttons = ['Couple Trainings', 'Group Trainings'];
     return (
       <View style={{ width: SCREEN_WIDTH, height: SCREEN_HEIGHT }}>
-        {this.state.fontLoaded && this.state.addresses.length!=0? 
+        {this.state.fontLoaded && this.state.status==1?
           <View style={{ flex: 1 }}>
             <View
               style={[
@@ -193,27 +221,22 @@ class Trainings extends Component {
                 {this.state.selectedIndex == 0 ?
                   <View style={styles.list}>
                     {this.state.pastCoupleTrainings.map((training, index) => (
-                      this.renderCoupleTraining(training, index)
-                        // <ListItem
-                        //   style={{ fontFamily: 'regular' }}
-                        //   key={training.TrainingCode}
-                        //   leftIcon={() =>
-                        //     <Image source={{ uri: training.PartnerPicture }} style={{ width: 40, height: 40, borderRadius: 20 }}></Image>}
-                        //   title={training.PartnerFirstName + " " + training.PartnerLastName}
-                        //   titleStyle={{ color: 'black', fontFamily: 'regular' }}
-                        //   subtitle={this.getAddress(training.Latitude, training.Longitude)}
-                        //   //subtitle={'glgg'}
-                        //   subtitleStyle={{ fontFamily: 'regular' }}
-                        //   //subtitle={l.subtitle}
-                        //   rightTitle={training.TrainingTime.split(" ")[0]}
-                        //   rightTitleStyle={{ color: 'green', fontSize: 15, fontFamily: 'regular' }}
-                        //   rightSubtitle={training.Price == 0 ? null : '$' + training.Price}
-                        //   rightSubtitleStyle={{ textAlign: 'center', fontFamily: 'regular' }}
-                        //   bottomDivider
-                        //   rightIcon={() => <Icon color='#f7d84c' name='star' size={30} onPress={() => this.props.navigation.navigate('Rate', {UserCode:this.state.userCode, RatedUserCode: training.PartnerUserCode, FullName:training.PartnerFirstName + " " + training.PartnerLastName, Picture:training.PartnerPicture})} />}
-                        //   onPress={()=> this.props.navigation.navigate('UserProfile', {UserCode: training.PartnerUserCode})}
-                        // />
-
+                      <ListItem
+                        key={index}
+                        leftIcon={() =>
+                          <Image source={{ uri: training.PartnerPicture }} style={{ width: 40, height: 40, borderRadius: 20 }}></Image>}
+                        title={training.PartnerFirstName + " " + training.PartnerLastName}
+                        titleStyle={{ color: 'black', fontFamily: 'regular' }}
+                        subtitle={this.state.coupleAddresses[index]}
+                        subtitleStyle={{ fontFamily: 'regular' }}
+                        rightTitle={training.TrainingTime.split(" ")[0]}
+                        rightTitleStyle={{ color: 'green', fontSize: 15, fontFamily: 'regular' }}
+                        rightSubtitle={training.Price == 0 ? null : '$' + training.Price}
+                        rightSubtitleStyle={{ textAlign: 'center', fontFamily: 'regular' }}
+                        bottomDivider
+                        rightIcon={() => <Icon color='#f7d84c' name='star' size={30} onPress={() => this.props.navigation.navigate('Rate', { UserCode: this.state.userCode, RatedUserCode: training.PartnerUserCode, FullName: training.PartnerFirstName + " " + training.PartnerLastName, Picture: training.PartnerPicture })} />}
+                        onPress={() => this.props.navigation.navigate('UserProfile', { UserCode: training.PartnerUserCode })}
+                      />
 
                     ))}
 
@@ -223,7 +246,7 @@ class Trainings extends Component {
                 {/* <Text style={styles.headline}>Group Trainings</Text> */}
                 {this.state.selectedIndex == 1 ?
                   <View style={styles.list}>
-                    {this.state.pastGroupTrainings.map((training) => (
+                    {this.state.pastGroupTrainings.map((training, index) => (
                       <ListItem
                         leftIcon={training.WithTrainer ?
                           <Image source={require('../../Images/GroupWithTrainer.png')} style={{ width: 40, height: 40, borderRadius: 20 }}></Image>
@@ -234,12 +257,12 @@ class Trainings extends Component {
                         title={training.SportCategory + ' Group'}
                         titleStyle={{ color: 'black', fontFamily: 'regular' }}
                         subtitleStyle={{ fontFamily: 'regular' }}
-                        subtitle={'will be the location'}
+                        subtitle={this.state.groupAddresses[index]}
                         rightTitle={training.TrainingTime.split(" ")[0]}
                         rightTitleStyle={{ color: 'green', fontSize: 15, fontFamily: 'regular' }}
-                        rightSubtitle={training.Price == 0 ? null : training.Price}
+                        rightSubtitle={training.Price == 0 ? null :'$'+ training.Price}
                         rightSubtitleStyle={{ textAlign: 'center', fontFamily: 'regular' }}
-                        onPress={()=>console.warn('ככככ')}
+                        onPress={() => this.props.navigation.navigate('GroupProfile',{ GroupCode:training.TrainingCode })}
                         bottomDivider
                       />
 

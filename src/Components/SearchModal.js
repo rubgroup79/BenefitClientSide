@@ -81,7 +81,89 @@ export default class SearchModal extends Component {
         this.setState({ endTime: moment(new Date()).format('YYYY-MM-DD') + " " + end + ":00.000" });
     }
 
-    search() {
+    // search() {
+    //     if (!this.state.withPartner && !this.state.withTrainer && !this.state.groupWithPartners && !this.state.groupWithTrainer)
+    //         alert("Please choose who to want to train with");
+    //     else {
+    //         if (this.state.startTime > this.state.endTime)
+    //             alert("Start time cannot be before end time");
+    //         else {
+    //             if (this.state.latitude != 0 && this.state.longitude != 0) {
+    //                 //this.props.userCode
+    //                 var OnlineDetails = {
+    //                     UserCode: 1,
+    //                     Latitude: this.state.latitude,
+    //                     Longitude: this.state.longitude,
+    //                     StartTime: this.state.startTime,
+    //                     EndTime: this.state.endTime,
+    //                     WithTrainer: this.boolToInt(this.state.withTrainer),
+    //                     WithPartner: this.boolToInt(this.state.withPartner),
+    //                     GroupWithTrainer: this.boolToInt(this.state.groupWithTrainer),
+    //                     GroupWithPartners: this.boolToInt(this.state.groupWithPartners),
+    //                 };
+
+    //                 this.props.updateOnlineTrainee(OnlineDetails);
+    //                 this.props.setSearchLocation(this.state.latitude, this.state.longitude);
+    //                 this.props.searchModalVisible();
+    //                 this.props.setSearchMode(true);
+
+    //                 //הכנסה של מתאמן לחיפוש
+    //                 fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/InsertOnlineTrainee', {
+    //                     method: 'POST',
+    //                     headers: { "Content-type": "application/json; charset=UTF-8" },
+    //                     body: JSON.stringify(OnlineDetails),
+    //                 })
+    //                     .catch(error => console.warn('Error1:', error.message));
+
+    //                 //נכנס רק אם משתמש חיפש אימון זוגי עם מאמן או מתאמן
+    //                 if (OnlineDetails.WithPartner == 1 || OnlineDetails.WithTrainer == 1) {
+    //                     fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/SearchCoupleTraining', {
+    //                         method: 'POST',
+    //                         headers: { "Content-type": "application/json; charset=UTF-8" },
+    //                         body: JSON.stringify(OnlineDetails),
+    //                     })
+    //                         .then(res => res.json())
+    //                         .then(response => {
+    //                             if (response.length == 0) alert('No Couple Training Results');
+    //                             else {
+    //                                 this.props.getCoupleResults(response);
+    //                             }
+    //                         })
+
+    //                         .catch(error => console.warn('Error2:', error.message));
+    //                 }
+
+
+
+    //                 //נכנס רק אם משתמש חיפש אימון קבוצתי עם מאמן או בלי מאמן
+
+    //                 if (this.state.groupWithTrainer || this.state.groupWithPartners) {
+
+    //                     fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/SearchGroups', {
+
+    //                         method: 'POST',
+    //                         headers: { "Content-type": "application/json; charset=UTF-8" },
+    //                         body: JSON.stringify(OnlineDetails),
+    //                     })
+    //                         .then(res => res.json())
+    //                         .then(response => {
+    //                             if (response.length == 0) alert('No Group Results');
+    //                             else {
+    //                                 this.props.getGroupResults(response);
+    //                             }
+
+    //                         })
+
+    //                         .catch(error => console.warn('Error3:', error.message));
+    //                 }
+
+    //             }
+    //             else alert("Please select location");
+    //         }
+    //     }
+    // }
+
+    validateSearchInput() {
         if (!this.state.withPartner && !this.state.withTrainer && !this.state.groupWithPartners && !this.state.groupWithTrainer)
             alert("Please choose who to want to train with");
         else {
@@ -101,64 +183,13 @@ export default class SearchModal extends Component {
                         GroupWithTrainer: this.boolToInt(this.state.groupWithTrainer),
                         GroupWithPartners: this.boolToInt(this.state.groupWithPartners),
                     };
-
-                    this.props.setSearchLocation(this.state.latitude, this.state.longitude);
                     this.props.searchModalVisible();
-                    this.props.setSearchMode(true);
+                    this.props.insertOnlineTrainee(OnlineDetails);
 
-                    //הכנסה של מתאמן לחיפוש
-                    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/InsertOnlineTrainee', {
-                        method: 'POST',
-                        headers: { "Content-type": "application/json; charset=UTF-8" },
-                        body: JSON.stringify(OnlineDetails),
-                    })
-                        .catch(error => console.warn('Error1:', error.message));
-
-                    //נכנס רק אם משתמש חיפש אימון זוגי עם מאמן או מתאמן
-                    if (OnlineDetails.WithPartner == 1 || OnlineDetails.WithTrainer == 1) {
-                        fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/SearchCoupleTraining', {
-                            method: 'POST',
-                            headers: { "Content-type": "application/json; charset=UTF-8" },
-                            body: JSON.stringify(OnlineDetails),
-                        })
-                            .then(res => res.json())
-                            .then(response => {
-                                if (response.length == 0) alert('No Couple Training Results');
-                                else {
-                                    this.props.getCoupleResults(response);
-                                }
-                            })
-
-                            .catch(error => console.warn('Error2:', error.message));
-                    }
-
-
-
-                    //נכנס רק אם משתמש חיפש אימון קבוצתי עם מאמן או בלי מאמן
-
-                    if (this.state.groupWithTrainer || this.state.groupWithPartners) {
-
-                        fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/SearchGroups', {
-
-                            method: 'POST',
-                            headers: { "Content-type": "application/json; charset=UTF-8" },
-                            body: JSON.stringify(OnlineDetails),
-                        })
-                            .then(res => res.json())
-                            .then(response => {
-                                if (response.length == 0) alert('No Group Results');
-                                else {
-                                    this.props.getGroupResults(response);
-                                }
-
-                            })
-
-                            .catch(error => console.warn('Error3:', error.message));
-                    }
-
-                }
+                } 
                 else alert("Please select location");
-            }
+            } 
+           
         }
     }
 
@@ -328,7 +359,7 @@ export default class SearchModal extends Component {
                                     textAlign: 'center',
                                 }}
                                 onPress={() => {
-                                    this.search();
+                                    this.validateSearchInput();
                                 }}
                                 activeOpacity={0.5}
                             />

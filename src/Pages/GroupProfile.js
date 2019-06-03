@@ -11,7 +11,7 @@ import {
   Image
 
 } from 'react-native';
-import { Slider, Divider, Button } from 'react-native-elements';
+import { Slider, Divider, Button, ListItem } from 'react-native-elements';
 import { Font } from 'expo';
 import AvatarImage from '../Components/AvatarImage'
 import NumericInput from 'react-native-numeric-input';
@@ -29,95 +29,37 @@ const SLIDER_SIZE = SCREEN_WIDTH - 150;
 
 
 
-
-// class CustomButton extends Component {
-//   constructor() {
-//     super();
-
-//     this.state = {
-//       selected: false,
-//     };
-//   }
-
-//   componentDidMount() {
-//     const { selected } = this.props;
-
-//     this.setState({
-//       selected,
-//     });
-//   }
-
-//   render() {
-//     const { title } = this.props;
-//     const { selected } = this.state;
-
-
-//     return (
-//       <Button
-//         title={title}
-//         disabledStyle={{
-//           backgroundColor: 'transparent',
-//         }}
-//         titleStyle={
-//           this.props.selected
-//             ? {
-//               color: 'white',
-//               fontSize: 12,
-//               fontFamily: 'regular'
-//             }
-//             : {
-//               fontSize: 12,
-//               color: 'gray',
-//               fontFamily: 'regular'
-//             }
-//         }
-//         buttonStyle={
-//           this.props.selected
-//             ? {
-//               backgroundColor: '#f34573',
-//               borderRadius: 100,
-//               width: 105
-//             }
-//             : {
-//               borderWidth: 1,
-//               borderColor: 'gray',
-//               borderRadius: 30,
-//               width: 105,
-//               backgroundColor: 'transparent',
-//             }
-//         }
-//         containerStyle={{ marginRight: 10 }}
-
-//       />
-//     );
-//   }
-// }
-
-
-export default class UserProfile extends Component {
+export default class GroupProfile extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
       fontLoaded: false,
       userCode: 0,
-      firstName: '',
-      lastName: '',
-      gender: '',
-      picture: '',
-      rate: 0,
-      sportCategories: [],
-      userSportCategories: [],
-      selectedSportCategories: [],
-      averageRates: [],
-      status: 0
+      trainingTime: "",
+      longitude: "",
+      latitude: "",
+      withTrainer: 0,
+      creatorCode: 0,
+      minParticipants: 0,
+      maxParticipants: 0,
+      currentParticipants: 0,
+      sportCategory: "",
+      price: 0,
+      groupParticipants: [],
+      address: "",
+      status: 0,
+      creatorPicture: "",
+      creatorRate: 0,
+      creatorName: "",
+      creatorAge: 0
+
 
     };
 
-    this.getProfileDetails = this.getProfileDetails.bind(this);
-    this.getSportCategories = this.getSportCategories.bind(this);
-    this.setSelectedSportCategories = this.setSelectedSportCategories.bind(this);
-    this.getAvarageParametersRate = this.getAvarageParametersRate.bind(this);
+    this.getGroupDetails = this.getGroupDetails.bind(this);
+    this.getGroupParticipants = this.getGroupParticipants.bind(this);
+    this.getAddress = this.getAddress.bind(this);
   }
 
   async componentDidMount() {
@@ -135,67 +77,60 @@ export default class UserProfile extends Component {
 
   componentWillMount() {
 
-    this.getProfileDetails();
-    this.getAvarageParametersRate();
+    this.getGroupDetails();
 
 
   }
 
-  getProfileDetails() {
-    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/ShowProfile?UserCode=' + this.props.navigation.getParam('UserCode', null), {
+  getGroupDetails() {
+    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetGroupDetails?GroupCode=' + this.props.navigation.getParam('GroupCode', null), {
 
       method: 'GET',
       headers: { "Content-type": "application/json; charset=UTF-8" },
     })
       .then(res => res.json())
       .then(response => {
-        this.setState({ userCode: response.UserCode, firstName: response.FirstName, lastName: response.LastName, gender: response.Gender, picture: response.Picture, age: response.Age, userSportCategories: response.SportCategories, rate: response.Rate}, this.getSportCategories)
-        
+        this.setState({ trainingTime: response.TrainingTime, latitude: response.Latitude, longitude: response.Longitude, withTrainer: response.WithTrainer, creatorCode: response.CreatorCode, minParticipants: response.MinParticipants, maxParticipants: response.MaxParticipants, currentParticipants: response.CurrentParticipants, sportCategory: response.SportCategory, price: response.Price }, this.getGroupParticipants)
+
       })
       .catch(error => console.warn('Error:', error.message));
   }
 
-  getSportCategories() {
-    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetSportCategories', {
+  getGroupParticipants() {
+    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetGroupParticipants?GroupCode=' + this.props.navigation.getParam('GroupCode', null), {
 
       method: 'GET',
       headers: { "Content-type": "application/json; charset=UTF-8" },
     })
       .then(res => res.json())
       .then(response => {
-        this.setState({ sportCategories: response }, this.setSelectedSportCategories);
+        this.setState({ groupParticipants: response }, this.getAddress)
+        response.map((participant) => {
+          if (participant.UserCode == this.state.creatorCode)
+            this.setState({ creatorPicture: participant.Picture, creatorAge: participant.Age, creatorName: participant.FirstName + ' ' + participant.LastName, creatorRate: participant.Rate })
+        })
+
       })
       .catch(error => console.warn('Error:', error.message));
 
   }
 
-  getAvarageParametersRate() {
-    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetAvarageParametersRate?UserCode=' + this.props.navigation.getParam('UserCode', null), {
+  getAddress() {
+    var address = '';
 
-      method: 'GET',
-      headers: { "Content-type": "application/json; charset=UTF-8" },
-    })
-      .then(res => res.json())
-      .then(response => {
-        this.setState({ averageRates: response });
-      })
-      .catch(error => console.warn('Error:', error.message));
+    fetch('https://maps.googleapis.com/maps/api/geocode/json?address=' + this.state.latitude + ',' + this.state.longitude + '&key=' + 'AIzaSyB_OIuPsnUNvJ-CN0z2dir7cVbqJ7Xj3_Q')
+      .then((response) => response.json())
+      .then((responseJson) => {
+        address = JSON.stringify(responseJson.results[0].address_components.filter(x => x.types.filter(t => t == 'route').length > 0)[0].short_name) + ' ' +
+          JSON.stringify(responseJson.results[0].address_components.filter(x => x.types.filter(t => t == 'street_number').length > 0)[0].short_name) + ', ' +
+          JSON.stringify(responseJson.results[0].address_components.filter(x => x.types.filter(t => t == 'locality').length > 0)[0].short_name);
+        address = address.replace(/"/g, '');
+        this.setState({ address: address, status: 1 })
 
+
+      });
   }
 
-  setSelectedSportCategories() {
-    temp = this.state.sportCategories.map((category) => {
-      counter = 0;
-      this.state.userSportCategories.map((userCategory) => {
-        if (category.Description == userCategory.Description)
-          counter++;
-      })
-      if (counter == 1) return { CategoryCode: category.CategoryCode, Description: category.Description, Selected: true };
-      else return { CategoryCode: category.CategoryCode, Description: category.Description, Selected: false };
-    });
-    this.setState({ selectedSportCategories: temp, status:1 });
-
-  }
 
   render() {
     const { goBack } = this.props.navigation;
@@ -204,14 +139,17 @@ export default class UserProfile extends Component {
       <SafeAreaView style={{ flex: 1 }}>
         <StatusBar barStyle="light-content" />
 
-        {this.state.fontLoaded && this.state.status == 1 && this.state.selectedSportCategories.length!=0? (
+        {this.state.fontLoaded && this.state.status == 1 ? (
           <View style={{ flex: 1, }}>
             <Icon1 name='left' style={styles.closeIcon} size={20} color='gray' onPress={() => { goBack() }}></Icon1>
             <View style={styles.statusBar} />
 
             <View style={styles.navBar}>
 
-              <Text style={styles.nameHeader}>{this.state.firstName + ' ' + this.state.lastName + "'s Profile"}</Text>
+              <Text style={styles.nameHeader}>{this.state.sportCategory + ' Group'}</Text>
+              <Text style={{ flex: 1, fontFamily: 'regular', textAlign: 'center', color: '#7384B4', fontSize: 18, }}>{this.state.address}</Text>
+              <Text style={{ flex: 1, fontFamily: 'regular', textAlign: 'center', color: '#7384B4', fontSize: 18, }}>{this.state.trainingTime}</Text>
+              <Text style={{ flex: 1, fontFamily: 'light', textAlign: 'center', color: '#7384B4', fontSize: 14, }}>Open For {this.state.minParticipants} - {this.state.maxParticipants} Trainees </Text>
 
             </View>
 
@@ -219,14 +157,70 @@ export default class UserProfile extends Component {
               scrollEnabled={false}
               style={{ flex: 1, flexDirection: 'column' }}>
 
-              <View style={{ flex: 1, alignItems: 'center', marginTop: 10, flexDirection: 'column', }}>
+              {this.state.withTrainer ?
 
-                <Image style={{ width: 120, height: 120, borderRadius: 60, }} source={{ uri: this.state.picture }} ></Image>
-                <Text style={{ flex: 1, fontFamily: 'regular', color: '#7384B4', fontSize: 18, margin: 5 }}>{this.state.gender}</Text>
-                <Text style={{ flex: 1, fontFamily: 'regular', color: '#7384B4', fontSize: 15, }}>{this.state.age}</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', alignContent: 'center', justifyContent: 'center', marginBottom: 20, marginTop: 20 }}>
+                  <View style={{ flex: 1, alignItems: 'flex-end', marginRight: 5 }}>
+                    <Image style={{ width: 80, height: 80, borderRadius: 40 }} source={{ uri: this.state.creatorPicture }}></Image>
+                  </View>
+                  <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', marginLeft: 5 }}>
+                    <View style={{ flex: 1, flexDirection: 'row', marginTop: 5 }}>
+
+                      <Text style={{ fontFamily: 'light', color: '#7384B4', }}>{this.state.creatorName}</Text>
+                    </View>
+                    <View style={{ flex: 1, flexDirection: 'row', marginTop: 5 }}>
+
+                      <Text style={{ fontFamily: 'light', color: '#7384B4', }}>$ {this.state.price}</Text>
+                    </View>
+                    <View style={{ flex: 1, flexDirection: 'row', marginTop: 5 }}>
+                      <Image style={{ width: 20, height: 20 }} source={require('../../Images/SelectedStar.png')}></Image>
+                      <Text style={{ fontFamily: 'light', marginLeft: 10, marginTop: 2, color: '#7384B4', }}>{this.state.creatorRate}</Text>
+                    </View>
+                  </View>
+                </View> :   <View style={{ flex: 1, alignItems: 'center', marginRight: 5 }}>
+                    <Image style={{ width: 80, height: 80, borderRadius: 40 }} source={require('../../Images/GroupWithPartners.png') }></Image>
+                  </View>}
+
+              <ScrollView
+                style={{ flex: 1, flexDirection: 'column', height:400, marginTop:10 }}>
+
+                <View style={styles.list}>
+                  {this.state.groupParticipants.map((participant, index) => (
+                    participant.UserCode != this.state.creatorCode &&
+                    <ListItem
+                      key={index}
+                      leftIcon={() =>
+                        <Image source={{ uri: participant.Picture }} style={{ width: 40, height: 40, borderRadius: 20 }}></Image>}
+                      title={participant.FirstName + " " + participant.LastName}
+                      titleStyle={{ color: 'black', fontFamily: 'regular' }}
+                      subtitle={participant.Age.toString()}
+                      subtitleStyle={{ fontFamily: 'regular' }}
+                      rightTitle={participant.Rate.toString()}
+                      rightTitleStyle={{ color: 'green', fontSize: 15, fontFamily: 'regular' }}
+                      bottomDivider
+                      rightIcon={() => <Icon1 color='#f7d84c' name='star' size={30} />}
+                      onPress={() => this.props.navigation.navigate('UserProfile', { UserCode: participant.UserCode })}
+                    />)
+                  )}
+
+                </View>
+              </ScrollView>
+              <View style={{flex:1, alignItems:'flex-end'}}>
+                <Text style={{ fontFamily: 'light',color: '#7384B4', marginRight:8}}>{this.state.withTrainer ? this.state.currentParticipants-1:this.state.currentParticipants} Participants</Text>
               </View>
 
-              <View style={{ flex: 1, marginTop: 10, flexDirection: 'column', margin: 20, justifyContent: 'center' }}>
+
+
+
+
+
+
+
+
+
+
+
+              {/* <View style={{ flex: 1, marginTop: 10, flexDirection: 'column', margin: 20, justifyContent: 'center' }}>
                 <Text style={{ flex: 1, fontFamily: 'regular', color: '#f34573', fontSize: 15, }}>{this.state.firstName + "'s Favorite sports"} </Text>
 
                 <View
@@ -264,9 +258,9 @@ export default class UserProfile extends Component {
                   </View>
 
                 </View>
-              </View>
+              </View> */}
 
-              <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: -40 }}>
+              {/* <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: -40 }}>
                 <Image source={STAR}></Image>
                 <Text style={{ fontFamily: 'bold', fontSize: 20, color: "#7384B4" }}>{this.state.rate}</Text>
               </View>
@@ -278,7 +272,7 @@ export default class UserProfile extends Component {
                   </View>)
                 })}
 
-              </View>
+              </View> */}
 
 
 
@@ -301,11 +295,11 @@ const styles = StyleSheet.create({
   },
 
   navBar: {
-    height: 60,
+    height: 110,
     width: SCREEN_WIDTH,
     justifyContent: 'center',
     alignContent: 'center',
-    marginTop: 10
+    marginTop: 10,
   },
 
   nameHeader: {

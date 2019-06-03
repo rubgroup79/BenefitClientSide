@@ -141,13 +141,14 @@ export default class ApprovedRequestsListView extends Component {
                     <Icon name='close' style={styles.closeIcon} size={20} color='gray' onPress={() => this.props.closeListView()}></Icon>
                     <Text style={styles.headline}>Approved Requests</Text>
                 </View>
+                {this.props.ApprovedRequests.length!=0 ?  
         <ScrollView style={{ flex: 1, marginBottom: 20 }}>
-          {this.props.ApprovedRequests.map((x) => {
-            return (<View>{this.renderApprovedSuggestions(x)}</View>)
+          {this.props.ApprovedRequests.map((x, index) => {
+            return (<View key={index}>{this.renderApprovedSuggestions(x)}</View>)
           }
           )}
 
-        </ScrollView>
+        </ScrollView>: <Text style={{fontFamily:'regular', fontSize:15, textAlign:'center', color:'gray'}}>No Approved Requests</Text>}  
 
 
 

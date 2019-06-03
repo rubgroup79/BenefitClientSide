@@ -44,6 +44,10 @@ export default class RatingStarsShowOnly extends Component {
     })
   }
 
+//   starSelectedInPosition(position){
+// console.warn(position)
+//   }
+
   render() {
     const { position } = this.state
     const { count, reviews, showRating } = this.props
@@ -53,6 +57,7 @@ export default class RatingStarsShowOnly extends Component {
       rating_array.push(
         <Star
           key={index}
+          starSelectedInPosition={()=>{}}
           position={index + 1}
           fill={position >= index + 1}
           {...this.props}

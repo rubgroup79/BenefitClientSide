@@ -286,28 +286,24 @@ export default class FutureTrainingsListView extends Component {
     render() {
         return (
             <View style={{ flex: 1, flexDirection: 'column', backgroundColor: 'rgba(255,255,255,0.9)', alignContent: "center", position:'absolute', zIndex:2, top:90, width:SCREEN_WIDTH }}>
-                {/* <View style={{ flex: 0.2, flexDirection: 'column', alignContent: 'center' }}>
-                    <Text style={style = styles.trainingsHeadline}>
-                        Your Future Trainings
-                      </Text>
-                </View> */}
+    
                 <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
                     <Icon name='close' style={styles.closeIcon} size={20} color='gray' onPress={() => this.props.closeListView()}></Icon>
                     <Text style={styles.headline}>Future Trainings</Text>
                 </View>
-
+                {this.props.FutureCoupleTrainings.length!=0 ||this.props.FutureGroupTrainings.length!=0 ?  
                 <ScrollView style={{ flex: 1, marginBottom: 20 }}>
-                    {this.props.FutureCoupleTrainings.map((x) => {
-                        return (<View>{this.renderFutureCoupleTrainings(x)}</View>)
+                    {this.props.FutureCoupleTrainings.map((x, index) => {
+                        return (<View kew={index}>{this.renderFutureCoupleTrainings(x)}</View>)
                     }
                     )}
 
-                    {this.props.FutureGroupTrainings.map((x) => {
-                        return (<View>{this.renderFutureGroupTrainings(x)}</View>)
+                    {this.props.FutureGroupTrainings.map((x, index) => {
+                        return (<View key={index}>{this.renderFutureGroupTrainings(x)}</View>)
                     }
                     )}
 
-                </ScrollView>
+                </ScrollView>: <Text style={{fontFamily:'regular', fontSize:15, textAlign:'center', color:'gray'}}>No Future Trainings</Text>}  
 
             </View>
 
@@ -348,5 +344,6 @@ const styles = StyleSheet.create({
         fontSize: 23,
         color: '#f34573',
         fontFamily: 'regular',
+        marginLeft: 15
     },
 })
