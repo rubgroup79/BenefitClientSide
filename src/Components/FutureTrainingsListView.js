@@ -5,6 +5,8 @@ import Icon2 from 'react-native-vector-icons/AntDesign';
 import Icon3 from 'react-native-vector-icons/Foundation';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Icon1 from 'react-native-vector-icons/Entypo';
+import { NavigationApps, actions, googleMapsTravelModes } from "react-native-navigation-apps";
+
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -16,15 +18,15 @@ export default class FutureTrainingsListView extends Component {
 
         this.state = {
             status: 0,
-            creatorDetails:[]
+            creatorDetails: []
         }
-        this.getCreatorDetails=this.getCreatorDetails.bind(this);
+        this.getCreatorDetails = this.getCreatorDetails.bind(this);
     }
 
 
 
     cancelCoupleTraining(CoupleTraining) {
-      fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/CancelCoupleTraining?CoupleTrainingCode=' + CoupleTraining.TrainingCode + '&UserCode=' + this.props.UserCode, {
+        fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/CancelCoupleTraining?CoupleTrainingCode=' + CoupleTraining.TrainingCode + '&UserCode=' + this.props.UserCode, {
             body: JSON.stringify({}),
             method: 'POST',
             headers: { "Content-type": "application/json; charset=UTF-8" },
@@ -32,13 +34,13 @@ export default class FutureTrainingsListView extends Component {
             .then(res => res.json())
             .then(response => {
                 alert("The training is canceled!");
-                 fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetToken?UserCode=' + response, {
+                fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetToken?UserCode=' + response, {
                     method: 'GET',
                     headers: { "Content-type": "application/json; charset=UTF-8" },
                 })
                     .then(res => res.json())
                     .then(response => {
-                       this.sendPushNotification(response, "your partner has canceled the training");
+                        this.sendPushNotification(response, "your partner has canceled the training");
                     })
                     .catch(error => console.warn('Error:', error.message));
             })
@@ -62,11 +64,11 @@ export default class FutureTrainingsListView extends Component {
                         method: 'GET',
                         headers: { "Content-type": "application/json; charset=UTF-8" },
                     })
-                    .then(res => res.json())
-                    .then(response => {
-                        this.sendPushNotification(response, "one of your group members has canceled");
-                    })
-                    .catch(error => console.warn('Error:', error.message));
+                        .then(res => res.json())
+                        .then(response => {
+                            this.sendPushNotification(response, "one of your group members has canceled");
+                        })
+                        .catch(error => console.warn('Error:', error.message));
                 }
                 else {
                     response.map((user) => this.sendPushNotification(user.Token, "Your group training has been canceled"));
@@ -78,16 +80,16 @@ export default class FutureTrainingsListView extends Component {
 
 
     getCreatorDetails(creatorCode) {
-        fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/ShowProfile?UserCode=' +creatorCode, {
+        fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/ShowProfile?UserCode=' + creatorCode, {
 
-      method: 'GET',
-      headers: { "Content-type": "application/json; charset=UTF-8" },
-    })
-      .then(res => res.json())
-      .then(response => {
-        this.setState({creatorDetails: response})
-      })
-      .catch(error => console.warn('Error:', error.message));
+            method: 'GET',
+            headers: { "Content-type": "application/json; charset=UTF-8" },
+        })
+            .then(res => res.json())
+            .then(response => {
+                this.setState({ creatorDetails: response })
+            })
+            .catch(error => console.warn('Error:', error.message));
     }
 
 
@@ -206,32 +208,49 @@ export default class FutureTrainingsListView extends Component {
                         flex: 1
                     }}
                 >
-                    <View style={{ flex: 1, flexDirection: 'row', alignContent: 'center', justifyContent: 'flex-end' }}>
-                    <TouchableOpacity
-                            style={{
-                                backgroundColor: 'rgba(222,222,222,1)',
-                                width: 28,
-                                height: 28,
-                                borderRadius: 100,
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                marginHorizontal: 10,
-                            }}
-                            onPress={() => {
-                                 this.props.navigation.navigate('Chat', { UserCode: this.props.UserCode, PartnerUserCode: x.PartnerUserCode, FullName: x.PartnerFirstName + " " + x.PartnerLastName, Picture: x.PartnerPicture })
-                            }}
-                        >
-                            <Icon2 name="message1" color="green" size={20} />
-                        </TouchableOpacity>
+
+
+                    <View style={{ flex: 1, flexDirection: 'row', alignContent: 'center', justifyContent: 'center' }}>
+                    <View style={{flex:1, justifyContent:'center', alignContent: 'center'}}>
+                            <NavigationApps
+                            iconSize={20}
+                            row
+                            viewMode={'sheet'}
+                            actionSheetBtnCloseTitle={'Cancel'}
+                            actionSheetBtnOpenTitle={<Icon style={{ flex: 1}} name='car' color='black' size={17}></Icon>}
+                            actionSheetBtnOpenStyle={{backgroundColor:'rgba(222,222,222,1)',  width: 28, height: 28,borderRadius: 14,  alignItems:'center',  justifyContent:'center'  }}
+                            address={coupleTrainingAddresses[index]} // address to navigate by for all apps 
+                            waze={{ lat: '32.6854', lon: '34.5523', action: actions.navigateByAddress }} // specific settings for waze
+                            googleMaps={{ lat: '', lon: '', action: actions.navigateByAddress }} // specific settings for google maps
+                            maps={{lat: '32.6854', lon: '34.5523', action: actions.navigateByAddress }} // specific settings for maps
+
+                        />
+                        </View>
                         <TouchableOpacity
                             style={{
                                 backgroundColor: 'rgba(222,222,222,1)',
                                 width: 28,
                                 height: 28,
-                                borderRadius: 100,
+                                borderRadius: 14,
                                 justifyContent: 'center',
                                 alignItems: 'center',
-                                marginHorizontal: 10,
+                                marginRight:23
+                            }}
+                            onPress={() => {
+                                this.props.navigation.navigate('Chat', { UserCode: this.props.UserCode, PartnerUserCode: x.PartnerUserCode, FullName: x.PartnerFirstName + " " + x.PartnerLastName, Picture: x.PartnerPicture })
+                            }}
+                        >
+                            <Icon2 name="message1" color="green" size={20} />
+                        </TouchableOpacity>
+                        
+                        <TouchableOpacity
+                            style={{
+                                backgroundColor: 'rgba(222,222,222,1)',
+                                width: 28,
+                                height: 28,
+                                borderRadius: 14,
+                                justifyContent: 'center',
+                                alignItems: 'center',
                             }}
                             onPress={() => {
                                 this.cancelCoupleTraining(x)
@@ -240,7 +259,11 @@ export default class FutureTrainingsListView extends Component {
                         >
                             <Icon2 name="close" color="red" size={20} />
                         </TouchableOpacity>
+                      
                     </View>
+                </View>
+                <View>
+
 
 
                 </View>
@@ -251,12 +274,12 @@ export default class FutureTrainingsListView extends Component {
 
 
     renderFutureGroupTrainings(x, index) {
-       this.getCreatorDetails(x.CreatorCode);
+        this.getCreatorDetails(x.CreatorCode);
 
         return (
-          
+
             <View
-            key={index}
+                key={index}
                 style={styles.trainingCard}
             >
                 <View style={{ flex: 2, flexDirection: 'row', alignItems: 'center' }}>
@@ -350,9 +373,40 @@ export default class FutureTrainingsListView extends Component {
                     }}
                 >
 
-                    <View style={{ flex: 1, flexDirection: 'row', alignContent: 'center', justifyContent: 'flex-end' }}>
-                        
-                        {this.props.UserCode!=x.CreatorCode&&  this.state.creatorDetails.length!=0 ?
+                    <View style={{ flex: 1, flexDirection: 'row', alignContent: 'center', justifyContent: 'center' }}>
+                    <View style={{flex:1, justifyContent:'center', alignContent: 'center'}}>
+                            <NavigationApps
+                            iconSize={20}
+                            row
+                            viewMode={'sheet'}
+                            actionSheetBtnCloseTitle={'Cancel'}
+                            actionSheetBtnOpenTitle={<Icon style={{ flex: 1}} name='car' color='black' size={17}></Icon>}
+                            actionSheetBtnOpenStyle={{backgroundColor:'rgba(222,222,222,1)',  width: 28, height: 28,borderRadius: 14,  alignItems:'center',  justifyContent:'center'  }}
+                            address={coupleTrainingAddresses[index]} // address to navigate by for all apps 
+                            waze={{ lat: '32.6854', lon: '34.5523', action: actions.navigateByAddress }} // specific settings for waze
+                            googleMaps={{ lat: '', lon: '', action: actions.navigateByAddress }} // specific settings for google maps
+                            maps={{lat: '32.6854', lon: '34.5523', action: actions.navigateByAddress }} // specific settings for maps
+
+                        />
+                        </View>
+                        {this.props.UserCode != x.CreatorCode && this.state.creatorDetails.length != 0 ?
+                            
+                            <TouchableOpacity
+                                style={{
+                                    backgroundColor: 'rgba(222,222,222,1)',
+                                    width: 28,
+                                    height: 28,
+                                    borderRadius: 100,
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    marginRight:23,
+                                }}
+                                onPress={() => {
+                                    this.props.navigation.navigate('Chat', { UserCode: this.props.UserCode, PartnerUserCode: x.CreatorCode, FullName: this.state.creatorDetails.FirstName + " " + this.state.creatorDetails.LastName, Picture: this.state.creatorDetails.Picture })
+                                }}
+                            >
+                                <Icon2 name="message1" color="green" size={20} />
+                            </TouchableOpacity> : null}
                         <TouchableOpacity
                             style={{
                                 backgroundColor: 'rgba(222,222,222,1)',
@@ -361,23 +415,6 @@ export default class FutureTrainingsListView extends Component {
                                 borderRadius: 100,
                                 justifyContent: 'center',
                                 alignItems: 'center',
-                                marginHorizontal: 10,
-                            }}
-                            onPress={() => {
-                                this.props.navigation.navigate('Chat', { UserCode: this.props.UserCode, PartnerUserCode: x.CreatorCode, FullName: this.state.creatorDetails.FirstName + " " + this.state.creatorDetails.LastName, Picture: this.state.creatorDetails.Picture })
-                            }}
-                        >
-                            <Icon2 name="message1" color="green" size={20} />
-                        </TouchableOpacity> : null}
-                        <TouchableOpacity
-                            style={{
-                                backgroundColor: 'rgba(222,222,222,1)',
-                                width: 28,
-                                height: 28,
-                                borderRadius: 100,
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                marginHorizontal: 10,
                             }}
                             onPress={() => this.cancelGroupParticipant(x)}
                         >
