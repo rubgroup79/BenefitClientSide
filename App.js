@@ -135,7 +135,7 @@ const MainRoot = DrawerNavigator(
     // },
   },
   {
-    initialRouteName: 'BottomNavigation',
+    initialRouteName: 'Login',
     contentOptions: {
       activeTintColor: '#548ff7',
       activeBackgroundColor: 'transparent',

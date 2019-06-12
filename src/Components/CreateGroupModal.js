@@ -7,6 +7,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import Icon4 from 'react-native-vector-icons/Entypo';
 import TimePickerNew from './TimePicker';
 import NumericInput from 'react-native-numeric-input';
+import CustomButton from '../Components/CategoriesButton';
 import moment from 'moment';
 import ActionButton from 'react-native-action-button';
 
@@ -22,120 +23,10 @@ var minutes_now = new Date().getMinutes();
 var timeNow = hours_now + ":" + minutes_now;
 var MaxDate = "01-01-" + (new Date().getFullYear() - 18);
 
-var Categories = [
-    {
-        CategoryCode: 1,
-        Description: 'Short Run',
-        Selected: false
-    },
-    {
-        CategoryCode: 2,
-        Description: 'Yoga',
-        Selected: false
-    },
-    {
-        CategoryCode: 3,
-        Description: 'Jogging',
-        Selected: false
-    },
-    {
-        CategoryCode: 4,
-        Description: 'Long Run',
-        Selected: false
-    },
-    {
-        CategoryCode: 5,
-        Description: 'Walking',
-        Selected: false
-    },
-    {
-        CategoryCode: 6,
-        Description: 'Functional',
-        Selected: false
-    },
-    {
-        CategoryCode: 7,
-        Description: 'Pilatis',
-        Selected: false
-    },
-    {
-        CategoryCode: 8,
-        Description: 'Strength',
-        Selected: false
-    },
-    {
-        CategoryCode: 9,
-        Description: 'TRX',
-        Selected: false
-    },
-]
 
 UIManager.setLayoutAnimationEnabledExperimental &&
     UIManager.setLayoutAnimationEnabledExperimental(true);
 
-
-class CustomButton extends Component {
-    constructor() {
-        super();
-
-        this.state = {
-            selected: false,
-        };
-    }
-
-    componentDidMount() {
-        const { selected } = this.props;
-
-        this.setState({
-            selected,
-        });
-    }
-
-    render() {
-        const { title } = this.props;
-        const { selected } = this.state;
-
-
-        return (
-            <Button
-                title={title}
-                titleStyle={
-                    selected
-                        ? { 
-                            color:'white', 
-                            fontSize: 12,  
-                            fontFamily: 'regular' 
-                        } 
-                        : {
-                            fontSize: 12, 
-                            color: 'gray', 
-                            fontFamily: 'regular'
-                        }
-                    }
-                buttonStyle={
-                    selected
-                        ? {
-                            backgroundColor: '#f34573',
-                            borderRadius: 100,
-                            width: 105
-                        }
-                        : {
-                            borderWidth: 1,
-                            borderColor: 'gray',
-                            borderRadius: 30,
-                            width: 105,
-                            backgroundColor: 'transparent',
-                        }
-                }
-                containerStyle={{ marginRight: 7 }}
-                onPress={() => {
-                    this.setState({ selected: !selected });
-                    this.props.setCategories(title);
-                }}
-            />
-        );
-    }
-}
 
 export default class CreateGroupModal extends Component {
     constructor(props) {
@@ -150,10 +41,13 @@ export default class CreateGroupModal extends Component {
             minParticipants: 3,
             maxParticipants: 7,
             sportCategory: 0,
+            selectedSportCategories:[],
             price: 0
         };
 
-        this.validateCategories = this.validateCategories.bind(this);
+        //this.validateCategories = this.validateCategories.bind(this);
+        this.getSportCategories=this.getSportCategories.bind(this);
+        this.setCategories=this.setCategories.bind(this);
 
     }
 
@@ -175,12 +69,39 @@ export default class CreateGroupModal extends Component {
         this.setState({ groupTime: moment(new Date()).format('YYYY-MM-DD') + " " + time + ":00.000" });
     }
 
+    UNSAFE_componentWillMount()
+    {
+        this.getSportCategories();
+    }
+
+    getSportCategories() { 
+        fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetSportCategories', {
+    
+          method: 'GET',
+          headers: { "Content-type": "application/json; charset=UTF-8" },
+        })
+          .then(res => res.json())
+          .then(response => {
+           
+            temp=response.map((category)=>{
+            return({CategoryCode:category.CategoryCode, Description:category.Description, Selected:false})
+            })
+            this.setState({ sportCategories: response, selectedSportCategories:temp, status:1 });
+          })
+    
+          .catch(error => console.warn('Error:', error.message));
+    
+      }
+
+
     createGroup() {
-        const isCategoriesValid = this.validateCategories();
+        console.warn(this.state.sportCategory);
+        //const isCategoriesValid = this.validateCategories();
         const isLocationValid = this.validateLocation();
         var Group = null;
+        //isCategoriesValid &&
         if (
-            isCategoriesValid &&
+            
             isLocationValid
         ) {
 
@@ -222,11 +143,16 @@ export default class CreateGroupModal extends Component {
 
 
     setCategories(category) {
-        Categories.map(function (x) {
+        selectedCategory=0;
+        this.state.selectedSportCategories.map(function (x) {
             if (x.Description == category) {
-                x.selected = !x.selected;
+                x.Selected = !x.Selected;
+                selectedCategory=x.CategoryCode;
             }
+            else x.Selected=false;
         });
+
+        this.setState({sportCategory:selectedCategory});
     }
 
     validateLocation() {
@@ -237,33 +163,6 @@ export default class CreateGroupModal extends Component {
         return true;
     }
 
-    validateCategories() {
-        var counter = 0;
-        var temp = 0;
-        Categories.map(function (x) {
-            if (x.selected) {
-                counter++;
-            }
-
-        })
-        if (counter > 1) {
-            alert("Please select only one category");
-            return false;
-        }
-        else {
-            Categories.map(function (x) {
-                if (x.selected) {
-                    {
-                        temp = x.CategoryCode;
-                    }
-
-                }
-
-            })
-            this.setState({ sportCategory: temp });
-            return true;
-        }
-    }
 
 
 
@@ -276,7 +175,7 @@ export default class CreateGroupModal extends Component {
                     <Text style={styles.headline}>Create Your Group</Text>
                 </View>
 
-                {this.state.fontLoaded ?
+                {this.state.fontLoaded && this.state.status==1? 
 
                     <View style={styles.searchContainer}>
                         <View style={styles.timePickerContainer}>
@@ -407,24 +306,24 @@ export default class CreateGroupModal extends Component {
 
                                         <View style={{ flex: 1, flexDirection: 'row' }}>
 
-                                            <CustomButton title="Short Run" setCategories={this.setCategories} />
-                                            <CustomButton title="Yoga" setCategories={this.setCategories} />
-                                            <CustomButton title="Jogging" setCategories={this.setCategories} />
+                                            <CustomButton selected={this.state.selectedSportCategories[0].Selected} editMode={true} title="Short Run" setCategories={this.setCategories} />
+                                            <CustomButton selected={this.state.selectedSportCategories[1].Selected} editMode={true} title="Yoga" setCategories={this.setCategories} />
+                                            <CustomButton selected={this.state.selectedSportCategories[2].Selected} editMode={true} title="Jogging" setCategories={this.setCategories} />
 
                                         </View>
 
                                         <View style={{ flex: 1, flexDirection: 'row' }}>
 
-                                            <CustomButton title="Long Run" setCategories={this.setCategories} />
-                                            <CustomButton title="Walking" setCategories={this.setCategories} />
-                                            <CustomButton title="Functional" setCategories={this.setCategories} />
+                                            <CustomButton selected={this.state.selectedSportCategories[3].Selected} editMode={true} title="Long Run" setCategories={this.setCategories} />
+                                            <CustomButton selected={this.state.selectedSportCategories[4].Selected} editMode={true} title="Walking" setCategories={this.setCategories} />
+                                            <CustomButton selected={this.state.selectedSportCategories[5].Selected} editMode={true} title="Functional" setCategories={this.setCategories} />
 
                                         </View>
                                         <View style={{ flex: 1, flexDirection: 'row' }}>
 
-                                            <CustomButton title="Pilatis" setCategories={this.setCategories} />
-                                            <CustomButton title="Strength" setCategories={this.setCategories} />
-                                            <CustomButton title="TRX" setCategories={this.setCategories} />
+                                            <CustomButton selected={this.state.selectedSportCategories[6].Selected} editMode={true} title="Pilatis" setCategories={this.setCategories} />
+                                            <CustomButton selected={this.state.selectedSportCategories[7].Selected} editMode={true} title="Strength" setCategories={this.setCategories} />
+                                            <CustomButton selected={this.state.selectedSportCategories[8].Selected} editMode={true} title="TRX" setCategories={this.setCategories} />
 
                                         </View>
 

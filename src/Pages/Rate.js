@@ -84,7 +84,7 @@ class Rate extends Component {
             .then(res => res.json())
             .then(response => {
                 if (response.AvgTotalRate != 0) {
-                    console.warn(response.RatingCode);
+                 
                     this.setState({ ratingExists: true, oldRate: response.AvgTotalRate, oldRateCode: response.RatingCode });
                 }
             })
@@ -176,7 +176,7 @@ class Rate extends Component {
 
 
     render() {
-
+        const { goBack } = this.props.navigation;
         return (
             <View>
 
@@ -207,7 +207,7 @@ class Rate extends Component {
                                         backgroundColor: 'transparent',
 
                                     }}
-                                    onPress={() => this.props.navigation.navigate('Trainings')}
+                                    onPress={() => goBack()}
                                     activeOpacity={0.5}
                                 />
                             </View>

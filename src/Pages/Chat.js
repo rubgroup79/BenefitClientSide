@@ -1,5 +1,5 @@
 import React, { Component, } from 'react';
-import { View, ScrollView, StyleSheet, Image, ListView, Dimensions, KeyboardAvoidingView, TextInput, } from 'react-native';
+import { View, ScrollView, StyleSheet, Image, ListView, Dimensions, KeyboardAvoidingView, TextInput,AsyncStorage } from 'react-native';
 import { Font } from 'expo';
 import Icon from 'react-native-vector-icons/AntDesign';
 import Icon1 from 'react-native-vector-icons/Ionicons';
@@ -36,7 +36,11 @@ class Chat extends Component {
             sendButtonDisabled: true,
             newTrainingButtonDisabled: true,
             suggestionCode: 0,
-            createNewTrainingModalVisible: false
+            createNewTrainingModalVisible: false,
+            chatCode:0,
+            status:0,
+            receiverToken:'',
+            userFirstName: ''
 
         };
 
@@ -45,7 +49,23 @@ class Chat extends Component {
         this.updateIndex = this.updateIndex.bind(this);
         this.renderRow = this.renderRow.bind(this);
         this.getMessages = this.getMessages.bind(this);
+        this.openChat=this.openChat.bind(this);
+        this.getToken=this.getToken.bind(this);
+        this.getLocalStorage=this.getLocalStorage.bind(this);
     }
+
+
+    getLocalStorage = async () => {
+   
+    
+        await AsyncStorage.getItem('Details', (err, result) => {
+          if (result != null) {
+            this.setState({ userFirstName: JSON.parse(result) });
+          }
+          else alert('error local storage is trainer');
+        }
+        )
+      }
 
 
     async componentDidMount() {
@@ -61,24 +81,75 @@ class Chat extends Component {
             fontLoaded: true,
 
         });
+
+
     }
+getToken(){
+       fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetToken?UserCode=' + this.props.navigation.getParam('PartnerUserCode', null), {
+        method: 'GET',
+        headers: { "Content-type": "application/json; charset=UTF-8" },
+    })
+        .then(res => res.json())
+        .then(response => {
+            this.setState({receiverToken:response})
+        })
+        .catch(error => console.warn('Error:', error.message));
+}
+ 
 
     async UNSAFE_componentWillMount() {
+        this.getLocalStorage();
         this.checkForActiveSuggestion();
-        this.getMessages();
-        renderMessages = setInterval(this.getMessages, 3000);
+        this.openChat();
+        this.getToken();
+        renderMessages = setInterval(this.getMessages, 1000);
     }
+
+
+    sendPushNotification(title, body) {
+
+        console.warn(title);
+        var pnd = {
+            to: this.state.receiverToken,
+            title: 'You Have a New Message From ' + title,
+            body: body,
+            badge: 1
+        }
+        fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/sendpushnotification', {
+            body: JSON.stringify(pnd),
+            method: 'POST',
+            headers: { "Content-type": "application/json; charset=UTF-8" },
+        })
+            .then(response => {
+            })
+            .catch(error => console.warn('Error:', error.message));
+    }
+
+    openChat(){
+       
+        fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/OpenChat?UserCode1=' + this.props.navigation.getParam('UserCode', null) +"&UserCode2="+this.props.navigation.getParam('PartnerUserCode', null), {
+            method: 'POST',
+            headers: { "Content-type": "application/json; charset=UTF-8" },
+        })
+            .then(res => res.json())
+            .then(response => {
+                this.setState({ chatCode: response }, this.getMessages());
+            })
+            .catch(error => console.warn('Error:', error.message));
+    }
+
     getMessages() {
-        fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetMessages?ChatCode=' + this.props.navigation.getParam('ChatCode', null), {
+        fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetMessages?ChatCode=' + this.state.chatCode, {
             method: 'GET',
             headers: { "Content-type": "application/json; charset=UTF-8" },
         })
             .then(res => res.json())
             .then(response => {
-                this.setState({ messages: response });
+                this.setState({ messages: response, status:1 });
             })
             .catch(error => console.warn('Error:', error.message));
     }
+    
     checkForActiveSuggestion() {
         fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetSuggestionCode?UserCode1=' + this.props.navigation.getParam('UserCode', null) + '&UserCode2=' + this.props.navigation.getParam('PartnerUserCode', null), {
             method: 'GET',
@@ -142,12 +213,13 @@ class Chat extends Component {
 
     sendMessage() {
         this.ScrollView.scrollToEnd();
-        this.setState({ newMessage: '', sendButtonDisabled: true })
+      
         var message = {
-            ChatCode: this.props.navigation.getParam('ChatCode', null),
+            ChatCode: this.state.chatCode,
             SenderCode: this.props.navigation.getParam('UserCode', null),
             Content: this.state.newMessage
         }
+       
         fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/SendMessage', {
             method: 'POST',
             headers: { "Content-type": "application/json; charset=UTF-8" },
@@ -155,8 +227,11 @@ class Chat extends Component {
         })
             .then(() => {
                 this.getMessages();
+                this.sendPushNotification(this.state.userFirstName, this.state.newMessage )
             })
             .catch(error => console.warn('Error:', error.message));
+
+            this.setState({ newMessage: '', sendButtonDisabled: true })
     }
 
 
@@ -174,7 +249,7 @@ class Chat extends Component {
 
 
     render() {
-
+        const { goBack } = this.props.navigation;
         return (
             <View>
 
@@ -216,7 +291,7 @@ class Chat extends Component {
 
 
                                 }}
-                                onPress={() => this.props.navigation.navigate('Chats')}
+                                onPress={() => goBack()}
                                 activeOpacity={0.5}
                             />
                             </View>
@@ -252,6 +327,7 @@ class Chat extends Component {
                                 activeOpacity={0.5}
                             />
                         </View>
+                        {this.state.status==1 ? 
                         <KeyboardAvoidingView
                             behavior="position"
                         >
@@ -313,7 +389,7 @@ class Chat extends Component {
                                 </View>
 
                             </View>
-                        </KeyboardAvoidingView>
+                        </KeyboardAvoidingView> :  null}
 
 
                     </View> : null}

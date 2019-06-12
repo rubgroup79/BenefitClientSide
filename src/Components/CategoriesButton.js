@@ -45,8 +45,8 @@ export default class CustomButton extends Component {
   }
 
   render() {
-    const { title } = this.props;
-    const { selected } = this.state;
+    const { title, selected } = this.props;
+    //const { selected } = this.state;
 
 
     return (
@@ -83,7 +83,7 @@ export default class CustomButton extends Component {
         containerStyle={{ marginRight: 10 }}
         onPress={() => { 
           if(this.props.editMode) {
-          this.setState({ selected: !selected })
+          //this.setState({ selected: !selected })
           this.props.setCategories(title)
         }
           

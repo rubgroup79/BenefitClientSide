@@ -59,31 +59,39 @@ export default class Login extends Component {
       isConfirmationValid: true,
       token: '',
       userCode: 0,
-      isTrainer:false
+      isTrainer: false,
+      userFirstName: []
     };
 
     this.selectCategory = this.selectCategory.bind(this);
     this.login = this.login.bind(this);
     this.signUp = this.signUp.bind(this);
     this._storeData = this._storeData.bind(this);
+    this.checkPassword = this.checkPassword.bind(this);
+    this.getUserDetails = this.getUserDetails.bind(this);
   }
 
-  _storeData = async () => {
+  _storeData = async (firstName) => {
     try {
       await AsyncStorage.setItem('UserCode', JSON.stringify(this.state.userCode));
       await AsyncStorage.setItem('IsTrainer', JSON.stringify(this.state.isTrainer));
+      await AsyncStorage.setItem('Details', JSON.stringify(firstName));
+
     } catch (error) {
       console.warn(error);
       // Error saving data
     }
+
   }
 
   UNSAFE_componentWillMount() {
     AsyncStorage.getItem('UserCode', (err, result) => {
-      if(result!=null)
-        this.props.navigation.navigate('BottomNavigation');
+      if (result != null) {
+        this.props.navigation.navigate('HomeTraineeTab');
+      }
     }
     )
+
   }
 
 
@@ -201,14 +209,12 @@ export default class Login extends Component {
       .then(response => {
         if (response.UserCode != 0) {
           this.setState({ userCode: response.UserCode, isTrainer: response.IsTrainer });
+          this.getUserDetails(response.UserCode)
           this.registerForPushNotifications();
           alert("Success! User Code= " + this.state.userCode);
-
-          if (response.IsTrainer == 0) // a trainee
-            this.props.navigation.navigate('BottomNavigation', { userCode: response.UserCode });
-          else this.props.navigation.navigate('HomeTrainer', { userCode: response.UserCode });
-
-          this._storeData();
+          if (this.state.isTrainer == 0) // a trainee
+          this.props.navigation.navigate('HomeTraineeTab');
+        else this.props.navigation.navigate('HomeTrainer');
         }
         else
           alert("Incorrect password");
@@ -216,6 +222,24 @@ export default class Login extends Component {
 
       .catch(error => console.warn('Error:', error.message));
   }
+
+
+  getUserDetails(userCode) {
+    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/ShowProfile?UserCode=' + userCode, {
+
+      method: 'GET',
+      headers: { "Content-type": "application/json; charset=UTF-8" },
+    })
+      .then(res => res.json())
+      .then(response => {
+        this.setState({ userFirstName: response })
+
+        this._storeData(response);
+      })
+
+      .catch(error => console.warn('Error:', error.message));
+  }
+
 
   signUp() {
     const { email, password, passwordConfirmation } = this.state;

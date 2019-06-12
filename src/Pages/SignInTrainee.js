@@ -82,7 +82,7 @@ export default class SigninTrainee extends Component {
         LastName: this.props.navigation.getParam('lastName'),
         Gender: this.props.navigation.getParam('gender'),
         DateOfBirth: this.props.navigation.getParam('dateOfBirth'),
-        SportCategories: this.props.navigation.getParam('sportCategories'),
+        SportCategories: this.props.navigation.getParam('userSportCategories'),
         IsTrainer: 0,
         SearchRadius: this.state.searchRadius,
         MinBudget: 0,

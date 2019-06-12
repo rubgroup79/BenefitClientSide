@@ -56,7 +56,7 @@ export default class HomeTrainee extends Component {
       listView: false,
       userCode: 0,
       isTrainer: false,
-      onlineTrainee: []
+      onlineTrainee: [],
 
     };
 
@@ -68,6 +68,10 @@ export default class HomeTrainee extends Component {
     this.afterLocalStorageFunctions = this.afterLocalStorageFunctions.bind(this);
     this.search = this.search.bind(this);
     this.insertOnlineTrainee = this.insertOnlineTrainee.bind(this);
+    this.getFutureTrainings = this.getFutureTrainings.bind(this);
+    this.setLatLon = this.setLatLon.bind(this);
+    this.refresh=this.refresh.bind(this);
+
   }
 
   searchModalVisible() {
@@ -94,15 +98,19 @@ export default class HomeTrainee extends Component {
   }
 
   UNSAFE_componentWillMount() {
-    this.getLocalStorage();
 
+
+    setTimeout(() => {
+     this.getLocalStorage()
+    }, 1500); 
+ 
   }
 
 
   getLocalStorage = async () => {
     await AsyncStorage.getItem('UserCode', (err, result) => {
       if (result != null) {
-        this.setState({ userCode: result }, this.afterLocalStorageFunctions);
+      this.setState({ userCode: result },this.afterLocalStorageFunctions);
       }
       else alert('error local storage user code');
     }
@@ -134,13 +142,13 @@ export default class HomeTrainee extends Component {
     })
       .then(res => res.json())
       .then(response => {
-        
+
         if (response.OnlineCode != 0) {
           this.search(response);
           this.setState({ searchMode: true, onlineDetails: response, Longitude: response.Longitude, Latitude: response.Latitude, status: 1 });
         }
         else {
-          this.setState({ onlineDetails: [], pendingRequestsMapView:true })
+          this.setState({ onlineDetails: [], pendingRequestsMapView: true })
           this.getCurrentLocation();
         }
       })
@@ -149,8 +157,26 @@ export default class HomeTrainee extends Component {
 
   }
 
+  refresh(str) {
+      this.search(this.state.onlineTrainee);
+      this.getRequests(true);
+      this.getRequests(false);
+      this.getFutureTrainings();
+      
+      if(str=='search')
+      this.setState({ searchResultsMapView: true,  pendingRequestsMapView: false,  approvedRequestsMapView: false, futureTrainingsMapView: false,})
+      if(str=='pending')
+      this.setState({ searchResultsMapView: false,  pendingRequestsMapView: true,  approvedRequestsMapView: false, futureTrainingsMapView: false,})
+      if(str=='approved')
+      this.setState({ searchResultsMapView: false,  pendingRequestsMapView: false,  approvedRequestsMapView: true, futureTrainingsMapView: false,})
+      if(str=='future')
+      this.setState({ searchResultsMapView: false,  pendingRequestsMapView: false,  approvedRequestsMapView: false, futureTrainingsMapView: true,})
+      
+
+  }
+
   goOffline() {
-    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GoOffline?UserCode=' + this.state.userCode + '&IsTrainer=' + this.setState.isTrainer, {
+    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GoOffline?UserCode=' + this.state.userCode + '&IsTrainer=' + this.state.isTrainer, {
       method: 'POST',
       body: JSON.stringify({}),
       headers: { "Content-type": "application/json; charset=UTF-8" },
@@ -158,7 +184,7 @@ export default class HomeTrainee extends Component {
       .then(response => { alert('Youre now Offline'); })
       .catch(error => console.warn('Error:', error.message));
 
-    this.setState({ searchMode: false });
+    this.setState({ searchMode: false, pendingRequestsMapView: true });
   }
 
   getCurrentLocation = () => {
@@ -243,12 +269,17 @@ export default class HomeTrainee extends Component {
 
 
   search(onlineDetails) {
-
+this.setState({coupleResults:[], groupResults:[]});
     this.setSearchMode(true);
     this.setState({
       onlineTrainee: onlineDetails,
       latitude: onlineDetails.Latitude,
-      longitude: onlineDetails.Longitude
+      longitude: onlineDetails.Longitude,
+      searchResultsMapView: true,
+      pendingRequestsMapView: false,
+      approvedRequestsMapView: false,
+      futureTrainingsMapView: false
+
     });
 
 
@@ -304,6 +335,10 @@ export default class HomeTrainee extends Component {
 
   }
 
+  setLatLon(lat, long) {
+    this.setState({ latitude: lat, longitude: long, })
+  }
+
 
   render() {
     return (
@@ -321,7 +356,7 @@ export default class HomeTrainee extends Component {
               : null}
 
             <View style={{ flex: 6, zIndex: 0, width: SCREEN_WIDTH, height: SCREEN_HEIGHT }} >
-              <Map style={{ zIndex: 0 }} navigation={this.props.navigation} SenderCode={this.state.userCode} HomeTraineeStates={this.state}></Map>
+              <Map refresh={this.refresh} style={{ zIndex: 0 }} navigation={this.props.navigation} SenderCode={this.state.userCode} HomeTraineeStates={this.state}></Map>
             </View>
 
 
@@ -339,7 +374,7 @@ export default class HomeTrainee extends Component {
 
                       <TouchableOpacity
                         onPress={() => {
-                          this.setState({ searchResultsMapView: true, pendingRequestsMapView: false, approvedRequestsMapView: false, futureTrainingsMapView: false });
+                          this.setState({ searchResultsMapView: true, pendingRequestsMapView: false, approvedRequestsMapView: false, futureTrainingsMapView: false, });
                           this.search(this.state.onlineTrainee);
                         }}
                       >
@@ -416,20 +451,20 @@ export default class HomeTrainee extends Component {
               </View>
 
               {this.state.searchResultsMapView && this.state.listView ?
-                <SearchResultsListView closeListView={this.closeListView} CoupleResults={this.state.coupleResults} GroupResults={this.state.groupResults} UserCode={this.state.userCode}></SearchResultsListView>
+                <SearchResultsListView navigation={this.props.navigation} refresh={this.refresh} setLatLon={this.setLatLon} closeListView={this.closeListView} CoupleResults={this.state.coupleResults} GroupResults={this.state.groupResults} UserCode={this.state.userCode}></SearchResultsListView>
                 : null}
 
               {this.state.pendingRequestsMapView && this.state.listView ?
-                <PendingRequestsListView closeListView={this.closeListView} PendingRequests={this.state.pendingRequests} UserCode={this.state.userCode}></PendingRequestsListView>
+                <PendingRequestsListView navigation={this.props.navigation} refresh={this.refresh} setLatLon={this.setLatLon} closeListView={this.closeListView} PendingRequests={this.state.pendingRequests} UserCode={this.state.userCode}></PendingRequestsListView>
                 : null}
 
               {this.state.approvedRequestsMapView && this.state.listView ?
-                <ApprovedRequestsListView closeListView={this.closeListView} ApprovedRequests={this.state.approvedRequests} UserCode={this.state.userCode} ></ApprovedRequestsListView>
+                <ApprovedRequestsListView  navigation={this.props.navigation} refresh={this.refresh} setLatLon={this.setLatLon} closeListView={this.closeListView} ApprovedRequests={this.state.approvedRequests} UserCode={this.state.userCode} ></ApprovedRequestsListView>
                 : null
               }
 
               {this.state.futureTrainingsMapView && this.state.listView ?
-                <FutureTrainingsListView closeListView={this.closeListView} FutureCoupleTrainings={this.state.futureCoupleTrainings} FutureGroupTrainings={this.state.futureGroupTrainings} UserCode={this.state.userCode}></FutureTrainingsListView>
+                <FutureTrainingsListView navigation={this.props.navigation} refresh={this.refresh} setLatLon={this.setLatLon} closeListView={this.closeListView} FutureCoupleTrainings={this.state.futureCoupleTrainings} FutureGroupTrainings={this.state.futureGroupTrainings} UserCode={this.state.userCode}></FutureTrainingsListView>
                 : null}
 
 
@@ -505,6 +540,7 @@ export default class HomeTrainee extends Component {
                         buttonColor='rgba(255,255,255,0.7)'
                         onPress={() => {
                           this.createGroupModalVisible();
+                          this.setState({ searchModalVisible: false })
                         }}
                       >
                         <Icon2
@@ -515,7 +551,12 @@ export default class HomeTrainee extends Component {
 
                       <ActionButton.Item
                         buttonColor='rgba(255,255,255,0.7)'
-                        onPress={() => this.searchModalVisible()}
+                        onPress={() => {
+                          this.searchModalVisible();
+                          this.setState({ createGroupModalVisible: false })
+
+                        }
+                        }
                       >
                         <Icon3
                           name="account-search-outline"
@@ -543,6 +584,7 @@ export default class HomeTrainee extends Component {
                         buttonColor='rgba(255,255,255,0.7)'
                         onPress={() => {
                           this.createGroupModalVisible();
+                          this.setState({ searchModalVisible: false });
                         }}
                       >
                         <Icon2
@@ -553,7 +595,11 @@ export default class HomeTrainee extends Component {
 
                       <ActionButton.Item
                         buttonColor='rgba(255,255,255,0.7)'
-                        onPress={() => this.searchModalVisible()}
+                        onPress={() => {
+                          this.searchModalVisible();
+                          this.setState({ createGroupModalVisible: false });
+                        }
+                        }
                       >
                         <Icon3
                           name="account-search-outline"

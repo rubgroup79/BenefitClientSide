@@ -14,6 +14,7 @@ import { Input, Button, withTheme } from 'react-native-elements';
 import MyDatePicker from '../Components/DatePicker';
 import Icon from 'react-native-vector-icons/SimpleLineIcons';
 import AvatarImage from '../Components/AvatarImage';
+import CustomButton from '../Components/CategoriesButton';
 // Enable LayoutAnimation on Android
 
 const MALE_AVATAR = require('../../Images/MaleAvatar.png');
@@ -27,119 +28,9 @@ const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 var MaxDate = "01-01-" + (new Date().getFullYear() - 18);
 
-var Categories = [
-  {
-    CategoryCode: 1,
-    Description: 'Short Run',
-    Selected: false
-  },
-  {
-    CategoryCode: 2,
-    Description: 'Yoga',
-    Selected: false
-  },
-  {
-    CategoryCode: 3,
-    Description: 'Jogging',
-    Selected: false
-  },
-  {
-    CategoryCode: 4,
-    Description: 'Long Run',
-    Selected: false
-  },
-  {
-    CategoryCode: 5,
-    Description: 'Walking',
-    Selected: false
-  },
-  {
-    CategoryCode: 6,
-    Description: 'Functional',
-    Selected: false
-  },
-  {
-    CategoryCode: 7,
-    Description: 'Pilatis',
-    Selected: false
-  },
-  {
-    CategoryCode: 8,
-    Description: 'Strength',
-    Selected: false
-  },
-  {
-    CategoryCode: 9,
-    Description: 'TRX',
-    Selected: false
-  },
-]
 
 UIManager.setLayoutAnimationEnabledExperimental &&
   UIManager.setLayoutAnimationEnabledExperimental(true);
-
-class CustomButton extends Component {
-  constructor() {
-    super();
-
-    this.state = {
-      selected: false,
-    };
-  }
-
-  componentDidMount() {
-    const { selected } = this.props;
-
-    this.setState({
-      selected,
-    });
-  }
-
-  render() {
-    const { title } = this.props;
-    const { selected } = this.state;
-
-
-    return (
-      <Button
-        title={title}
-        titleStyle={
-          selected
-              ? { 
-                  color:'white', 
-                  fontSize: 12,  
-                  fontFamily: 'regular' 
-              } 
-              : {
-                  fontSize: 12, 
-                  color: 'gray', 
-                  fontFamily: 'regular'
-              }
-          }
-        buttonStyle={
-          selected
-              ? {
-                  backgroundColor: '#f34573',
-                  borderRadius: 100,
-                  width: 105
-              }
-              : {
-                  borderWidth: 1,
-                  borderColor: 'gray',
-                  borderRadius: 30,
-                  width: 105,
-                  backgroundColor: 'transparent',
-              }
-      }
-        containerStyle={{ marginRight: 10 }}
-        onPress={() => {
-          this.setState({ selected: !selected });
-          this.props.setCategories(title);
-        }}
-      />
-    );
-  }
-}
 
 export default class SignIn1 extends Component {
   constructor(props) {
@@ -156,16 +47,44 @@ export default class SignIn1 extends Component {
       lastName: '',
       dateOfBirth: MaxDate,
       sportCategories: [],
+      selectedSportCategories:[],
+      userSportCategories:[],
       gender: null,
       isTrainer: null,
       lastNameValid: true,
       firstNameValid: true,
       confirmationPasswordValid: true,
+      status:0
     };
 
     this.setSelectedType = this.setSelectedType.bind(this);
     this.setDate = this.setDate.bind(this);
     this.signup = this.signup.bind(this);
+    this.getSportCategories=this.getSportCategories.bind(this);
+    this.setCategories=this.setCategories.bind(this);
+  }
+
+  UNSAFE_componentWillMount(){
+    this.getSportCategories();
+  }
+
+  getSportCategories() { 
+    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetSportCategories', {
+
+      method: 'GET',
+      headers: { "Content-type": "application/json; charset=UTF-8" },
+    })
+      .then(res => res.json())
+      .then(response => {
+       
+        temp=response.map((category)=>{
+        return({CategoryCode:category.CategoryCode, Description:category.Description, Selected:false})
+        })
+        this.setState({ sportCategories: response, selectedSportCategories:temp, status:1 });
+      })
+
+      .catch(error => console.warn('Error:', error.message));
+
   }
 
   async componentDidMount() {
@@ -181,14 +100,14 @@ export default class SignIn1 extends Component {
   }
 
   signup() {
+    
     LayoutAnimation.easeInEaseOut();
     const isTrainerValid = this.validateIsTrainer();
     const firstNameValid = this.validateFirstName();
     const lastNameValid = this.validateLastName();
     const isGenderValid = this.validateGender();
     const isCategoriesValid = this.validateCategories();
-
-
+    
     if (
 
       firstNameValid &&
@@ -205,12 +124,12 @@ export default class SignIn1 extends Component {
         this.setState({ isLoading: false });
         // IF THE USER IS TRAINEE
         if (this.state.isTrainer == 0)
-          this.props.navigation.navigate('SigninTrainee', { email: this.props.navigation.getParam('email', null), password: this.props.navigation.getParam('password', null), firstName: this.state.firstName, lastName: this.state.lastName, gender: this.state.gender, dateOfBirth: this.state.dateOfBirth, sportCategories: this.state.sportCategories });
+          this.props.navigation.navigate('SigninTrainee', { email: this.props.navigation.getParam('email', null), password: this.props.navigation.getParam('password', null), firstName: this.state.firstName, lastName: this.state.lastName, gender: this.state.gender, dateOfBirth: this.state.dateOfBirth, userSportCategories: this.state.userSportCategories });
         // USER IS TRAINER
         else {
-          this.props.navigation.navigate('SigninTrainer', { email: this.props.navigation.getParam('email', null), password: this.props.navigation.getParam('password', null), firstName: this.state.firstName, lastName: this.state.lastName, gender: this.state.gender, dateOfBirth: this.state.dateOfBirth, sportCategories: this.state.sportCategories });
+          this.props.navigation.navigate('SigninTrainer', { email: this.props.navigation.getParam('email', null), password: this.props.navigation.getParam('password', null), firstName: this.state.firstName, lastName: this.state.lastName, gender: this.state.gender, dateOfBirth: this.state.dateOfBirth, userSportCategories: this.state.userSportCategories });
 
-          console.warn(this.state);
+         
         }
       }, 1500);
     }
@@ -260,26 +179,29 @@ export default class SignIn1 extends Component {
   }
 
   setCategories(category) {
-    Categories.map(function (x) {
+    this.state.selectedSportCategories.map(function (x) {
       if (x.Description == category) {
-        x.selected = !x.selected;
+        x.Selected = !x.Selected;
       }
+     
 
     });
+    this.setState({});
   }
 
   validateCategories() {
-    temp = [];
-    var i = 0;
-    Categories.map(function (x) {
-      if (x.selected) {
-        temp[i] = x.CategoryCode;
-        i++;
+    temp=[];
+    this.state.selectedSportCategories.map(function (x) {
+      if (x.Selected) {
+        temp.push(x.CategoryCode);
       }
 
     })
+    this.setState({userSportCategories:temp});
+    console.warn(temp);
+    
     if (temp.length != 0) {
-      this.setState({ sportCategories: temp });
+      
       return true;
     }
     else {
@@ -305,9 +227,10 @@ export default class SignIn1 extends Component {
       lastName,
       firstNameValid,
       lastNameValid,
+      status
     } = this.state;
 
-    return !fontLoaded ? (
+    return !fontLoaded && status!=1 ? (
       <Text> Loading... </Text>
 
     ) : (
@@ -507,24 +430,24 @@ export default class SignIn1 extends Component {
 
                         <View style={{ flex: 1, flexDirection: 'row' }}>
 
-                          <CustomButton title="Short Run" setCategories={this.setCategories} />
-                          <CustomButton title="Yoga" setCategories={this.setCategories} />
-                          <CustomButton title="Jogging" setCategories={this.setCategories} />
+                          <CustomButton selected={this.state.selectedSportCategories[0].Selected} editMode={true} title={this.state.sportCategories[0].Description} setCategories={this.setCategories} />
+                          <CustomButton selected={this.state.selectedSportCategories[1].Selected} editMode={true} title={this.state.sportCategories[1].Description}  setCategories={this.setCategories} />
+                          <CustomButton selected={this.state.selectedSportCategories[2].Selected} editMode={true} title={this.state.sportCategories[2].Description} setCategories={this.setCategories} />
 
                         </View>
 
                         <View style={{ flex: 1, flexDirection: 'row' }}>
 
-                          <CustomButton title="Long Run" setCategories={this.setCategories} />
-                          <CustomButton title="Walking" setCategories={this.setCategories} />
-                          <CustomButton title="Functional" setCategories={this.setCategories} />
+                          <CustomButton selected={this.state.selectedSportCategories[3].Selected} editMode={true} title={this.state.sportCategories[3].Description}  setCategories={this.setCategories} />
+                          <CustomButton selected={this.state.selectedSportCategories[4].Selected} editMode={true} title={this.state.sportCategories[4].Description}  setCategories={this.setCategories} />
+                          <CustomButton selected={this.state.selectedSportCategories[5].Selected} editMode={true} title={this.state.sportCategories[5].Description}  setCategories={this.setCategories} />
 
                         </View>
                         <View style={{ flex: 1, flexDirection: 'row' }}>
 
-                          <CustomButton title="Pilatis" setCategories={this.setCategories} />
-                          <CustomButton title="Strength" setCategories={this.setCategories} />
-                          <CustomButton title="TRX" setCategories={this.setCategories} />
+                          <CustomButton selected={this.state.selectedSportCategories[6].Selected} editMode={true} title={this.state.sportCategories[6].Description}  setCategories={this.setCategories} />
+                          <CustomButton selected={this.state.selectedSportCategories[7].Selected} editMode={true} title={this.state.sportCategories[7].Description}  setCategories={this.setCategories} />
+                          <CustomButton selected={this.state.selectedSportCategories[8].Selected} editMode={true} title={this.state.sportCategories[8].Description}  setCategories={this.setCategories} />
 
                         </View>
 

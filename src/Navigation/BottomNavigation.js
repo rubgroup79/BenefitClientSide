@@ -3,12 +3,7 @@ import { TabNavigator, StackNavigator,  } from 'react-navigation';
 import { Icon, Image } from 'react-native-elements';
 import Icon1 from 'react-native-vector-icons/AntDesign';
 import Icon2 from 'react-native-vector-icons/SimpleLineIcons';
-import ButtonsTab from '../tabs/buttons';
-import ListsTab from '../tabs/lists';
-import InputTab from '../tabs/input';
-import FontsTab from '../tabs/fonts';
 import HomeTraineeTab from '../TabsNavigation/HomeTraineeTab';
-//import Chats from '../Pages/Chats';
 import ChatsTab from '../TabsNavigation/ChatsTab';
 import TrainingsTab from '../TabsNavigation/TrainingsTab';
 import ProfileTab from '../TabsNavigation/ProfileTab';
@@ -16,23 +11,8 @@ import RatesTab from '../TabsNavigation/RatesTab';
 
 const Components = TabNavigator(
   {
-    // ButtonsTab: {
-    //   screen: ButtonsTab,
-    //   path: '/buttons',
-    //   navigationOptions: {
-    //     tabBarLabel: 'Buttons',
-    //     tabBarIcon: ({ tintColor, focused }) => (
-    //       <Icon
-    //         name={focused ? 'emoticon-cool' : 'emoticon-neutral'}
-    //         size={30}
-    //         type="material-community"
-    //         color={tintColor}
-    //       />
-    //     ),
-    //   },
-    // },
 
-
+   
     RatesTab: {
       screen: RatesTab,
       path: '/RatesTab',
@@ -76,6 +56,7 @@ const Components = TabNavigator(
       },
     },
 
+
     TrainingsTab: {
       screen: TrainingsTab,
       path: '/trainingsTab',
@@ -108,7 +89,7 @@ const Components = TabNavigator(
     },
   },
   {
-    initialRouteName: 'HomeTraineeTab',
+    initialRouteName: 'ProfileTab',
     animationEnabled: false,
     swipeEnabled: false,
     // Android's default option displays tabBars on top, but iOS is bottom
@@ -146,7 +127,9 @@ Components.navigationOptions = {
 // and you were not on the Buttons tab
 export default StackNavigator(
   {
-    HomeTrainee: { screen: Components },
+      HomeTab: { screen: Components },
+     
+
   },
   {
     headerMode: 'none',

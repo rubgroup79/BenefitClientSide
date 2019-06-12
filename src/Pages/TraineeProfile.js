@@ -16,11 +16,13 @@ import { Slider, Divider, Button } from 'react-native-elements';
 import { Font } from 'expo';
 import AvatarImage from '../Components/AvatarImage';
 import NumericInput from 'react-native-numeric-input';
-import Icon from "react-native-vector-icons/Entypo";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import Icon1 from "react-native-vector-icons/FontAwesome";
+import Icon2 from "react-native-vector-icons/Feather";
 import ActionButton from 'react-native-action-button';
 import ImageUpload from '../Components/ImagePicker';
 import CustomButton from '../Components/CategoriesButton';
+import { StackActions, NavigationActions } from 'react-navigation';
 
 const MALE_AVATAR = require('../../Images/MaleAvatar.png');
 const FEMALE_AVATAR = require('../../Images/FemaleAvatar.png');
@@ -37,21 +39,21 @@ export default class TraineeProfile extends Component {
       fontLoaded: false,
       userCode: 0,
       IsTrainer: 0,
-      firstName: 'Stav',
-      lastName: 'Shalechet',
-      email: 'Stav.sha@gmail.com',
-      age: 27,
-      picture: 'https://ae01.alicdn.com/kf/HTB1B87CQXXXXXcuXXXXq6xXFXXXg/226832306/HTB1B87CQXXXXXcuXXXXq6xXFXXXg.jpg',
-      rate: 4.8,
-      searchRadius: 15,
-      maxBudget: 200,
-      partnerGender: 'Female',
-      trainerGender: 'Male',
-      minPartnerAge: 18,
-      maxPartnerAge: 30,
-      selectedSportCategories:[],
-      sportCategories:[],
-      userSportCategories:[],
+      firstName: '',
+      lastName: '',
+      email: '',
+      age: 0,
+      picture: '',
+      rate: 0,
+      searchRadius: 0,
+      maxBudget: 0,
+      partnerGender: '',
+      trainerGender: '',
+      minPartnerAge: 0,
+      maxPartnerAge: 0,
+      selectedSportCategories: [],
+      sportCategories: [],
+      userSportCategories: [],
       editMode: false
 
     };
@@ -61,10 +63,9 @@ export default class TraineeProfile extends Component {
     this.setPicturePath = this.setPicturePath.bind(this);
     this.getLocalStorage = this.getLocalStorage.bind(this);
     this.getTraineeDetails = this.getTraineeDetails.bind(this);
-    this.setSelectedSportCategories=this.setSelectedSportCategories.bind(this);
-    this.getSportCategories= this.getSportCategories.bind(this);
-    this.setCategories=this.setCategories.bind(this);
-
+    this.setSelectedSportCategories = this.setSelectedSportCategories.bind(this);
+    this.getSportCategories = this.getSportCategories.bind(this);
+    this.setCategories = this.setCategories.bind(this);
   }
 
   async componentDidMount() {
@@ -82,13 +83,14 @@ export default class TraineeProfile extends Component {
 
   componentWillMount() {
     this.getLocalStorage();
+   
   }
 
 
   getLocalStorage = async () => {
     await AsyncStorage.getItem('UserCode', (err, result) => {
       if (result != null) {
-        this.setState({ userCode: result }, this.getTraineeDetails);
+        this.setState({ userCode: result }, this.getSportCategories);
       }
       else alert('error local storage user code');
     }
@@ -103,7 +105,7 @@ export default class TraineeProfile extends Component {
     )
   }
 
-  getTraineeDetails()  {
+  getTraineeDetails() {
     fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetTraineeProfileDetails?UserCode=' + this.state.userCode, {
       method: 'GET',
       headers: { "Content-type": "application/json; charset=UTF-8" },
@@ -124,14 +126,14 @@ export default class TraineeProfile extends Component {
           minPartnerAge: response.MinPartnerAge,
           maxPartnerAge: response.MaxPartnerAge,
           userSportCategories: response.SportCategories
-        }, this.getSportCategories)
+        }, this.setSelectedSportCategories)
       })
       .catch(error => console.warn('Error:', error.message));
 
   }
 
 
-  getSportCategories() { 
+  getSportCategories() {
     fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetSportCategories', {
 
       method: 'GET',
@@ -139,25 +141,25 @@ export default class TraineeProfile extends Component {
     })
       .then(res => res.json())
       .then(response => {
-        this.setState({ sportCategories: response }, this.setSelectedSportCategories);
+        this.setState({ sportCategories: response }, this.getTraineeDetails);
       })
       .catch(error => console.warn('Error:', error.message));
 
   }
 
-  setSelectedSportCategories()  {
+  setSelectedSportCategories() {
     temp = this.state.sportCategories.map((category) => {
       counter = 0;
       this.state.userSportCategories.map((userCategory) => {
         if (category.Description == userCategory.Description)
           counter++;
       })
-      if (counter == 1) return {CategoryCode: category.CategoryCode, Description: category.Description, Selected: true};
-      else return {CategoryCode: category.CategoryCode, Description: category.Description, Selected: false};
+      if (counter == 1) return { CategoryCode: category.CategoryCode, Description: category.Description, Selected: true };
+      else return { CategoryCode: category.CategoryCode, Description: category.Description, Selected: false };
     });
 
     this.setState({ selectedSportCategories: temp });
-    
+
   }
 
   setCategories(category) {
@@ -167,41 +169,45 @@ export default class TraineeProfile extends Component {
       }
 
     });
+    this.setState({});
 
   }
 
-  updateDetails(){
-    temp=this.state.selectedSportCategories.map((category)=>{
-      if(category.Selected)
+  updateDetails() {
+
+    temp = this.state.selectedSportCategories.map((category) => {
+      if (category.Selected)
         return category;
     });
 
     var filtered = temp.filter(function (el) {
       return el != null;
     });
-    
-    Trainee={
-       TraineeCode: this.state.userCode,
-       Picture: this.state.picture,
-       SearchRadius: this.state.searchRadius,
-       MaxBudget: this.state.maxBudget,
-       PartnerGender: this.state.partnerGender,
-       TrainerGender: this.state.trainerGender,
-       MinPartnerAge: this.state.minPartnerAge,
-       MaxPartnerAge: this.state.maxPartnerAge,
-       SportCategories: filtered
-      }
 
-      console.warn(Trainee);
+
+
+
+    Trainee = {
+      TraineeCode: this.state.userCode,
+      Picture: this.state.picture,
+      SearchRadius: this.state.searchRadius,
+      MaxBudget: this.state.maxBudget,
+      PartnerGender: this.state.partnerGender,
+      TrainerGender: this.state.trainerGender,
+      MinPartnerAge: this.state.minPartnerAge,
+      MaxPartnerAge: this.state.maxPartnerAge,
+      SportCategories: filtered
+    }
+
 
     fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/UpdateTraineeDetails', {
-        method: 'POST',
-        headers: { "Content-type": "application/json; charset=UTF-8" },
-        body: JSON.stringify(Trainee),
+      method: 'POST',
+      headers: { "Content-type": "application/json; charset=UTF-8" },
+      body: JSON.stringify(Trainee),
 
-      })
-        .then(() => { this.setState({editMode: !this.state.editMode}) } )
-        .catch(error => console.warn('Error:', error.message));
+    })
+      .then(() => { this.setState({ editMode: !this.state.editMode }) })
+      .catch(error => console.warn('Error:', error.message));
   }
 
   validatePicture() {
@@ -244,51 +250,104 @@ export default class TraineeProfile extends Component {
   }
 
 
+
+
+  async logout() {
+    
+    try {
+      await AsyncStorage.removeItem('UserCode');
+      await AsyncStorage.removeItem('IsTrainer');
+      await AsyncStorage.removeItem('Details');
+     
+      this.props.navigation.navigate('Login');
+      
+      return true;
+    }
+    catch (exception) {
+      return false;
+    }
+
+
+  }
+
+
+  // reset(){
+  //   console.warn('reset')
+  //   const resetAction = StackActions.reset({
+  //     index: 0,
+  //     actions: [
+  //       NavigationActions.navigate({ routeName: 'Profile' }),
+  //       NavigationActions.navigate({ routeName: 'Login' }),
+  //     ],
+  //   });
+  //   this.props.navigation.dispatch(resetAction);
+  // }
   render() {
     return (
       <SafeAreaView style={{ flex: 1, }}>
 
         <StatusBar barStyle="light-content" />
-        {this.state.fontLoaded && this.state.selectedSportCategories.length!=0 ? (
-          <View style={{ flex: 1, }}>
-
-            <View style={styles.statusBar} />
-
+        {this.state.fontLoaded && this.state.selectedSportCategories.length != 0 ? (
+          <View style={{ flex: 1 }}>
             <View style={styles.navBar}>
-              <View style={{ marginTop: -98, marginRight: 18 }} >
-
+              <Text style={styles.nameHeader}>{this.state.firstName + ' ' + this.state.lastName}</Text>
+              <View style={{ zIndex: 2, position: 'absolute', top: 0, left: 50 }} >
                 <ActionButton
-                  disabled={this.state.editMode}
-                  buttonColor={this.state.editMode ? 'rgba(71, 224, 135,0.7)' : '#d7dbe2'}
-                  size={35}
-                  renderIcon={() => this.state.editMode ? <Icon1
-                    name='pencil'
-                    color='white'
-                    size={20}
-                  /> : <Icon1
+                  renderIcon={active => active ? (<Icon2
+                    name="settings"
+                    size={25}
+                  />) :
+                    (<Icon2
+                      name="settings"
+                      size={25}
+                    />)
+                  }
+                  verticalOrientation="down"
+                  buttonColor='#d7dbe2'
+                  size={30}
+                >
+                  <ActionButton.Item
+                    buttonColor='#d7dbe2'
+                    onPress={() => {
+                      this.logout();
+                    }}
+                  >
+                    <Icon
+                      name="logout"
+                      color='white'
+                      size={20}
+                    />
+                  </ActionButton.Item>
+                  <ActionButton.Item
+                    buttonColor={this.state.editMode ? 'rgba(71, 224, 135,0.7)' : '#d7dbe2'}
+                    size={35}
+                    buttonStyle={{ flex: 1, zIndex: 2 }}
+                    onPress={() => {
+                      if (this.state.editMode)
+                        this.getTraineeDetails();
+                      this.setState({ editMode: !this.state.editMode, })
+
+                    }}>
+                    <Icon1
                       name='pencil'
-                      color='black'
+                      color='white'
                       size={20}
                     />
 
-                  }
-                  onPress={() => {
-                    if (this.state.editMode)
-                      this.getTraineeDetails();
-                    this.setState({ editMode: !this.state.editMode })
+                  </ActionButton.Item>
 
-                  }}
-                ></ActionButton>
+                </ActionButton>
 
               </View>
-
-              <Text style={styles.nameHeader}>{this.state.firstName + ' ' + this.state.lastName}</Text>
-
             </View>
+            {/* <View style={styles.statusBar} /> */}
+
+
+
 
 
             <ScrollView
-              style={{ flex: 1 }}>
+              style={{ flex: 2 }}>
               <View style={{ flexDirection: 'column', alignItems: 'center', alignContent: 'center', justifyContent: 'center', marginBottom: 20, }}>
                 <View style={{ flex: 1, alignItems: 'center', }}>
 
@@ -374,26 +433,26 @@ export default class TraineeProfile extends Component {
                 >
 
                   <View style={{ flex: 1, flexDirection: 'row' }}>
-                     <CustomButton editMode={this.state.editMode} title={this.state.sportCategories[0].Description}  selected={this.state.selectedSportCategories[0].Selected}  setCategories={this.setCategories} /> 
-                    <CustomButton editMode={this.state.editMode} title={this.state.sportCategories[1].Description} selected={this.state.selectedSportCategories[1].Selected} setCategories={this.setCategories} />
-                    <CustomButton editMode={this.state.editMode} title={this.state.sportCategories[2].Description} selected={this.state.selectedSportCategories[2].Selected} setCategories={this.setCategories} />
+                    <CustomButton selected={this.state.selectedSportCategories[0].Selected} editMode={this.state.editMode} title={this.state.sportCategories[0].Description} selected={this.state.selectedSportCategories[0].Selected} setCategories={this.setCategories} />
+                    <CustomButton selected={this.state.selectedSportCategories[1].Selected} editMode={this.state.editMode} title={this.state.sportCategories[1].Description} selected={this.state.selectedSportCategories[1].Selected} setCategories={this.setCategories} />
+                    <CustomButton selected={this.state.selectedSportCategories[2].Selected} editMode={this.state.editMode} title={this.state.sportCategories[2].Description} selected={this.state.selectedSportCategories[2].Selected} setCategories={this.setCategories} />
 
                   </View>
 
                   <View style={{ flex: 1, flexDirection: 'row' }}>
 
-                    <CustomButton editMode={this.state.editMode} title={this.state.sportCategories[3].Description} selected={this.state.selectedSportCategories[3].Selected} setCategories={this.setCategories} />
-                    <CustomButton editMode={this.state.editMode} title={this.state.sportCategories[4].Description} selected={this.state.selectedSportCategories[4].Selected} setCategories={this.setCategories} />
-                    <CustomButton editMode={this.state.editMode} title={this.state.sportCategories[5].Description} selected={this.state.selectedSportCategories[5].Selected} setCategories={this.setCategories} />
+                    <CustomButton selected={this.state.selectedSportCategories[3].Selected} editMode={this.state.editMode} title={this.state.sportCategories[3].Description} selected={this.state.selectedSportCategories[3].Selected} setCategories={this.setCategories} />
+                    <CustomButton selected={this.state.selectedSportCategories[4].Selected} editMode={this.state.editMode} title={this.state.sportCategories[4].Description} selected={this.state.selectedSportCategories[4].Selected} setCategories={this.setCategories} />
+                    <CustomButton selected={this.state.selectedSportCategories[5].Selected} editMode={this.state.editMode} title={this.state.sportCategories[5].Description} selected={this.state.selectedSportCategories[5].Selected} setCategories={this.setCategories} />
 
                   </View>
                   <View style={{ flex: 1, flexDirection: 'row' }}>
 
-                    <CustomButton editMode={this.state.editMode} title={this.state.sportCategories[6].Description} selected={this.state.selectedSportCategories[6].Selected} setCategories={this.setCategories} />
-                    <CustomButton editMode={this.state.editMode} title={this.state.sportCategories[7].Description} selected={this.state.selectedSportCategories[7].Selected} setCategories={this.setCategories} />
-                    <CustomButton editMode={this.state.editMode} title={this.state.sportCategories[8].Description} selected={this.state.selectedSportCategories[8].Selected} setCategories={this.setCategories} />
+                    <CustomButton selected={this.state.selectedSportCategories[6].Selected} editMode={this.state.editMode} title={this.state.sportCategories[6].Description} selected={this.state.selectedSportCategories[6].Selected} setCategories={this.setCategories} />
+                    <CustomButton selected={this.state.selectedSportCategories[7].Selected} editMode={this.state.editMode} title={this.state.sportCategories[7].Description} selected={this.state.selectedSportCategories[7].Selected} setCategories={this.setCategories} />
+                    <CustomButton selected={this.state.selectedSportCategories[8].Selected} editMode={this.state.editMode} title={this.state.sportCategories[8].Description} selected={this.state.selectedSportCategories[8].Selected} setCategories={this.setCategories} />
 
-                  </View> 
+                  </View>
 
                 </View>
 
@@ -520,12 +579,12 @@ export default class TraineeProfile extends Component {
                         maxValue={100}
                         rounded
                       />
-                    </View> : 
-                    <View style={{ flex: 5, justifyContent: 'center', flexDirection: 'row', marginRight: 25 }}>
-                     <Text style={{ flex: 1, color: 'white', marginTop: 10, fontWeight: 'bold', fontFamily:'regular', color:'#f34573' }}>{this.state.minPartnerAge+" to "+this.state.maxPartnerAge}</Text>
+                    </View> :
+                      <View style={{ flex: 5, justifyContent: 'center', flexDirection: 'row', marginRight: 25 }}>
+                        <Text style={{ flex: 1, color: 'white', marginTop: 10, fontWeight: 'bold', fontFamily: 'regular', color: '#f34573' }}>{this.state.minPartnerAge + " to " + this.state.maxPartnerAge}</Text>
 
-                    </View> 
-                  }
+                      </View>
+                    }
 
                   </View>
 
@@ -681,10 +740,10 @@ export default class TraineeProfile extends Component {
                   color: 'white',
                   textAlign: 'center',
                 }}
-                onPress={()=>{
+                onPress={() => {
                   this.updateDetails();
                 }}
-                  
+
                 activeOpacity={0.5}
               />
                 : null}
@@ -712,17 +771,19 @@ const styles = StyleSheet.create({
 
   navBar: {
     flexDirection: 'row',
-    height: 60,
+    height: 90,
     width: SCREEN_WIDTH,
     justifyContent: 'center',
     alignContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
 
   nameHeader: {
+    flex: 1,
     color: '#f34573',
     fontSize: 28,
     textAlign: 'center',
+    justifyContent: 'center',
     fontFamily: 'light'
   },
 

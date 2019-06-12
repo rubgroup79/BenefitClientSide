@@ -1,21 +1,29 @@
 import React, { Component } from 'react';
 import { Text, View, StyleSheet, ScrollView, TouchableOpacity, Dimensions, } from 'react-native';
 import { Avatar, Button } from 'react-native-elements';
-import Icon2 from 'react-native-vector-icons/AntDesign';
-import Icon3 from 'react-native-vector-icons/Foundation';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon1 from 'react-native-vector-icons/Entypo';
+
 
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
-
+var coupleAddresses = [];
+var groupAddresses = [];
 export default class SearchResultsListView extends Component {
     constructor(props) {
+
         super(props);
+
+        this.state = {
+            status: 0
+        }
+
 
         this.renderCoupleResults = this.renderCoupleResults.bind(this);
         this.renderGroupResults = this.renderGroupResults.bind(this);
-        this.sendSuggestion=this.sendSuggestion.bind(this);
-        this.sendPushNotification=this.sendPushNotification.bind(this);
+        this.sendSuggestion = this.sendSuggestion.bind(this);
+        this.sendPushNotification = this.sendPushNotification.bind(this);
+        this.getAddress = this.getAddress.bind(this);
     }
 
 
@@ -34,7 +42,7 @@ export default class SearchResultsListView extends Component {
                     })
                         .then(res => res.json())
                         .then(response => {
-                            this.sendPushNotification(response,  "You have a new suggestion!");
+                            this.sendPushNotification(response, "You have a new suggestion!");
                             this.setState({});
                         })
                         .catch(error => console.warn('Error:', error.message));
@@ -42,7 +50,24 @@ export default class SearchResultsListView extends Component {
 
             })
             .catch(error => console.warn('Error:', error.message));
+            this.props.refresh("search");
     }
+
+
+    UNSAFE_componentWillMount() {
+        coupleAddresses = [];
+        groupAddresses = [];
+
+        {this.props.CoupleResults.map((x) => {
+            this.getAddress(x.Latitude, x.Longitude, true)
+        })}
+        {this.props.GroupResults.map((x) => {
+            this.getAddress(x.Latitude, x.Longitude, false)
+        })}
+        
+        
+    }
+
 
     sendPushNotification(ReceiverToken, message) {
         var pnd = {
@@ -62,30 +87,31 @@ export default class SearchResultsListView extends Component {
     }
 
     joinGroup(GroupCode, CreatorCode) {
-        fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/JoinGroup?UserCode='+ this.props.UserCode +'&GroupTrainingCode='+GroupCode , {
+        fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/JoinGroup?UserCode=' + this.props.UserCode + '&GroupTrainingCode=' + GroupCode, {
             method: 'POST',
             headers: { "Content-type": "application/json; charset=UTF-8" },
         })
-            
+
             .then(() => {
-                    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetToken?UserCode=' + CreatorCode, {
-                        method: 'GET',
-                        headers: { "Content-type": "application/json; charset=UTF-8" },
+                fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetToken?UserCode=' + CreatorCode, {
+                    method: 'GET',
+                    headers: { "Content-type": "application/json; charset=UTF-8" },
+                })
+                    .then(res => res.json())
+                    .then(response => {
+                        this.sendPushNotification(response, 'Your group has a new member!');
+                        alert('Welcome to the group');
+                        this.setState({});
                     })
-                        .then(res => res.json())
-                        .then(response => {
-                            this.sendPushNotification(response, 'Your group has a new member!');
-                            alert('Welcome to the group');
-                            this.setState({});
-                        })
-                        .catch(error => console.warn('Error:', error.message));
+                    .catch(error => console.warn('Error:', error.message));
             })
             .catch(error => console.warn('Error:', error.message));
+            this.props.refresh("search");
     }
 
 
 
-    renderCoupleResults(x) {
+    renderCoupleResults(x, index) {
         return (
             <View
                 style={{
@@ -103,35 +129,60 @@ export default class SearchResultsListView extends Component {
             >
 
                 <View style={{ flex: 2, flexDirection: 'row', alignItems: 'center' }}>
-                    
+
                     <View style={{ marginLeft: 15 }}>
                         <Avatar
                             small
                             rounded
                             source={{ uri: x.Picture.toString() }}
                             activeOpacity={0.7}
+                            
                         />
                     </View>
-                    <View style={{flex:1, flexDirection:'column',  justifyContent:'center'}}>
-                    <Text
-                        style={{
-                            fontFamily: 'regular',
-                            fontSize: 15,
-                            marginLeft: 10,
-                            color: 'gray',
-                        }}
-                    >
-                        {x.FirstName + ' ' + x.LastName + ', ' + x.Age}
-                    </Text>
-                    {x.IsTrainer? <Text
-                        style={{
-                            fontFamily: 'light',
-                            fontSize: 12,
-                            marginLeft: 10,
-                            color: 'blue',
-                        }}
-                    >
-                        Trainer
+                    <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', justifyContent:'center' }}>
+                        
+                        <Text
+                            style={{
+                                fontFamily: 'regular',
+                                fontSize: 15,
+                                marginLeft: 10,
+                                color: 'gray',
+                            }}
+                        >
+                            {x.FirstName + ' ' + x.LastName + ', ' + x.Age}
+                        </Text>
+                        <View style={{flex:1, flexDirection:'row', marginRight:25, justifyContent:'center'}}>
+                        
+                        <Icon1 style={{ flex: 1, marginLeft:15 }} name='location-pin' color='gray' textAlign='center' size={20} onPress={()=>this.props.setLatLon(x.Latitude, x.Longitude)}></Icon1>
+                        <Text
+                            style={{
+                                fontFamily: 'regular',
+                                fontSize: 12,
+                                marginLeft: 10,
+                                color: 'gray',
+                                flex:5,
+                                justifyContent:'center',
+                                textAlign:'right',
+                                marginTop:3
+                            }}
+                        >
+                            { ((coupleAddresses[index]).length > 25) ? 
+    (((coupleAddresses[index]).substring(0,25-3)) + '...') : 
+    coupleAddresses[index] }
+                            {}
+                        </Text>
+
+                       
+                        </View>
+                        {x.IsTrainer ? <Text
+                            style={{
+                                fontFamily: 'light',
+                                fontSize: 12,
+                                marginLeft: 10,
+                                color: 'blue',
+                            }}
+                        >
+                            {x.Price +"$"}
                     </Text> : null}
                     </View>
                 </View>
@@ -143,13 +194,17 @@ export default class SearchResultsListView extends Component {
                         flex: 1
                     }}
                 >
-                   
+
                     <View style={{ flex: 1, alignItems: 'center' }}>
+                    
                         <Button
                             style={{ flex: 1 }}
                             titleStyle={{ fontWeight: 'bold', fontSize: 10 }}
                             title={'Send Suggestion'}
-                            onPress={() => { this.sendSuggestion(x.UserCode) }}
+                            onPress={() => { 
+                                this.sendSuggestion(x.UserCode) 
+                              
+                            }}
                             buttonStyle={{
                                 borderWidth: 0,
                                 borderColor: 'transparent',
@@ -175,118 +230,172 @@ export default class SearchResultsListView extends Component {
         )
     }
 
-    renderGroupResults(x) {
+    getAddress(latitude, longitude, couple) {
+        var address = '';
+        fetch('https://maps.googleapis.com/maps/api/geocode/json?address=' + latitude + ',' + longitude + '&key=' + 'AIzaSyB_OIuPsnUNvJ-CN0z2dir7cVbqJ7Xj3_Q')
+            .then((response) => response.json())
+            .then((responseJson) => {
+                address = JSON.stringify(responseJson.results[0].address_components.filter(x => x.types.filter(t => t == 'route').length > 0)[0].short_name) + ' ' +
+                    JSON.stringify(responseJson.results[0].address_components.filter(x => x.types.filter(t => t == 'street_number').length > 0)[0].short_name) + ', ' +
+                    JSON.stringify(responseJson.results[0].address_components.filter(x => x.types.filter(t => t == 'locality').length > 0)[0].short_name);
+                address = address.replace(/"/g, '');
+
+                if (couple)
+                    coupleAddresses.push(address);
+                else groupAddresses.push(address);
+
+                if ((coupleAddresses.length == this.props.CoupleResults.length) && (groupAddresses.length == this.props.GroupResults.length)) {
+                    this.setState({ status: 1 });
+
+
+                }
+
+            });
+    }
+
+    renderGroupResults(x, index) {
+
         return (
             <View
-            style={{
-                height: 60,
-                marginHorizontal: 10,
-                marginTop: 10,
-                justifyContent: 'center',
-                backgroundColor: 'white',
-                borderRadius: 5,
-                alignItems: 'center',
-                flexDirection: 'row',
-                flex: 1
-
-            }}
-        >
-
-            <View style={{ flex: 2, flexDirection: 'row', alignItems: 'center' }}>
-                
-                <View style={{ marginLeft: 15 }}>
-                    <Avatar
-                        small
-                        rounded
-                        source={x.WithTrainer? require('../../Images/GroupWithTrainer.png') : require('../../Images/GroupWithPartners.png')}
-                        activeOpacity={0.7}
-                    />
-                </View>
-                <View style={{flex:1, flexDirection:'column',  justifyContent:'center'}}>
-                <Text
-                    style={{
-                        fontFamily: 'regular',
-                        fontSize: 15,
-                        marginLeft: 10,
-                        color: 'gray',
-                    }}
-                >
-                    {'x.SportCategory' + ' Group'}
-                </Text>
-                {x.WithTrainer? <Text
-                    style={{
-                        fontFamily: 'light',
-                        fontSize: 12,
-                        marginLeft: 10,
-                        color: 'blue',
-                    }}
-                >
-                    Trainer
-                </Text> : null}
-                </View>
-            </View>
-            <View
                 style={{
+                    height: 60,
+                    marginHorizontal: 10,
+                    marginTop: 10,
+                    justifyContent: 'center',
+                    backgroundColor: 'white',
+                    borderRadius: 5,
+                    alignItems: 'center',
                     flexDirection: 'row',
-                    justifyContent: 'flex-end',
-                    marginRight: 10,
                     flex: 1
+
                 }}
             >
-               
-                <View style={{ flex: 1, alignItems: 'center' }}>
-                    <Button
-                        style={{ flex: 1 }}
-                        titleStyle={{ fontWeight: 'bold', fontSize: 10 }}
-                        title={'Join Group'}
-                        onPress={() => { this.joinGroup(x.TrainingCode, x.CreatorCode) }}
-                        buttonStyle={{
-                            borderWidth: 0,
-                            borderColor: 'transparent',
-                            borderRadius: 20,
-                            backgroundColor: '#f34573'
-                        }}
-                        containerStyle={{ marginVertical: 3, height: 30, width: 115, alignItems: 'center' }}
-                        icon={{
-                            name: 'mail',
-                            type: 'Octicons',
-                            size: 15,
-                            color: 'white',
-                        }}
-                        iconContainerStyle={{ width: 15 }}
-                    />
+
+                <View style={{ flex: 2, flexDirection: 'row', alignItems: 'center' }}>
+
+                    <View style={{ marginLeft: 15 }}>
+                        <Avatar
+                            small
+                            rounded
+                            source={x.WithTrainer ? require('../../Images/GroupWithTrainer.png') : require('../../Images/GroupWithPartners.png')}
+                            activeOpacity={0.7}
+                        />
+                    </View>
+                    <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center' }}>
+                        <Text
+                            style={{
+                                fontFamily: 'regular',
+                                fontSize: 15,
+                                marginLeft: 10,
+                                color: 'gray',
+                            }}
+                        >
+                            {x.SportCategory +" Group"}
+                        </Text>
+                        <View style={{flex:1, flexDirection:'row', marginRight:25, justifyContent:'center'}}>
+                        
+                        <Icon1 style={{ flex: 1, marginLeft:15 }} name='location-pin' color='gray' textAlign='center' size={20} onPress={()=>this.props.setLatLon(x.Latitude, x.Longitude)}></Icon1>
+                        <Text
+                            style={{
+                                fontFamily: 'regular',
+                                fontSize: 12,
+                                marginLeft: 10,
+                                color: 'gray',
+                                flex:5,
+                                justifyContent:'center',
+                                textAlign:'right',
+                                marginTop:3
+                            }}
+                        >
+                            { ((groupAddresses[index]).length > 25) ? 
+    (((groupAddresses[index]).substring(0,25-3)) + '...') : 
+    groupAddresses[index] }
+                        
+                        </Text>
+
+                       
+                        </View>
+                        {x.WithTrainer ? <Text
+                            style={{
+                                fontFamily: 'light',
+                                fontSize: 12,
+                                marginLeft: 10,
+                                color: 'blue',
+                            }}
+                        >
+                            Trainer
+                </Text> : null}
+                    </View>
                 </View>
+                <View
+                    style={{
+                        flexDirection: 'row',
+                        justifyContent: 'flex-end',
+                        marginRight: 10,
+                        flex: 1
+                    }}
+                >
+
+                    <View style={{ flex: 1, alignItems: 'center' }}>
+                        <Button
+                            style={{ flex: 1 }}
+                            titleStyle={{ fontWeight: 'bold', fontSize: 10 }}
+                            title={'Join Group'}
+                            onPress={() => {
+                                this.joinGroup(x.TrainingCode, x.CreatorCode);
+                             
+                             }}
+                            buttonStyle={{
+                                borderWidth: 0,
+                                borderColor: 'transparent',
+                                borderRadius: 20,
+                                backgroundColor: '#f34573'
+                            }}
+                            containerStyle={{ marginVertical: 3, height: 30, width: 115, alignItems: 'center' }}
+                            icon={{
+                                name: 'mail',
+                                type: 'Octicons',
+                                size: 15,
+                                color: 'white',
+                            }}
+                            iconContainerStyle={{ width: 15 }}
+                        />
+                    </View>
 
 
 
+                </View>
             </View>
-        </View>
 
-    )
+        )
     }
 
 
     render() {
         return (
-            <View style={{ flex: 1,alignItems:'center', flexDirection: 'column', backgroundColor: 'rgba(255,255,255,0.9)', alignContent: "center", position: 'absolute', zIndex: 2, top: 90, width: SCREEN_WIDTH, }}>
-
-                <View style={{ flex: 1, flexDirection: 'row', alignItems:'center' }}>
-                    <Icon name='close' style={styles.closeIcon} size={20} color='gray' onPress={()=>this.props.closeListView()}></Icon>
+            <View style={{ flex: 1, alignItems: 'center', flexDirection: 'column', backgroundColor: 'rgba(255,255,255,0.9)', alignContent: "center", position: 'absolute', zIndex: 2, top: 90, width: SCREEN_WIDTH, }}>
+        
+                <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                    <Icon name='close' style={styles.closeIcon} size={20} color='gray' onPress={() => this.props.closeListView()}></Icon>
                     <Text style={styles.headline}>Search Results</Text>
                 </View>
-            {this.props.CoupleResults.length!=0 || this.props.GroupResults.length!=0 ?  
-                <ScrollView style={{ flex: 1, marginBottom: 20 }}>
-                    {this.props.CoupleResults.map((x, index) => {
-                        return (<View key={index}>{this.renderCoupleResults(x)}</View>)
-                    }
-                    )}
-                     {this.props.GroupResults.map((x, index) => {
-                        return (<View key={index}>{this.renderGroupResults(x)}</View>)
-                    }
-                    )}
 
-                </ScrollView> : <Text style={{fontFamily:'regular', fontSize:15, textAlign:'center', color:'gray'}}>No Results</Text>}   
+                {(this.props.CoupleResults.length != 0 || this.props.GroupResults.length != 0) && this.state.status == 1 ?
+                    <ScrollView style={{ flex: 1, marginBottom: 20, width: SCREEN_WIDTH }}>
+                        {this.props.CoupleResults.map((x, index) => {
+                            return (<View key={index}>{this.renderCoupleResults(x, index)}</View>)
+                        }
+                        )}
+                        {this.props.GroupResults.map((x, index) => {
+                            return (<View key={index}>{this.renderGroupResults(x, index)}</View>)
+                        }
+                        )}
+
+                    </ScrollView> : <Text style={{ fontFamily: 'regular', fontSize: 15, textAlign: 'center', color: 'gray' }}>No Results</Text>}
+
             </View>
+
+
 
         );
 
@@ -306,7 +415,7 @@ const styles = StyleSheet.create({
         fontSize: 23,
         color: '#f34573',
         fontFamily: 'regular',
-        marginLeft:20
+        marginLeft: 20
     },
 
 })
