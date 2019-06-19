@@ -32,8 +32,8 @@ export default class Map extends React.Component {
             width: SCREEN_WIDTH + 30
           }}
           region={{
-            latitude: this.props.HomeTraineeStates.latitude,
-            longitude: this.props.HomeTraineeStates.longitude,
+            latitude: this.props.HomeTraineeStates.partnerLatitude,
+            longitude: this.props.HomeTraineeStates.partnerLongitude,
             latitudeDelta: 0.01322,
             longitudeDelta: 0.01321,
           }}

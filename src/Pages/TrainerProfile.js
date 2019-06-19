@@ -32,7 +32,7 @@ const SCREEN_WIDTH = Dimensions.get('window').width;
 const SLIDER_SIZE = SCREEN_WIDTH - 150;
 
 
-export default class TraineeProfile extends Component {
+export default class TrainerProfile extends Component {
   constructor(props) {
     super(props);
 
@@ -47,11 +47,7 @@ export default class TraineeProfile extends Component {
       picture: '',
       rate: 0,
       searchRadius: 0,
-      maxBudget: 0,
-      partnerGender: '',
-      trainerGender: '',
-      minPartnerAge: 0,
-      maxPartnerAge: 0,
+      personalTrainingPrice:0,
       selectedSportCategories: [],
       sportCategories: [],
       userSportCategories: [],
@@ -63,7 +59,7 @@ export default class TraineeProfile extends Component {
     this.setSelectedGenderTrainer = this.setSelectedGenderTrainer.bind(this);
     this.setPicturePath = this.setPicturePath.bind(this);
     this.getLocalStorage = this.getLocalStorage.bind(this);
-    this.getTraineeDetails = this.getTraineeDetails.bind(this);
+    this.getTrainerDetails = this.getTrainerDetails.bind(this);
     this.setSelectedSportCategories = this.setSelectedSportCategories.bind(this);
     this.getSportCategories = this.getSportCategories.bind(this);
     this.setCategories = this.setCategories.bind(this);
@@ -83,6 +79,7 @@ export default class TraineeProfile extends Component {
   }
 
   componentWillMount() {
+    console.warn('trainer profile');
     setTimeout(() => {
       this.getLocalStorage();
     }, 1000);
@@ -109,8 +106,8 @@ export default class TraineeProfile extends Component {
     )
   }
 
-  getTraineeDetails() {
-    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetTraineeProfileDetails?UserCode=' + this.state.userCode, {
+  getTrainerDetails() {
+    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetTrainerProfileDetails?UserCode=' + this.state.userCode, {
       method: 'GET',
       headers: { "Content-type": "application/json; charset=UTF-8" },
     })
@@ -124,11 +121,7 @@ export default class TraineeProfile extends Component {
           picture: response.Picture,
           rate: response.Rate,
           searchRadius: response.SearchRadius,
-          maxBudget: response.MaxBudget,
-          partnerGender: response.PartnerGender,
-          trainerGender: response.TrainerGender,
-          minPartnerAge: response.MinPartnerAge,
-          maxPartnerAge: response.MaxPartnerAge,
+          personalTrainingPrice:response.PersonalTrainingPrice,
           userSportCategories: response.SportCategories
         }, this.setSelectedSportCategories)
       })
@@ -145,7 +138,7 @@ export default class TraineeProfile extends Component {
     })
       .then(res => res.json())
       .then(response => {
-        this.setState({ sportCategories: response }, this.getTraineeDetails);
+        this.setState({ sportCategories: response }, this.getTrainerDetails);
       })
       .catch(error => console.warn('Error:', error.message));
 
@@ -188,26 +181,19 @@ export default class TraineeProfile extends Component {
       return el != null;
     });
 
-
-
-
-    Trainee = {
-      TraineeCode: this.state.userCode,
+    Trainer= {
+      TrainerCode: this.state.userCode,
       Picture: this.state.picture,
       SearchRadius: this.state.searchRadius,
-      MaxBudget: this.state.maxBudget,
-      PartnerGender: this.state.partnerGender,
-      TrainerGender: this.state.trainerGender,
-      MinPartnerAge: this.state.minPartnerAge,
-      MaxPartnerAge: this.state.maxPartnerAge,
+      PersonalTrainingPrice:this.state.personalTrainingPrice,
       SportCategories: filtered
     }
 
 
-    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/UpdateTraineeDetails', {
+    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/UpdateTrainerDetails', {
       method: 'POST',
       headers: { "Content-type": "application/json; charset=UTF-8" },
-      body: JSON.stringify(Trainee),
+      body: JSON.stringify(Trainer),
 
     })
       .then(() => { this.setState({ editMode: !this.state.editMode }) })
@@ -327,7 +313,7 @@ export default class TraineeProfile extends Component {
                   buttonStyle={{ flex: 1, zIndex: 2 }}
                   onPress={() => {
                     if (this.state.editMode)
-                      this.getTraineeDetails();
+                      this.getTrainerDetails();
                     this.setState({ editMode: !this.state.editMode, })
 
                   }}>
@@ -454,9 +440,9 @@ export default class TraineeProfile extends Component {
               <Divider style={{ flex: 1, marginTop: 10 }}></Divider>
 
 
-              <View>
+             <View>
 
-                <View style={{ flex: 1, flexDirection: 'column' }}>
+                 {/* <View style={{ flex: 1, flexDirection: 'column' }}>
 
                   <Text style={styles.preferencesHeadlines} > PARTNER PREFERENCES</Text>
 
@@ -667,14 +653,14 @@ export default class TraineeProfile extends Component {
 
                   </View>
 
-                </View>
+                </View> */}
 
                 <View style={{ flex: 1, flexDirection: 'column', marginBottom: 15 }}>
 
                   <Text
                     style={[styles.textHeadlines]}
                   >
-                    Your Budget
+                    Personal Training Price
                     </Text>
 
                   <View style={styles.sliderContainerStyle} >
@@ -690,8 +676,8 @@ export default class TraineeProfile extends Component {
                       minimumValue={0}
                       step={10}
                       maximumValue={500}
-                      value={this.state.maxBudget}
-                      onValueChange={value => this.setState({ maxBudget: value })}
+                      value={this.state.personalTrainingPrice}
+                      onValueChange={value => this.setState({ personalTrainingPrice: value })}
                     />
 
                     <Text style={style = styles.sliderRangeText}>500</Text>
@@ -699,7 +685,7 @@ export default class TraineeProfile extends Component {
 
                   </View>
 
-                  <Text style={{ color: '#f34573', textAlign: 'center', fontSize: 13 }}>Budget: {this.state.maxBudget} $</Text>
+                  <Text style={{ color: '#f34573', textAlign: 'center', fontSize: 13 }}>Price: {this.state.personalTrainingPrice} $</Text>
 
                 </View>
 
@@ -751,7 +737,7 @@ export default class TraineeProfile extends Component {
 
           )}
 
-      </View>
+       </View>
     );
   }
 }

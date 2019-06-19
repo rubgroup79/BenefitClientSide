@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { StackNavigator } from 'react-navigation';
+import { StackNavigator, NavigationActions } from 'react-navigation';
 import { Permissions, Notifications } from 'expo';
 import {
   StyleSheet,
@@ -44,6 +44,16 @@ TabSelector.propTypes = {
 
 
 
+const navigateActionTrainee = NavigationActions.navigate({
+  routeName: 'BottomNavigation',
+  action: NavigationActions.navigate({routeName: 'HomeTraineeTab'})
+})
+
+const navigateActionTrainer = NavigationActions.navigate({
+  routeName: 'BottomNavigationTrainer',
+  action: NavigationActions.navigate({routeName: 'HomeTrainerTab'})
+})
+
 export default class Login extends Component {
   constructor(props) {
     super(props);
@@ -84,15 +94,18 @@ export default class Login extends Component {
 
   }
 
-  UNSAFE_componentWillMount() {
-    AsyncStorage.getItem('UserCode', (err, result) => {
-      if (result != null) {
-        this.props.navigation.navigate('HomeTraineeTab');
-      }
+  UNSAFE_componentWillMount = async () => {
+    await AsyncStorage.getItem('IsTrainer', (err, result) => {
+      if (result != null && result == 1)
+        this.props.navigation.dispatch(navigateActionTrainer);
+      if (result != null && result == 0)
+      this.props.navigation.dispatch(navigateActionTrainee);
     }
     )
-
   }
+
+
+
 
 
   async registerForPushNotifications() {
@@ -213,8 +226,9 @@ export default class Login extends Component {
           this.registerForPushNotifications();
           alert("Success! User Code= " + this.state.userCode);
           if (this.state.isTrainer == 0) // a trainee
-          this.props.navigation.navigate('HomeTraineeTab');
-        else this.props.navigation.navigate('HomeTrainer');
+            //this.props.navigation.navigate('BottomNavigation');
+            this.props.navigation.dispatch(navigateActionTrainee);
+          else this.props.navigation.dispatch(navigateActionTrainer);
         }
         else
           alert("Incorrect password");
@@ -222,6 +236,7 @@ export default class Login extends Component {
 
       .catch(error => console.warn('Error:', error.message));
   }
+
 
 
   getUserDetails(userCode) {
@@ -268,7 +283,7 @@ export default class Login extends Component {
         if (response) {
           alert('Email already exists!');
         }
-        else if (this.state.isEmailValid && this.state.isConfirmationValid) this.props.navigation.navigate('SignIn1', { email: this.state.email, password: this.state.password });
+        else if (this.state.isEmailValid && this.state.isConfirmationValid) this.props.navigation.navigate('SigninGeneral', { email: this.state.email, password: this.state.password });
 
       })
 

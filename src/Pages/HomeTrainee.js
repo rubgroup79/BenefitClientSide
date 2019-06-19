@@ -43,13 +43,15 @@ export default class HomeTrainee extends Component {
       searchMode: false,
       latitude: 0,
       longitude: 0,
+      partnerLatitude: 0,
+      partnerLongitude: 0,
       coupleResults: [],
       groupResults: [],
       pendingRequests: [],
       futureCoupleTrainings: [],
       futureGroupTrainings: [],
       approvedRequests: [],
-      searchResultsMapView: false,
+      searchResultsMapView: true,
       pendingRequestsMapView: false,
       approvedRequestsMapView: false,
       futureTrainingsMapView: false,
@@ -70,7 +72,9 @@ export default class HomeTrainee extends Component {
     this.insertOnlineTrainee = this.insertOnlineTrainee.bind(this);
     this.getFutureTrainings = this.getFutureTrainings.bind(this);
     this.setLatLon = this.setLatLon.bind(this);
-    this.refresh=this.refresh.bind(this);
+    this.refresh = this.refresh.bind(this);
+    this.seachGroups= this.seachGroups.bind(this);
+    this.changeSearchMode=this.changeSearchMode.bind(this);
 
   }
 
@@ -101,16 +105,24 @@ export default class HomeTrainee extends Component {
 
 
     setTimeout(() => {
-     this.getLocalStorage()
-    }, 1500); 
- 
+      this.getLocalStorage()
+    }, 1500);
+
   }
 
+  changeMapViewAfterSearch() {
+    this.setState({
+      searchResultsMapView: true,
+      pendingRequestsMapView: false,
+      approvedRequestsMapView: false,
+      futureTrainingsMapView: false,
+    })
+  }
 
   getLocalStorage = async () => {
     await AsyncStorage.getItem('UserCode', (err, result) => {
       if (result != null) {
-      this.setState({ userCode: result },this.afterLocalStorageFunctions);
+        this.setState({ userCode: result }, this.afterLocalStorageFunctions);
       }
       else alert('error local storage user code');
     }
@@ -145,7 +157,7 @@ export default class HomeTrainee extends Component {
 
         if (response.OnlineCode != 0) {
           this.search(response);
-          this.setState({ searchMode: true, onlineDetails: response, Longitude: response.Longitude, Latitude: response.Latitude, status: 1 });
+          this.setState({ searchMode: true, onlineDetails: response, longitude: response.Longitude, latitude: response.Latitude,partnerLongitude: response.Longitude, partnerLatitude: response.Latitude, status: 1 });
         }
         else {
           this.setState({ onlineDetails: [], pendingRequestsMapView: true })
@@ -158,20 +170,20 @@ export default class HomeTrainee extends Component {
   }
 
   refresh(str) {
-      this.search(this.state.onlineTrainee);
-      this.getRequests(true);
-      this.getRequests(false);
-      this.getFutureTrainings();
-      
-      if(str=='search')
-      this.setState({ searchResultsMapView: true,  pendingRequestsMapView: false,  approvedRequestsMapView: false, futureTrainingsMapView: false,})
-      if(str=='pending')
-      this.setState({ searchResultsMapView: false,  pendingRequestsMapView: true,  approvedRequestsMapView: false, futureTrainingsMapView: false,})
-      if(str=='approved')
-      this.setState({ searchResultsMapView: false,  pendingRequestsMapView: false,  approvedRequestsMapView: true, futureTrainingsMapView: false,})
-      if(str=='future')
-      this.setState({ searchResultsMapView: false,  pendingRequestsMapView: false,  approvedRequestsMapView: false, futureTrainingsMapView: true,})
-      
+    this.search(this.state.onlineTrainee);
+    this.getRequests(true);
+    this.getRequests(false);
+    this.getFutureTrainings();
+
+    if (str == 'search')
+      this.setState({ searchResultsMapView: true, pendingRequestsMapView: false, approvedRequestsMapView: false, futureTrainingsMapView: false, })
+    if (str == 'pending')
+      this.setState({ searchResultsMapView: false, pendingRequestsMapView: true, approvedRequestsMapView: false, futureTrainingsMapView: false, })
+    if (str == 'approved')
+      this.setState({ searchResultsMapView: false, pendingRequestsMapView: false, approvedRequestsMapView: true, futureTrainingsMapView: false, })
+    if (str == 'future')
+      this.setState({ searchResultsMapView: false, pendingRequestsMapView: false, approvedRequestsMapView: false, futureTrainingsMapView: true, })
+
 
   }
 
@@ -184,7 +196,8 @@ export default class HomeTrainee extends Component {
       .then(response => { alert('Youre now Offline'); })
       .catch(error => console.warn('Error:', error.message));
 
-    this.setState({ searchMode: false, pendingRequestsMapView: true });
+    this.setState({ searchMode: false, pendingRequestsMapView: true, coupleResults:[], groupResults:[] });
+    this.getCurrentLocation();
   }
 
   getCurrentLocation = () => {
@@ -197,7 +210,7 @@ export default class HomeTrainee extends Component {
           '\nheading=' + position.coords.heading +
           '\nspeed=' + position.coords.speed;
 
-        this.setState({ latitude: position.coords.latitude, longitude: position.coords.longitude, status: 1 });// +  Math.random()/1000,
+        this.setState({ partnerLatitude: position.coords.latitude, partnerLongitude: position.coords.longitude,latitude: position.coords.latitude, longitude: position.coords.longitude, status: 1 });// +  Math.random()/1000,
       },
       (error) => alert(error.message),
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
@@ -266,20 +279,22 @@ export default class HomeTrainee extends Component {
     this.search(onlineDetails);
   }
 
+changeSearchMode(){
+  this.setState({searchMode:true})
 
+}
 
   search(onlineDetails) {
-this.setState({coupleResults:[], groupResults:[]});
-    this.setSearchMode(true);
     this.setState({
       onlineTrainee: onlineDetails,
       latitude: onlineDetails.Latitude,
       longitude: onlineDetails.Longitude,
+      partnerLatitude: onlineDetails.Latitude,
+      partnerLongitude:onlineDetails.Longitude,
       searchResultsMapView: true,
       pendingRequestsMapView: false,
       approvedRequestsMapView: false,
-      futureTrainingsMapView: false
-
+      futureTrainingsMapView: false,
     });
 
 
@@ -293,51 +308,54 @@ this.setState({coupleResults:[], groupResults:[]});
         .then(res => res.json())
         .then(response => {
           if (response.length == 0) {
-            this.setState({ coupleResults: [] });
+            this.setState({ coupleResults: [] }, this.seachGroups(onlineDetails));
           }
           else {
             this.setState({
               coupleResults: response,
-            })
+            }, this.seachGroups(onlineDetails))
           }
         })
 
         .catch(error => console.warn('Error2:', error.message));
     }
-
-    //נכנס רק אם משתמש חיפש אימון קבוצתי עם מאמן או בלי מאמן
-
-    if (onlineDetails.GroupWithTrainer || onlineDetails.GroupWithPartners) {
-
-      fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/SearchGroups', {
-
-        method: 'POST',
-        headers: { "Content-type": "application/json; charset=UTF-8" },
-        body: JSON.stringify(onlineDetails),
-      })
-        .then(res => res.json())
-        .then(response => {
-          if (response.length == 0) {
-            this.setState({ groupResults: [] });
-
-          }
-
-          else {
-            this.setState({
-              groupResults: response,
-            })
-          }
-
-        })
-
-        .catch(error => console.warn('Error3:', error.message));
-    }
+    
 
   }
+
+seachGroups(onlineDetails){
+  if (onlineDetails.GroupWithTrainer || onlineDetails.GroupWithPartners) {
+
+    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/SearchGroups', {
+
+      method: 'POST',
+      headers: { "Content-type": "application/json; charset=UTF-8" },
+      body: JSON.stringify(onlineDetails),
+    })
+      .then(res => res.json())
+      .then(response => {
+        if (response.length == 0) {
+          this.setState({ groupResults: [] });
+
+        }
+
+        else {
+          console.warn('ff');
+          this.setState({
+            groupResults: response,
+          })
+        }
+
+      })
+
+      .catch(error => console.warn('Error3:', error.message));
+  }
+}
 
   setLatLon(lat, long) {
-    this.setState({ latitude: lat, longitude: long, })
+    this.setState({ partnerLatitude: lat, partnerLongitude: long, })
   }
+
 
 
   render() {
@@ -348,11 +366,11 @@ this.setState({coupleResults:[], groupResults:[]});
 
           <View style={{ flex: 1, width: SCREEN_WIDTH, backgroundColor: 'white', height: SCREEN_HEIGHT, alignItems: 'center' }}>
             {this.state.createGroupModalVisible ?
-              <CreateGroupModal createGroupModalVisible={this.createGroupModalVisible} CreatorCode={this.state.userCode} IsTrainer={this.state.isTrainer} ></CreateGroupModal>
+              <CreateGroupModal isTrainer={this.state.isTrainer} createGroupModalVisible={this.createGroupModalVisible} CreatorCode={this.state.userCode} IsTrainer={this.state.isTrainer} ></CreateGroupModal>
               : null}
 
             {this.state.searchModalVisible ?
-              <SearchModal searchModalVisible={this.searchModalVisible} insertOnlineTrainee={this.insertOnlineTrainee} userCode={this.state.userCode} searchModalVisible={this.searchModalVisible} style={{ zIndex: 1000 }}></SearchModal>
+              <SearchModal changeSearchMode={this.changeSearchMode} searchModalVisible={this.searchModalVisible} insertOnlineTrainee={this.insertOnlineTrainee} userCode={this.state.userCode} searchModalVisible={this.searchModalVisible} style={{ zIndex: 1000 }}></SearchModal>
               : null}
 
             <View style={{ flex: 6, zIndex: 0, width: SCREEN_WIDTH, height: SCREEN_HEIGHT }} >
@@ -375,7 +393,9 @@ this.setState({coupleResults:[], groupResults:[]});
                       <TouchableOpacity
                         onPress={() => {
                           this.setState({ searchResultsMapView: true, pendingRequestsMapView: false, approvedRequestsMapView: false, futureTrainingsMapView: false, });
-                          this.search(this.state.onlineTrainee);
+                          this.refresh('search');
+                          this.setSearchMode(true);
+                          this.setState({ searchResultsMapView: true })
                         }}
                       >
                         {this.state.searchResultsMapView ? <Image source={SELECTED_SEARCH_VIEW} style={{ width: 60, height: 60 }} /> : <Image source={SEARCH_VIEW} style={{ width: 60, height: 60 }} />}
@@ -395,7 +415,7 @@ this.setState({coupleResults:[], groupResults:[]});
                     <TouchableOpacity
                       onPress={() => {
                         this.setState({ pendingRequestsMapView: true, approvedRequestsMapView: false, futureTrainingsMapView: false, searchResultsMapView: false });
-                        this.getRequests(false);
+                        this.refresh('pending');
                       }}
                     >
                       {this.state.pendingRequestsMapView ? <Image source={SELECTED_PENDING_REQUESTS} style={{ width: 60, height: 60 }} /> : <Image source={PENDING_REQUESTS} style={{ width: 60, height: 60 }} />}
@@ -413,7 +433,7 @@ this.setState({coupleResults:[], groupResults:[]});
                     <TouchableOpacity
                       onPress={() => {
                         this.setState({ approvedRequestsMapView: true, pendingRequestsMapView: false, futureTrainingsMapView: false, searchResultsMapView: false })
-                        this.getRequests(true);
+                        this.refresh('approved');
                       }}
                     >
 
@@ -432,7 +452,7 @@ this.setState({coupleResults:[], groupResults:[]});
                     <TouchableOpacity
                       onPress={() => {
                         this.setState({ futureTrainingsMapView: true, approvedRequestsMapView: false, pendingRequestsMapView: false, searchResultsMapView: false });
-                        this.getFutureTrainings();
+                        this.refresh('future');
                       }}
                     >
                       {this.state.futureTrainingsMapView ? <Image source={SELECTED_FUTURE_TRAININGS} style={{ width: 60, height: 60 }} /> : <Image source={FUTURE_TRAININGS} style={{ width: 60, height: 60 }} />}
@@ -459,7 +479,7 @@ this.setState({coupleResults:[], groupResults:[]});
                 : null}
 
               {this.state.approvedRequestsMapView && this.state.listView ?
-                <ApprovedRequestsListView  navigation={this.props.navigation} refresh={this.refresh} setLatLon={this.setLatLon} closeListView={this.closeListView} ApprovedRequests={this.state.approvedRequests} UserCode={this.state.userCode} ></ApprovedRequestsListView>
+                <ApprovedRequestsListView navigation={this.props.navigation} refresh={this.refresh} setLatLon={this.setLatLon} closeListView={this.closeListView} ApprovedRequests={this.state.approvedRequests} UserCode={this.state.userCode} ></ApprovedRequestsListView>
                 : null
               }
 
@@ -528,6 +548,7 @@ this.setState({coupleResults:[], groupResults:[]});
                         buttonColor='rgba(237,29,26,0.7)'
                         onPress={() => {
                           this.goOffline();
+                          this.setState({listView:false})
                         }}
                       >
                         <Icon2
@@ -540,6 +561,7 @@ this.setState({coupleResults:[], groupResults:[]});
                         buttonColor='rgba(255,255,255,0.7)'
                         onPress={() => {
                           this.createGroupModalVisible();
+                          this.setState({listView:false})
                           this.setState({ searchModalVisible: false })
                         }}
                       >
@@ -553,6 +575,7 @@ this.setState({coupleResults:[], groupResults:[]});
                         buttonColor='rgba(255,255,255,0.7)'
                         onPress={() => {
                           this.searchModalVisible();
+                          this.setState({listView:false})
                           this.setState({ createGroupModalVisible: false })
 
                         }

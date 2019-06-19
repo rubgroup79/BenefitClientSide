@@ -1,25 +1,23 @@
 import React from 'react';
-
 import { registerRootComponent, AppLoading, Asset, Font } from 'expo';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
-import { View, Image, Dimensions } from 'react-native';
+import { View, Image, Dimensions, I18nManager } from 'react-native';
 import { DrawerNavigator, DrawerItems } from 'react-navigation';
 import Login from './src/Pages/Login';
-import SignIn1 from "./src/Pages/SignInGeneral";
+import SigninGeneral from "./src/Pages/SignInGeneral";
 import Components from './src/drawer/components';
 import Ratings from './src/drawer/ratings';
 import Pricing from './src/drawer/pricing';
 import SigninTrainee from './src/Pages/SignInTrainee';
 import SigninTrainer from './src/Pages/SignInTrainer';
-import Profile from './src/drawer/profile';
 import Lists from './src/drawer/lists';
-import Settings from './src/drawer/settings';
-import HomeTrainee from './src/Pages/HomeTrainee';
-import HomeTrainer from './src/Pages/HomeTrainer';
-import UserProfile from './src/Pages/UserProfile';
-import BottomNavigation from './src/Navigation/BottomNavigation';
-import Chat from './src/Pages/Chat';
+import HomeTraineeTab from './src/TabsNavigation/HomeTraineeTab';
+import HomeTrainerTab from './src/TabsNavigation/HomeTrainerTab';
 
+import BottomNavigation from './src/Navigation/BottomNavigation';
+import BottomNavigationTrainer from './src/Navigation/BottomNavigationTrainer';
+I18nManager.forceRTL(false);
+I18nManager.allowRTL(false);
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
 const CustomDrawerContentComponent = props => (
@@ -68,9 +66,9 @@ const MainRoot = DrawerNavigator(
     //   //   drawerLabel:()=>null
     //   // }
     // },
-    SignIn1: {
-      path: '/signIn1',
-      screen: SignIn1,
+    SigninGeneral: {
+      path: '/signinGeneral',
+      screen: SigninGeneral,
       // navigationOptions: {
       //   drawerLabel:()=>null
       // }
@@ -113,13 +111,25 @@ const MainRoot = DrawerNavigator(
       path: '/components',
       screen: Components,
     },
-
+    BottomNavigationTrainer: {
+      path: '/bottomNavigationTrainer',
+      screen: BottomNavigationTrainer,
+    },
 
     BottomNavigation: {
       path: '/bottomNavigation',
       screen: BottomNavigation,
     },
+    
+    HomeTrainerTab: {
+      path: '/homeTrainerTab',
+      screen: HomeTrainerTab,
+    },
 
+    HomeTraineeTab: {
+      path: '/HomeTraineeTab',
+      screen: HomeTraineeTab,
+    },
 
     Ratings: {
       path: '/ratings',
@@ -210,3 +220,7 @@ export default class AppContainer extends React.Component {
   }
 }
 registerRootComponent(AppContainer);
+console.disableYellowBox = false;
+
+
+

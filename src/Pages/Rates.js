@@ -50,7 +50,9 @@ class Rates extends Component {
     }
 
     async UNSAFE_componentWillMount() {
-        this.getLocalStorage();
+        setTimeout(() => {
+            this.getLocalStorage();
+          }, 1000);
         
 
     }
@@ -164,25 +166,22 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
     },
     headerContainer: {
-        //flex: 1,
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
         marginTop: 25,
         backgroundColor: '#d0d4db',
         height: 80,
-        //paddingBottom:10
     },
 
     heading: {
         color: 'black',
-        marginTop: 10,
-        fontSize: 30,
+        fontSize: 23,
         flex: 1,
-        textAlign: 'center',
-        fontFamily: 'bold',
-        //marginLeft: -110
-    },
+        justifyContent: "center",
+        marginLeft: 15,
+        fontFamily: 'light',
+      },
     fonts: {
         marginBottom: 8,
     },

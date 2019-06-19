@@ -1,19 +1,18 @@
 import React from 'react';
 import { StackNavigator } from 'react-navigation';
-import TraineeProfile from '../Pages/TraineeProfile';
+import TrainerProfile from '../Pages/TrainerProfile';
 
-const ProfileTabView = ({ navigation }) => (
-  <TraineeProfile navigation={navigation} />
+const ProfileTrainerTabView = ({ navigation }) => (
+  <TrainerProfile navigation={navigation} />
 );
 
 
 
-const ProfileTab = StackNavigator({
+const ProfileTrainerTab = StackNavigator({
   Profile: {
-    screen: ProfileTabView,
+    screen: ProfileTrainerTabView,
     path: '/Profile',
   },
-
 
 },
 
@@ -28,4 +27,4 @@ const ProfileTab = StackNavigator({
 
 );
 
-export default ProfileTab;
+export default ProfileTrainerTab;

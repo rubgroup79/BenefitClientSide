@@ -10,11 +10,11 @@ import {
   StatusBar,
 
 } from 'react-native';
-import { Button, Input, Slider } from 'react-native-elements';
+import { Slider, Divider, Button } from 'react-native-elements';
 import { Font } from 'expo';
+import AvatarImage from '../Components/AvatarImage';
 import NumericInput from 'react-native-numeric-input';
 import Icon from "react-native-vector-icons/Entypo";
-import Icon1 from "react-native-vector-icons/Ionicons";
 import ActionButton from 'react-native-action-button';
 import ImageUpload from '../Components/ImagePicker';
 
@@ -25,27 +25,21 @@ const SCREEN_WIDTH = Dimensions.get('window').width;
 const SLIDER_SIZE = SCREEN_WIDTH - 150;
 
 
-export default class SigninTrainer extends Component {
+export default class SigninTrainee extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
       fontLoaded: false,
-      // email: '',
-      // password: '',
-      // firstName: '',
-      // lastName: '',
-      // dateOfBirth: '',
-      // sportCategories: [],
-      // gender: null,
-      // isTrainer: null,
       searchRadius: 5,
       picture: '',
-      personalTrainingPrice: 0
+      personalTrainingPrice: 150
     };
 
+    // this.setSelectedGenderPartner = this.setSelectedGenderPartner.bind(this);
+    // this.setSelectedGenderTrainer = this.setSelectedGenderTrainer.bind(this);
     this.setPicturePath = this.setPicturePath.bind(this);
-  
+
   }
 
   async componentDidMount() {
@@ -61,75 +55,101 @@ export default class SigninTrainer extends Component {
     });
   }
 
- 
+  UNSAFE_componentWillMount() {
+    this.setState({ picture: this.props.navigation.getParam('gender') == 'Male' ? "http://proj.ruppin.ac.il/bgroup79/test1/tar6/uploadFiles/Male.jpg" : "http://proj.ruppin.ac.il/bgroup79/test1/tar6/uploadFiles/Female.jpg" })
+  }
+
+  nextStep() {
+    const partnerGenderValid = this.validatePartnerGender();
+    if (partnerGenderValid)
+      this.setState({ step: 2 });
+  }
+
+
   submit() {
-    const pictureValid = this.validatePicture();
 
-    if (
-      pictureValid 
-    ) {
-      let Trainer = {
-        Email: this.props.navigation.getParam('email'),
-        Password: this.props.navigation.getParam('password'),
-        FirstName: this.props.navigation.getParam('firstName'),
-        LastName: this.props.navigation.getParam('lastName'),
-        Gender: this.props.navigation.getParam('gender'),
-        DateOfBirth: this.props.navigation.getParam('dateOfBirth'),
-        SportCategories: this.props.navigation.getParam('userSportCategories'),
-        IsTrainer: 1,
-        SearchRadius: this.state.searchRadius,
-        PersonalTrainingPrice:0,
-        Picture: this.state.picture,
-      }
-
-      console.warn(Trainer);
-      fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/InsertTrainer', {
-        method: 'POST',
-        headers: { "Content-type": "application/json; charset=UTF-8" },
-        body: JSON.stringify(Trainer),
-
-      })
-        .then(res => res.json())
-        .then(response => {
-          if (response == 0) {
-            alert('Error');
-          }
-          else {
-            alert('User Code: ' + response);
-            this.props.navigation.navigate('Login');
-          }
-        })
-
-        .catch(error => console.warn('Error:', error.message));
+    let Trainer = {
+      Email: this.props.navigation.getParam('email'),
+      Password: this.props.navigation.getParam('password'),
+      FirstName: this.props.navigation.getParam('firstName'),
+      LastName: this.props.navigation.getParam('lastName'),
+      Gender: this.props.navigation.getParam('gender'),
+      DateOfBirth: this.props.navigation.getParam('dateOfBirth'),
+      SportCategories: this.props.navigation.getParam('userSportCategories'),
+      IsTrainer: 1,
+      SearchRadius: this.state.searchRadius,
+      Picture: this.state.picture,
+      PersonalTrainingPrice: this.state.personalTrainingPrice
     }
 
+    console.warn(Trainer);
+    fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/InsertTrainer', {
+      method: 'POST',
+      headers: { "Content-type": "application/json; charset=UTF-8" },
+      body: JSON.stringify(Trainer),
+
+    })
+      .then(res => res.json())
+      .then(response => {
+        if (response == 0) {
+          alert('Error');
+        }
+        else {
+          alert('User Code: ' + response);
+          this.props.navigation.navigate('Login');
+        }
+      })
+
+      .catch(error => console.warn('Error:', error.message));
 
 
   }
 
   validatePicture() {
-    if (this.state.picture == null) {
-      alert('Please insert picture');
-      return false;
-    }
+    if (this.state.picture == '') return false;
     else return true;
-
   }
 
 
-setPicturePath(path){
-  this.setState({picture:path});
-}
+  // validatePartnerGender() {
+  //   if (this.state.partnerGender == null) {
+  //     alert('Please select prefered partner gender');
+  //     return false;
+  //   }
+  //   else return true;
+
+  // }
+
+  // validateTrainerGender() {
+  //   if (this.state.trainerGender == null) {
+  //     alert('Please select prefered trainer gender');
+  //     return false;
+  //   }
+  //   else return true;
+
+  // }
+
+  // setSelectedGenderPartner = selectedType =>
+  //   LayoutAnimation.easeInEaseOut() || this.setState({ partnerGender: selectedType });
+
+
+  // setSelectedGenderTrainer = selectedType =>
+  //   LayoutAnimation.easeInEaseOut() || this.setState({ trainerGender: selectedType });
+
+
+  setPicturePath(path) {
+    this.setState({ picture: path });
+  }
 
 
   render() {
     return (
       <SafeAreaView style={{ flex: 1 }}>
-
+{console.warn(this.state.picture)}
         <StatusBar barStyle="light-content" />
 
         {this.state.fontLoaded ? (
-          <View style={{ flex: 1, backgroundColor: 'rgba(47,44,60,1)' }}>
+          <View style={{ flex: 1, }}>
 
             <View style={styles.statusBar} />
 
@@ -139,7 +159,9 @@ setPicturePath(path){
 
             </View>
 
-            <ScrollView style={{ flex: 1 }}>
+            <ScrollView
+              scrollEnabled={false}
+              style={{ flex: 1 }}>
 
               <View>
 
@@ -147,97 +169,104 @@ setPicturePath(path){
 
               </View>
 
-                  <View style={{ flex: 1, flexDirection: 'column' }}>
+              <View style={{ flex: 1, flexDirection: 'column', marginTop: 20 }}>
 
-                    <Text
-                      style={style = styles.textHeadlines}
-                    >
+                <Text
+                  style={style = styles.textHeadlines}
+                >
 
-                      Search Radius
+                  Search Radius
                 </Text>
 
-                    <View style={styles.sliderContainerStyle} >
+                <View style={styles.sliderContainerStyle} >
 
-                      <Text style={styles.sliderRangeText}>0</Text >
+                  <Text style={styles.sliderRangeText}>0</Text >
 
-                      <Slider
-                        minimumTrackTintColor='white'
-                        maximumTrackTintColor='gray'
-                        thumbTintColor='rgba(213, 100, 140, 1)'
-                        style={styles.sliderStyle}
-                        minimumValue={0}
-                        step={1}
-                        maximumValue={30}
-                        value={this.state.searchRadius}
-                        onValueChange={value => this.setState({ searchRadius: value })}
-                      />
+                  <Slider
+                    minimumTrackTintColor='gray'
+                    maximumTrackTintColor='#c7c9cc'
+                    thumbTintColor='#f34573'
+                    style={styles.sliderStyle}
+                    minimumValue={0}
+                    step={1}
+                    maximumValue={30}
+                    value={this.state.searchRadius}
+                    onValueChange={value => this.setState({ searchRadius: value })}
+                  />
 
-                      <Text style={style = styles.sliderRangeText}>30</Text>
-
-                    </View>
-
-                    <Text style={{ color: 'rgba(216, 121, 112, 1)', textAlign: 'center', fontSize: 13 }}>Radius: {this.state.searchRadius} km</Text>
-
-                  </View>
-
-                  <View style={{ flex: 1, flexDirection: 'column' }}>
-
-                    {/* <Text style={styles.preferencesHeadlines} > Partner Preferences</Text> */}
-
-
-                    <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', alignContent: "center", marginTop: 20 }}>
-
-                      <Text style={style = styles.partnersAgeHeadline}>
-                        Price for personal training
-                      </Text>
-
-                      <View style={{ flex: 5, justifyContent: 'center', flexDirection: 'row', marginRight: 25 }}>
-
-                  
-
-                        <Text style={{ flex: 1, color: 'white', textAlign: 'center', marginTop: 10, fontWeight: 'bold' }}>$</Text>
-
-                        <NumericInput
-                          style={styles.numericInput}
-                          value={this.state.personalTrainingPrice}
-                          onChange={value => this.setState({ personalTrainingPrice: value })}
-                          type='up-down'
-                          initValue={this.state.personalTrainingPrice}
-                          totalWidth={100}
-                          textColor='white'
-                          minValue={0}
-                          maxValue={500}
-                          rounded
-                        />
-                      </View>
-
-                    </View>
-
-                  </View>
-
-                  <View style={{ flex: 1 }}>
-                      <ActionButton
-                        buttonColor='#46db93'
-                        size={50}
-                        renderIcon={active => active ? null :
-                          (<Icon
-                            name='check'
-                            color='white'
-                            size={35}
-                          />)
-                        }
-                        onPress={() => this.submit()}
-                      ></ActionButton>
-<Button
-title="submit"
-onPress={() => this.submit()}
->
-
-</Button>
+                  <Text style={style = styles.sliderRangeText}>30</Text>
 
                 </View>
 
-               
+                <Text style={{ color: '#f34573', textAlign: 'center', fontSize: 13, fontFamily: 'light' }}>Radius: {this.state.searchRadius} km</Text>
+
+              </View>
+
+              <View style={{ flex: 1, flexDirection: 'column', marginTop: 20 }}>
+
+                <Text
+                  style={style = styles.textHeadlines}
+                >
+
+                  Pesonal Training Price
+</Text>
+
+                <View style={styles.sliderContainerStyle} >
+
+                  <Text style={styles.sliderRangeText}>0</Text >
+
+                  <Slider
+                    minimumTrackTintColor='gray'
+                    maximumTrackTintColor='#c7c9cc'
+                    thumbTintColor='#f34573'
+                    style={styles.sliderStyle}
+                    minimumValue={0}
+                    step={1}
+                    maximumValue={500}
+                    value={this.state.personalTrainingPrice}
+                    onValueChange={value => this.setState({ personalTrainingPrice: value })}
+                  />
+
+                  <Text style={style = styles.sliderRangeText}>30</Text>
+
+                </View>
+
+                <Text style={{ color: '#f34573', textAlign: 'center', fontSize: 13, fontFamily: 'light' }}>Price: {this.state.personalTrainingPrice} $</Text>
+
+              </View>
+              <Button
+                containerStyle={{ marginVertical: 20 }}
+                style={{
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginBottom: 10
+                }}
+                buttonStyle={{
+                  height: 55,
+                  width: SCREEN_WIDTH - 250,
+                  borderRadius: 30,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+                linearGradientProps={{
+                  colors: ['#75cac3', '#75cac3'],
+                  start: [1, 0],
+                  end: [0.2, 0],
+                }}
+                title="SUBMIT"
+                titleStyle={{
+                  fontFamily: 'regular',
+                  fontSize: 20,
+                  color: 'white',
+                  textAlign: 'center',
+                }}
+                onPress={() => this.submit()}
+                activeOpacity={0.5}
+              />
+
+
+
 
             </ScrollView>
 
@@ -259,45 +288,24 @@ const styles = StyleSheet.create({
   statusBar: {
     height: 10,
   },
+
   navBar: {
     height: 60,
     width: SCREEN_WIDTH,
     justifyContent: 'center',
     alignContent: 'center',
   },
-  nameHeader: {
-    color: 'white',
-    fontSize: 22,
-    textAlign: 'center',
-  },
-  infoTypeLabel: {
-    fontSize: 15,
-    textAlign: 'right',
-    color: 'rgba(126,123,138,1)',
-    fontFamily: 'regular',
-    paddingBottom: 10,
-  },
-  infoAnswerLabel: {
-    fontSize: 15,
-    color: 'white',
-    fontFamily: 'regular',
-    paddingBottom: 10,
-  },
-  inputStyle: {
-    flex: 1,
-    marginLeft: 10,
-    color: 'white',
-    fontFamily: 'light',
-    fontSize: 16,
-    height: 100,
 
+  nameHeader: {
+    color: '#f34573',
+    fontSize: 28,
+    textAlign: 'center',
+    fontFamily: 'light'
   },
-  inputContainer: {
-    marginTop: 25
-  },
+
   sliderStyle: {
     width: SLIDER_SIZE,
-    marginTop: 25,
+    marginTop: 35,
   },
 
 
@@ -315,30 +323,32 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-around',
     margin: 10,
-    //alignItems: 'center',
     flexDirection: 'row',
     marginRight: 40
 
   },
+
   sliderRangeText: {
     flex: 1,
-    color: 'white',
-    fontWeight: 'bold',
+    color: '#f34573',
     marginTop: 37,
-    textAlign: 'center'
+    textAlign: 'center',
+    fontFamily: 'bold'
   },
+
   textHeadlines: {
     flex: 1,
     fontSize: 15,
-    color: 'rgba(216, 121, 112, 1)',
+    color: '#75cac3',
     fontFamily: 'regular',
     marginLeft: 40,
-    marginTop: 30
+    marginTop: 10
   },
+
   partnersGenderHeadline: {
     flex: 1,
     fontSize: 15,
-    color: 'rgba(216, 121, 112, 1)',
+    color: '#75cac3',
     fontFamily: 'regular',
     marginLeft: 40,
     marginTop: 30
@@ -347,7 +357,7 @@ const styles = StyleSheet.create({
   partnersAgeHeadline: {
     flex: 2,
     fontSize: 15,
-    color: 'rgba(216, 121, 112, 1)',
+    color: '#75cac3',
     fontFamily: 'regular',
     marginLeft: 40,
     marginTop: 10
@@ -360,29 +370,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: -18,
   },
+
   partnerPreferencesStyle: {
     flex: 1,
     flexDirection: 'row',
-    marginTop: 30
+    marginTop: 15
   },
-  uploadImageIcon: {
-    fontSize: 20,
-    height: 22,
-    color: 'black'
-  },
-  editImageButton: {
-    marginRight: 95,
-    marginTop: -30
-  },
+
   numericInput: {
     flex: 1,
   },
+
   preferencesHeadlines: {
-    color: 'white',
+    color: '#7384B4',
     textAlign: 'center',
-    fontSize: 20,
-    fontWeight: "bold",
-    marginTop: 30,
+    fontSize: 14,
+    fontFamily: "bold",
+    marginTop: 20,
   }
 
 

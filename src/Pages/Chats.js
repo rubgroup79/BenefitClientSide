@@ -49,7 +49,9 @@ class Chats extends Component {
   }
 
   UNSAFE_componentWillMount() {
-    this.getLocalStorage();
+    setTimeout(() => {
+      this.getLocalStorage();
+    }, 1000);
   }
 
 
@@ -167,11 +169,11 @@ const styles = StyleSheet.create({
   },
   heading: {
     color: 'black',
-    marginTop: 10,
-    fontSize: 30,
+    fontSize: 23,
     flex: 1,
-    textAlign: 'center',
-    fontFamily: 'bold'
+    justifyContent: "center",
+    marginLeft: 15,
+    fontFamily: 'light',
   },
   fonts: {
     marginBottom: 8,

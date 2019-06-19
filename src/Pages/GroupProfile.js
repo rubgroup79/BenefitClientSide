@@ -82,6 +82,23 @@ export default class GroupProfile extends Component {
 
   }
 
+  setTime(trainingTime) {
+    hour = (trainingTime.split(" ")[1]).split(":")[0];
+    minutes = (trainingTime.split(" ")[1]).split(":")[1];
+    ampm = trainingTime.split(" ")[2];
+    
+    if (ampm == "PM")
+    {
+        if(hour=="12")
+            return (hour) + ":" + minutes;
+        temp= JSON.parse(hour);
+        temp+=12;
+        return (temp) + ":" + minutes;
+    }
+       
+    else return hour + ":" + minutes;
+}
+
   getGroupDetails() {
     fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetGroupDetails?GroupCode=' + this.props.navigation.getParam('GroupCode', null), {
 
@@ -106,8 +123,10 @@ export default class GroupProfile extends Component {
       .then(response => {
         this.setState({ groupParticipants: response }, this.getAddress)
         response.map((participant) => {
-          if (participant.UserCode == this.state.creatorCode)
+          if (participant.UserCode == this.state.creatorCode){
             this.setState({ creatorPicture: participant.Picture, creatorAge: participant.Age, creatorName: participant.FirstName + ' ' + participant.LastName, creatorRate: participant.Rate })
+
+          }
         })
 
       })
@@ -148,7 +167,7 @@ export default class GroupProfile extends Component {
 
               <Text style={styles.nameHeader}>{this.state.sportCategory + ' Group'}</Text>
               <Text style={{ flex: 1, fontFamily: 'regular', textAlign: 'center', color: '#7384B4', fontSize: 18, }}>{this.state.address}</Text>
-              <Text style={{ flex: 1, fontFamily: 'regular', textAlign: 'center', color: '#7384B4', fontSize: 18, }}>{this.state.trainingTime}</Text>
+              <Text style={{ flex: 1, fontFamily: 'regular', textAlign: 'center', color: '#7384B4', fontSize: 18, }}>{this.setTime(this.state.trainingTime) +' '+ this.state.trainingTime.split(' ')[0] }</Text>
               <Text style={{ flex: 1, fontFamily: 'light', textAlign: 'center', color: '#7384B4', fontSize: 14, }}>Open For {this.state.minParticipants} - {this.state.maxParticipants} Trainees </Text>
 
             </View>
@@ -160,6 +179,7 @@ export default class GroupProfile extends Component {
               {this.state.withTrainer ?
 
                 <View style={{ flexDirection: 'row', alignItems: 'center', alignContent: 'center', justifyContent: 'center', marginBottom: 20, marginTop: 20 }}>
+                  
                   <View style={{ flex: 1, alignItems: 'flex-end', marginRight: 5 }}>
                     <Image style={{ width: 80, height: 80, borderRadius: 40 }} source={{ uri: this.state.creatorPicture }}></Image>
                   </View>

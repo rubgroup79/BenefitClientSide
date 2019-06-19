@@ -20,7 +20,7 @@ var hours_now = new Date().getHours();
 var minutes_now = new Date().getMinutes();
 var timeNow = hours_now + ":" + minutes_now;
 
-export default class SearchModal extends Component {
+export default class TrainerOnlineModal extends Component {
     constructor(props) {
 
         super(props);
@@ -29,10 +29,10 @@ export default class SearchModal extends Component {
             fontLoaded: false,
             latitude: 0,
             longitude: 0,
-            withTrainer: false,
-            withPartner: false,
-            groupWithTrainer: false,
-            groupWithPartners: false,
+            // withTrainer: false,
+            // withPartner: false,
+            // groupWithTrainer: false,
+            // groupWithPartners: false,
             startTime: (moment(new Date()).format('YYYY-MM-DD HH:mm:ss')),
             endTime: (moment(new Date()).format('YYYY-MM-DD HH:mm:ss')),
             coupleResults: [],
@@ -59,17 +59,17 @@ export default class SearchModal extends Component {
         else return 0;
     }
 
-    setPartnerTraining = () =>
-        LayoutAnimation.easeInEaseOut() || this.setState({ withPartner: !this.state.withPartner });
+    // setPartnerTraining = () =>
+    //     LayoutAnimation.easeInEaseOut() || this.setState({ withPartner: !this.state.withPartner });
 
-    setTrainerTraining = () =>
-        LayoutAnimation.easeInEaseOut() || this.setState({ withTrainer: !this.state.withTrainer });
+    // setTrainerTraining = () =>
+    //     LayoutAnimation.easeInEaseOut() || this.setState({ withTrainer: !this.state.withTrainer });
 
-    setPartnersGroupTraining = () =>
-        LayoutAnimation.easeInEaseOut() || this.setState({ groupWithPartners: !this.state.groupWithPartners });
+    // setPartnersGroupTraining = () =>
+    //     LayoutAnimation.easeInEaseOut() || this.setState({ groupWithPartners: !this.state.groupWithPartners });
 
-    setTrainerGroupTraining = () =>
-        LayoutAnimation.easeInEaseOut() || this.setState({ groupWithTrainer: !this.state.groupWithTrainer });
+    // setTrainerGroupTraining = () =>
+    //     LayoutAnimation.easeInEaseOut() || this.setState({ groupWithTrainer: !this.state.groupWithTrainer });
 
     onConfirmStartTime = (hour, minute) => {
         start = hour + ":" + minute;
@@ -81,54 +81,49 @@ export default class SearchModal extends Component {
         this.setState({ endTime: moment(new Date()).format('YYYY-MM-DD') + " " + end + ":00.000" });
     }
 
-   
+
     validateSearchInput() {
-        if (!this.state.withPartner && !this.state.withTrainer && !this.state.groupWithPartners && !this.state.groupWithTrainer)
-            alert("Please choose who to want to train with");
+
+        if (this.state.startTime > this.state.endTime)
+            alert("Start time cannot be before end time");
         else {
-            if (this.state.startTime > this.state.endTime)
-                alert("Start time cannot be before end time");
-            else {
-                if (this.state.latitude != 0 && this.state.longitude != 0) {
-                    //this.props.userCode
-                    var OnlineDetails = {
-                        UserCode: this.props.userCode,
-                        Latitude: this.state.latitude,
-                        Longitude: this.state.longitude,
-                        StartTime: this.state.startTime,
-                        EndTime: this.state.endTime,
-                        WithTrainer: this.boolToInt(this.state.withTrainer),
-                        WithPartner: this.boolToInt(this.state.withPartner),
-                        GroupWithTrainer: this.boolToInt(this.state.groupWithTrainer),
-                        GroupWithPartners: this.boolToInt(this.state.groupWithPartners),
-                    };
-                    this.props.searchModalVisible();
-                    this.props.changeSearchMode();
-                    
-                    this.props.insertOnlineTrainee(OnlineDetails);
+            if (this.state.latitude != 0 && this.state.longitude != 0) {
+                //this.props.userCode
+                var OnlineDetails = {
+                    UserCode: this.props.userCode,
+                    Latitude: this.state.latitude,
+                    Longitude: this.state.longitude,
+                    StartTime: this.state.startTime,
+                    EndTime: this.state.endTime,
+                    // WithTrainer: this.boolToInt(this.state.withTrainer),
+                    // WithPartner: this.boolToInt(this.state.withPartner),
+                    // GroupWithTrainer: this.boolToInt(this.state.groupWithTrainer),
+                    // GroupWithPartners: this.boolToInt(this.state.groupWithPartners),
+                };
+                this.props.onlineModalVisible();
 
-                } 
-                else alert("Please select location");
-            } 
-           
+                this.props.insertOnlineTrainer(OnlineDetails);
+
+            }
+            else alert("Please select location");
         }
+
+
     }
-
-
 
     render() {
         return (
 
             <ScrollView style={styles.mainContainer}>
                 <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
-                    <Icon name='close' style={styles.closeIcon} size={20} color='gray' onPress={() => this.props.searchModalVisible()}></Icon>
-                    <Text style={styles.headline}>Find Your BeneFIT</Text>
+                    <Icon name='close' style={styles.closeIcon} size={20} color='gray' onPress={() => this.props.onlineModalVisible()}></Icon>
+                    <Text style={styles.headline}>Couple Training</Text>
                 </View>
                 {this.state.fontLoaded ?
 
                     <View style={styles.searchContainer}>
 
-                        <View style={styles.trainWithContainer} >
+                        {/* <View style={styles.trainWithContainer} >
 
                             <AvatarImage
                                 label={"Partner"}
@@ -182,7 +177,7 @@ export default class SearchModal extends Component {
                                 selected={this.state.groupWithTrainer == true}
                             />
 
-                        </View>
+                        </View> */}
 
                         <View style={styles.timePickerContainer}>
 
@@ -281,7 +276,6 @@ export default class SearchModal extends Component {
                                 }}
                                 onPress={() => {
                                     this.validateSearchInput();
-                                    
                                 }}
                                 activeOpacity={0.5}
                             />

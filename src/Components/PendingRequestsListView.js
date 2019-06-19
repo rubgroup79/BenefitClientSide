@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
-import { Text, View, StyleSheet, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
+import { Text, View, StyleSheet, ScrollView, TouchableOpacity, Dimensions, ActivityIndicator } from 'react-native';
 import { Avatar, } from 'react-native-elements';
 import Icon2 from 'react-native-vector-icons/AntDesign';
 import Icon3 from 'react-native-vector-icons/Foundation';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Icon1 from 'react-native-vector-icons/Entypo';
+import Icon4 from 'react-native-vector-icons/MaterialCommunityIcons';
+
 
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -87,21 +89,28 @@ export default class PendingRequestsListView extends Component {
                             rounded
                             source={{ uri: x.Picture.toString() }}
                             activeOpacity={0.7}
+                            onPress={()=> this.props.navigation.navigate('UserProfile', {UserCode: x.SenderCode == this.props.UserCode ? x.ReceiverCode :x.SenderCode})}
                         />
                     </View>
                     <View style={{ flex: 1, flexDirection: 'column' }}>
-                        <Text
-                            style={{
-                                fontFamily: 'regular',
-                                fontSize: 15,
-                                marginLeft: 10,
-                                color: 'gray',
-                            }}
-                        >
-                            {x.FirstName + ' ' + x.LastName + ', ' + x.Age}
-                        </Text>
+                        
+                    <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignContent: 'flex-start', marginLeft: 10 }}>
+                            {x.IsTrainer == 1 ? <Icon4 name={'whistle'} size={20} color={'blue'} style={{ transform: [{ rotate: '-30deg' }], flex: 1 }} ></Icon4> : null}
+                            <Text
+                                style={{
+                                    fontFamily: 'regular',
+                                    fontSize: 15,
+                                    //marginLeft: 10,
+                                    color: 'gray',
+                                    flex: 5
+                                }}
+                            >
+                                {x.FirstName + ' ' + x.LastName + ', ' + x.Age}
+                            </Text>
+                        </View>
+                        
                         <View style={{ flex: 1, flexDirection: 'row', marginRight: 25, justifyContent: 'center' }}>
-                            <Icon1 style={{ flex: 1, marginLeft: 15 }} name='location-pin' color='gray' textAlign='center' size={20} onPress={() => this.props.setLatLon(x.Latitude, x.Longitude)}></Icon1>
+                            
 
                             <Text
                                 style={{
@@ -120,7 +129,18 @@ export default class PendingRequestsListView extends Component {
                                     addresses[index]}
 
                             </Text>
+                            <Icon1 style={{ flex: 1, marginLeft: 5 }} name='location-pin' color='gray' textAlign='center' size={20} onPress={() => this.props.setLatLon(x.Latitude, x.Longitude)}></Icon1>
                         </View>
+                        {x.IsTrainer ? <Text
+                            style={{
+                                fontFamily: 'light',
+                                fontSize: 12,
+                                marginLeft: 10,
+                                color: 'blue',
+                            }}
+                        >
+                            {x.Price + "$"}
+                        </Text> : null}
                     </View>
                 </View>
                 <View
@@ -129,26 +149,7 @@ export default class PendingRequestsListView extends Component {
                         justifyContent: 'flex-end',
                         marginRight: 10,
                         flex: 1
-                    }}
-                >
-
-
-                    {x.isTrainer ?
-                        <View
-                            style={{
-                                backgroundColor: 'rgba(222,222,222,1)',
-                                width: 28,
-                                height: 28,
-                                borderRadius: 100,
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                marginHorizontal: 10,
-                            }}
-                        >
-                            <Icon3 name="dollar" color="red" size={20} />
-                        </View>
-                        : null
-                    }
+                    }}>
 
                     {x.SenderCode == this.props.UserCode ?
                         (
@@ -186,7 +187,7 @@ export default class PendingRequestsListView extends Component {
                                 onPress={() => {
                                     this.replySuggestion(x.SuggestionCode, true)
                                     this.props.refresh("pending")
-                                    
+
                                 }}
                             >
                                 <Icon2 name="check" color="green" size={20} />
@@ -204,7 +205,7 @@ export default class PendingRequestsListView extends Component {
                                 onPress={() => {
                                     this.replySuggestion(x.SuggestionCode, false)
                                     this.props.refresh("pending");
-                                    
+
                                 }
 
                                 }
@@ -243,18 +244,20 @@ export default class PendingRequestsListView extends Component {
     render() {
         return (
             <View style={{ flex: 1, flexDirection: 'column', backgroundColor: 'rgba(255,255,255,0.9)', alignContent: "center", position: 'absolute', zIndex: 2, top: 90, width: SCREEN_WIDTH }}>
-          
+
                 <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
                     <Icon name='close' style={styles.closeIcon} size={20} color='gray' onPress={() => this.props.closeListView()}></Icon>
                     <Text style={styles.headline}>Pending Requests</Text>
                 </View>
 
-                {this.props.PendingRequests.length != 0 && this.state.status == 1 ?
-                    <ScrollView style={{ flex: 1, marginBottom: 20 }}>
-                        {this.props.PendingRequests.map((x, index) => {
-                            return (<View key={index}>{this.renderPendingSuggestion(x, index)}</View>)
-                        }
-                        )}
+                {this.props.PendingRequests.length != 0 ?
+                    <ScrollView style={{ flex: 1, marginBottom: 20, maxHeight:200 }}>
+                        {this.state.status == 1 ? <View>
+                            {this.props.PendingRequests.map((x, index) => {
+                                return (<View key={index}>{this.renderPendingSuggestion(x, index)}</View>)
+                            }
+                            )}
+                        </View> : <ActivityIndicator style={{ marginTop: 20 }} size="small" color="gray" />}
 
                     </ScrollView> : <Text style={{ fontFamily: 'regular', fontSize: 15, textAlign: 'center', color: 'gray' }}>No Pending Requests</Text>}
 

@@ -8,6 +8,7 @@ import {
   ScrollView,
   Text,
   View,
+  ActivityIndicator
 } from 'react-native';
 import { Font } from 'expo';
 import { Input, Button, withTheme } from 'react-native-elements';
@@ -32,7 +33,7 @@ var MaxDate = "01-01-" + (new Date().getFullYear() - 18);
 UIManager.setLayoutAnimationEnabledExperimental &&
   UIManager.setLayoutAnimationEnabledExperimental(true);
 
-export default class SignIn1 extends Component {
+export default class SigninGeneral extends Component {
   constructor(props) {
     super(props);
 
@@ -76,11 +77,12 @@ export default class SignIn1 extends Component {
     })
       .then(res => res.json())
       .then(response => {
-       
         temp=response.map((category)=>{
         return({CategoryCode:category.CategoryCode, Description:category.Description, Selected:false})
         })
-        this.setState({ sportCategories: response, selectedSportCategories:temp, status:1 });
+       setTimeout(() => {
+          this.setState({ sportCategories: response, selectedSportCategories:temp, status:1 });
+       }, 3000);
       })
 
       .catch(error => console.warn('Error:', error.message));
@@ -135,9 +137,6 @@ export default class SignIn1 extends Component {
     }
   }
 
-  print() {
-    console.warn(this.state.firstName + ' ' + this.state.lastName + ' ' + this.state.email + ' ' + this.state.password);
-  }
 
   setDate(date) {
     this.setState({ dateOfBirth: date });
@@ -227,19 +226,15 @@ export default class SignIn1 extends Component {
       lastName,
       firstNameValid,
       lastNameValid,
-      status
+      
     } = this.state;
 
-    return !fontLoaded && status!=1 ? (
-      <Text> Loading... </Text>
-
-    ) : (
-        <ScrollView
+    return fontLoaded && this.state.status==1 ? (
+      <ScrollView
           //scrollEnabled={true}
           keyboardShouldPersistTaps="handled"
           contentContainerStyle={styles.container}
         >
-
           <KeyboardAvoidingView
             behavior="position"
             contentContainerStyle={styles.formContainer}
@@ -498,6 +493,8 @@ export default class SignIn1 extends Component {
 
         </ScrollView>
 
+    ) : (
+      <ActivityIndicator style={{ justifyContent: 'center', top: 350 }} size="large" color="gray" />
       );
   }
 }

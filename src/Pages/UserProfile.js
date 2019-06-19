@@ -8,7 +8,8 @@ import {
   LayoutAnimation,
   Dimensions,
   StatusBar,
-  Image
+  Image,
+  TouchableOpacity
 
 } from 'react-native';
 import { Slider, Divider, Button } from 'react-native-elements';
@@ -135,19 +136,50 @@ export default class UserProfile extends Component {
     const { goBack } = this.props.navigation;
     index = 1;
     return (
-      <SafeAreaView style={{ flex: 1 }}>
-        <StatusBar barStyle="light-content" />
-
+      <View style={{ flex: 1 }}>
+       
         {this.state.fontLoaded && this.state.status == 1 && this.state.selectedSportCategories.length!=0? (
           <View style={{ flex: 1, }}>
-            <Icon1 name='left' style={styles.closeIcon} size={20} color='gray' onPress={() => { goBack() }}></Icon1>
-            <View style={styles.statusBar} />
+         <View
+                            style={[
+                                styles.headerContainer,
+                                { marginTop: 20, zIndex: 1, },
+                            ]}
+                        >
+                            <View style={{ flex: 1, }}>
+                                <Button
+                                    icon={() =>
+                                        <Icon1 name='left' size={20} />}
+                                    style={{
+                                        justifyContent: 'center',
+                                       
+                                       
+                                    }}
+                                    buttonStyle={{
+                                        height: 45,
+                                        width: 45,
+                                        borderRadius: 30,
+                                        backgroundColor: 'transparent',
+
+                                    }}
+                                    onPress={() => goBack()}
+                                    activeOpacity={0.5}
+                                />
+                            </View>
+                            <View style={{ flex: 7, flexDirection: 'row', justifyContent: 'center', alignContent: 'flex-start', }}>
+
+                                <Text style={styles.heading}>{this.state.firstName + ' ' + this.state.lastName }</Text>
+                            </View>
+                        </View>        
+          {/* <TouchableOpacity style={{ top:20, left:20, width:30, height:30}} onPress={() => { goBack() }}>
+            <Icon1 name='left' style={styles.closeIcon} size={20} color='gray' ></Icon1>
+            </TouchableOpacity>
 
             <View style={styles.navBar}>
 
-              <Text style={styles.nameHeader}>{this.state.firstName + ' ' + this.state.lastName + "'s Profile"}</Text>
+              <Text style={styles.nameHeader}>{this.state.firstName + ' ' + this.state.lastName }</Text>
 
-            </View>
+            </View> */}
 
             <ScrollView
               scrollEnabled={false}
@@ -222,7 +254,7 @@ export default class UserProfile extends Component {
           </View>
         ) : null}
 
-      </SafeAreaView>
+      </View>
     );
   }
 }
@@ -334,10 +366,24 @@ const styles = StyleSheet.create({
     fontFamily: "bold",
     marginTop: 20,
   },
-  closeIcon: {
-    top: 20,
-    left: 20
-  },
+  headerContainer: {
+    //flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 25,
+    backgroundColor: '#f5f5f5',
+    height: 80,
+},
+
+heading: {
+    color: '#f34573',
+    fontSize: 20,
+    flex: 1,
+    fontFamily: 'regular',
+    justifyContent:'center'
+},
+
 
 
 });

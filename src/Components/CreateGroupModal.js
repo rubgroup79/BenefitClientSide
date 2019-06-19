@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { Text, View, StyleSheet, Dimensions, LayoutAnimation, ScrollView, UIManager } from 'react-native';
+import { Text, View, StyleSheet, Dimensions, LayoutAnimation, ScrollView, UIManager, Alert } from 'react-native';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
-import { Input, Button, withTheme } from 'react-native-elements';
+import { Input, Button, withTheme, Slider } from 'react-native-elements';
 import { Font } from 'expo';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Icon4 from 'react-native-vector-icons/Entypo';
@@ -10,7 +10,7 @@ import NumericInput from 'react-native-numeric-input';
 import CustomButton from '../Components/CategoriesButton';
 import moment from 'moment';
 import ActionButton from 'react-native-action-button';
-
+const SLIDER_SIZE = SCREEN_WIDTH - 100;
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 const MALE_AVATAR = require('../../Images/MaleAvatar.png');
@@ -41,13 +41,13 @@ export default class CreateGroupModal extends Component {
             minParticipants: 3,
             maxParticipants: 7,
             sportCategory: 0,
-            selectedSportCategories:[],
+            selectedSportCategories: [],
             price: 0
         };
 
         //this.validateCategories = this.validateCategories.bind(this);
-        this.getSportCategories=this.getSportCategories.bind(this);
-        this.setCategories=this.setCategories.bind(this);
+        this.getSportCategories = this.getSportCategories.bind(this);
+        this.setCategories = this.setCategories.bind(this);
 
     }
 
@@ -69,39 +69,59 @@ export default class CreateGroupModal extends Component {
         this.setState({ groupTime: moment(new Date()).format('YYYY-MM-DD') + " " + time + ":00.000" });
     }
 
-    UNSAFE_componentWillMount()
-    {
+    UNSAFE_componentWillMount() {
         this.getSportCategories();
     }
 
-    getSportCategories() { 
+    getSportCategories() {
         fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetSportCategories', {
-    
-          method: 'GET',
-          headers: { "Content-type": "application/json; charset=UTF-8" },
-        })
-          .then(res => res.json())
-          .then(response => {
-           
-            temp=response.map((category)=>{
-            return({CategoryCode:category.CategoryCode, Description:category.Description, Selected:false})
-            })
-            this.setState({ sportCategories: response, selectedSportCategories:temp, status:1 });
-          })
-    
-          .catch(error => console.warn('Error:', error.message));
-    
-      }
 
+            method: 'GET',
+            headers: { "Content-type": "application/json; charset=UTF-8" },
+        })
+            .then(res => res.json())
+            .then(response => {
+
+                temp = response.map((category) => {
+                    return ({ CategoryCode: category.CategoryCode, Description: category.Description, Selected: false })
+                })
+                this.setState({ sportCategories: response, selectedSportCategories: temp, status: 1 });
+            })
+
+            .catch(error => console.warn('Error:', error.message));
+
+    }
+
+
+    checkForCloseTrainings() {
+        fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/checkForCloseTrainings?UserCode=' + this.props.CreatorCode + '&TrainingTime=' + this.state.groupTime, {
+            method: 'GET',
+            headers: { "Content-type": "application/json; charset=UTF-8" },
+        })
+            .then(response => {
+                if (response)
+                    Alert.alert(
+                        'Warning',
+                        'You have already booked a training for this time! Are you sure you want to continue?',
+                        [
+                            { text: "Yes, I'm sure!", onPress: () => this.createGroup() },
+                            {
+                                text: 'Cancel',
+                                onPress: () => { },
+                                style: 'cancel',
+                            },
+                        ],
+                        { cancelable: false },
+                    );
+            })
+            .catch(error => console.warn('Error:', error.message));
+    }
 
     createGroup() {
-        console.warn(this.state.sportCategory);
-        //const isCategoriesValid = this.validateCategories();
         const isLocationValid = this.validateLocation();
         var Group = null;
-        //isCategoriesValid &&
         if (
-            
+
             isLocationValid
         ) {
 
@@ -130,11 +150,11 @@ export default class CreateGroupModal extends Component {
                     headers: { "Content-type": "application/json; charset=UTF-8" },
                     body: JSON.stringify(Group),
                 })
-                  
-                    .then(response => { 
+
+                    .then(response => {
                         alert('Your group is now open for partners!');
                         this.props.createGroupModalVisible();
-                     })
+                    })
                     .catch(error => console.warn('Error:', error.message));
 
             }, 1500);
@@ -143,16 +163,16 @@ export default class CreateGroupModal extends Component {
 
 
     setCategories(category) {
-        selectedCategory=0;
+        selectedCategory = 0;
         this.state.selectedSportCategories.map(function (x) {
             if (x.Description == category) {
                 x.Selected = !x.Selected;
-                selectedCategory=x.CategoryCode;
+                selectedCategory = x.CategoryCode;
             }
-            else x.Selected=false;
+            else x.Selected = false;
         });
 
-        this.setState({sportCategory:selectedCategory});
+        this.setState({ sportCategory: selectedCategory });
     }
 
     validateLocation() {
@@ -171,18 +191,18 @@ export default class CreateGroupModal extends Component {
 
             <ScrollView style={styles.mainContainer}>
                 <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
-                    <Icon name='close' style={styles.closeIcon} size={20} color='gray' onPress={() => {this.props.createGroupModalVisible()}}></Icon>
+                    <Icon name='close' style={styles.closeIcon} size={20} color='gray' onPress={() => { this.props.createGroupModalVisible() }}></Icon>
                     <Text style={styles.headline}>Create Your Group</Text>
                 </View>
 
-                {this.state.fontLoaded && this.state.status==1? 
+                {this.state.fontLoaded && this.state.status == 1 ?
 
                     <View style={styles.searchContainer}>
                         <View style={styles.timePickerContainer}>
                             <Text style={styles.subHeadline}>
                                 When?
                             </Text>
-                            <View style={{ flex: 1, marginLeft: -600, marginTop:6 }}>
+                            <View style={{ flex: 1, marginLeft: -600, marginTop: 6 }}>
                                 <TimePickerNew setTime={this.onConfirmStartTime} title={''}></TimePickerNew>
                             </View>
                         </View>
@@ -255,7 +275,7 @@ export default class CreateGroupModal extends Component {
 
                         </View>
 
-                        <View style={{flex:1, flexDirection:'column', marginTop:15}}>
+                        <View style={{ flex: 1, flexDirection: 'column', marginTop: 15, marginBottom: 15 }}>
                             <Text style={styles.subHeadline}>
                                 Participants
                             </Text>
@@ -291,44 +311,73 @@ export default class CreateGroupModal extends Component {
 
 
                         </View>
+                        {this.props.isTrainer==1 ? 
+                        <View style={{flex:1, flexDirection:'column'}}>
+                        <Text style={styles.subHeadline}>
+                            Price
+                            </Text>
+                        <View style={styles.sliderContainerStyle} >
+
+                            <View style={{ flex: 1, flexDirection: 'row' }}>
+                                <Text style={styles.sliderRangeText}>0</Text >
+
+                                <Slider
+                                    minimumTrackTintColor='gray'
+                                    maximumTrackTintColor='#c7c9cc'
+                                    thumbTintColor='#f34573'
+                                    style={styles.sliderStyle}
+                                    minimumValue={0}
+                                    step={10}
+                                    maximumValue={500}
+                                    value={this.state.maxBudget}
+                                    onValueChange={value => this.setState({ price: value })}
+                                />
+
+                                <Text style={style = styles.sliderRangeText}>500</Text>
+
+                            </View>
+                            <Text style={{ color: '#f34573', textAlign: 'center', fontSize: 13 }}>Price: {this.state.price} $</Text>
+                        </View>
+                        </View> :null}
+                        
 
                         <View style={{ flex: 1, marginTop: 20, }}>
 
-                                    <View
-                                        style={{
-                                            flex: 1,
-                                            flexDirection: 'column',
-                                            height: 150,
-                                            marginLeft: 20,
-                                            marginRight: 10,
-                                        }}
-                                    >
+                            <View
+                                style={{
+                                    flex: 1,
+                                    flexDirection: 'column',
+                                    height: 150,
+                                    marginLeft: 20,
+                                    marginRight: 10,
+                                }}
+                            >
 
-                                        <View style={{ flex: 1, flexDirection: 'row' }}>
+                                <View style={{ flex: 1, flexDirection: 'row' }}>
 
-                                            <CustomButton selected={this.state.selectedSportCategories[0].Selected} editMode={true} title="Short Run" setCategories={this.setCategories} />
-                                            <CustomButton selected={this.state.selectedSportCategories[1].Selected} editMode={true} title="Yoga" setCategories={this.setCategories} />
-                                            <CustomButton selected={this.state.selectedSportCategories[2].Selected} editMode={true} title="Jogging" setCategories={this.setCategories} />
+                                    <CustomButton selected={this.state.selectedSportCategories[0].Selected} editMode={true} title="Short Run" setCategories={this.setCategories} />
+                                    <CustomButton selected={this.state.selectedSportCategories[1].Selected} editMode={true} title="Yoga" setCategories={this.setCategories} />
+                                    <CustomButton selected={this.state.selectedSportCategories[2].Selected} editMode={true} title="Jogging" setCategories={this.setCategories} />
 
-                                        </View>
+                                </View>
 
-                                        <View style={{ flex: 1, flexDirection: 'row' }}>
+                                <View style={{ flex: 1, flexDirection: 'row' }}>
 
-                                            <CustomButton selected={this.state.selectedSportCategories[3].Selected} editMode={true} title="Long Run" setCategories={this.setCategories} />
-                                            <CustomButton selected={this.state.selectedSportCategories[4].Selected} editMode={true} title="Walking" setCategories={this.setCategories} />
-                                            <CustomButton selected={this.state.selectedSportCategories[5].Selected} editMode={true} title="Functional" setCategories={this.setCategories} />
+                                    <CustomButton selected={this.state.selectedSportCategories[3].Selected} editMode={true} title="Long Run" setCategories={this.setCategories} />
+                                    <CustomButton selected={this.state.selectedSportCategories[4].Selected} editMode={true} title="Walking" setCategories={this.setCategories} />
+                                    <CustomButton selected={this.state.selectedSportCategories[5].Selected} editMode={true} title="Functional" setCategories={this.setCategories} />
 
-                                        </View>
-                                        <View style={{ flex: 1, flexDirection: 'row' }}>
+                                </View>
+                                <View style={{ flex: 1, flexDirection: 'row' }}>
 
-                                            <CustomButton selected={this.state.selectedSportCategories[6].Selected} editMode={true} title="Pilatis" setCategories={this.setCategories} />
-                                            <CustomButton selected={this.state.selectedSportCategories[7].Selected} editMode={true} title="Strength" setCategories={this.setCategories} />
-                                            <CustomButton selected={this.state.selectedSportCategories[8].Selected} editMode={true} title="TRX" setCategories={this.setCategories} />
+                                    <CustomButton selected={this.state.selectedSportCategories[6].Selected} editMode={true} title="Pilatis" setCategories={this.setCategories} />
+                                    <CustomButton selected={this.state.selectedSportCategories[7].Selected} editMode={true} title="Strength" setCategories={this.setCategories} />
+                                    <CustomButton selected={this.state.selectedSportCategories[8].Selected} editMode={true} title="TRX" setCategories={this.setCategories} />
 
-                                        </View>
+                                </View>
 
-                                    </View>
                             </View>
+                        </View>
 
                         <Button
                             containerStyle={{ marginVertical: 20 }}
@@ -337,11 +386,11 @@ export default class CreateGroupModal extends Component {
                                 justifyContent: 'center',
                                 alignItems: 'center',
                                 //marginBottom: 10,
-                                marginTop:-10
+                                marginTop: -10
                             }}
                             buttonStyle={{
-                                height: 40,
-                                width: 65,
+                                height: 60,
+                                width: 140,
                                 borderRadius: 30,
                                 justifyContent: 'center',
                                 alignItems: 'center',
@@ -355,7 +404,7 @@ export default class CreateGroupModal extends Component {
                                 textAlign: 'center',
                             }}
                             onPress={() => {
-                                this.createGroup();
+                                this.checkForCloseTrainings();
                             }}
                             activeOpacity={0.5}
                         />
@@ -374,7 +423,7 @@ export default class CreateGroupModal extends Component {
 
 const styles = StyleSheet.create({
     mainContainer: {
-        width: SCREEN_WIDTH - 40,        
+        width: SCREEN_WIDTH - 40,
         height: SCREEN_HEIGHT - 370,
         backgroundColor: 'rgba(255,255,255,0.9)',
         position: 'absolute',
@@ -428,7 +477,7 @@ const styles = StyleSheet.create({
         flex: 2,
         width: SCREEN_WIDTH - 100,
         justifyContent: 'center',
-        marginLeft:20
+        marginLeft: 20
     },
 
     locationIcon: {
@@ -607,5 +656,28 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         marginRight: 40
     },
+    sliderRangeText: {
+        flex: 1,
+        color: '#f34573',
+        marginTop: 37,
+        textAlign: 'center',
+        fontFamily: 'bold'
+    },
+
+    sliderStyle: {
+        width: 200,
+        marginTop: 35,
+    },
+
+
+    sliderContainerStyle: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'column',
+        marginTop: -18
+    },
+
 
 })

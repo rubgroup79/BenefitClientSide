@@ -3,15 +3,15 @@ import { TabNavigator, StackNavigator,  } from 'react-navigation';
 import { Icon, Image } from 'react-native-elements';
 import Icon1 from 'react-native-vector-icons/AntDesign';
 import Icon2 from 'react-native-vector-icons/SimpleLineIcons';
-import HomeTraineeTab from '../TabsNavigation/HomeTraineeTab';
+import HomeTrainerTab from '../TabsNavigation/HomeTrainerTab';
 import ChatsTab from '../TabsNavigation/ChatsTab';
 import TrainingsTab from '../TabsNavigation/TrainingsTab';
-import ProfileTab from '../TabsNavigation/ProfileTab';
+import ProfileTabTrainer from '../TabsNavigation/ProfileTabTrainer';
 import RatesTab from '../TabsNavigation/RatesTab';
 
 const Components = TabNavigator(
   {
-
+   
     RatesTab: {
       screen: RatesTab,
       path: '/RatesTab',
@@ -38,9 +38,9 @@ const Components = TabNavigator(
       },
     },
   
-    HomeTraineeTab: {
-      screen: HomeTraineeTab,
-      path: '/HomeTraineeTab',
+    HomeTrainerTab: {
+      screen: HomeTrainerTab,
+      path: '/HomeTrainerTab',
       tabBarOptions:{
         showLable:false
       },
@@ -71,9 +71,9 @@ const Components = TabNavigator(
         ),
       },
     },
-    ProfileTab: {
-      screen: ProfileTab,
-      path: '/ProfileTab',
+    ProfileTabTrainer: {
+      screen: ProfileTabTrainer,
+      path: '/ProfileTabTrainer',
       navigationOptions: {
         tabBarLabel: 'Profile',
         tabBarIcon: ({ tintColor, focused }) => (
@@ -88,7 +88,7 @@ const Components = TabNavigator(
     },
   },
   {
-    initialRouteName: 'HomeTraineeTab',
+    initialRouteName: 'HomeTrainerTab',
     animationEnabled: false,
     swipeEnabled: false,
     // Android's default option displays tabBars on top, but iOS is bottom
@@ -104,6 +104,7 @@ const Components = TabNavigator(
       
     },
   }
+  
 );
 
 Components.navigationOptions = {

@@ -9,6 +9,7 @@ import TimePickerNew from './TimePicker';
 import NumericInput from 'react-native-numeric-input';
 import moment from 'moment';
 import ActionButton from 'react-native-action-button';
+import { getLocation, getData } from 'react-native-weather-api';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -18,6 +19,7 @@ const TRAINER_AVATAR = require('../../Images/TrainerAvatar.png');
 const TRAINEE_AVATAR = require('../../Images/TraineeAvatar.png');
 
 var hours_now = new Date().getHours();
+var inserted_hour = "20";
 var minutes_now = new Date().getMinutes();
 var timeNow = hours_now + ":" + minutes_now;
 var MaxDate = "01-01-" + (new Date().getFullYear() - 18);
@@ -33,9 +35,17 @@ export default class CreateNewTrainingModal extends Component {
             trainingTime: (moment(new Date()).format('YYYY-MM-DD HH:mm:ss')),
             latitude: 0,
             longitude: 0,
+            forecastTemp: "",
+            forecastDesc:""
         };
 
+        this.getWeather = this.getWeather.bind(this);
 
+
+    }
+
+    UNSAFE_componentWillMount() {
+        
     }
 
     async componentDidMount() {
@@ -52,13 +62,14 @@ export default class CreateNewTrainingModal extends Component {
     }
 
     onConfirmStartTime = (hour, minute) => {
+        inserted_hour = hour;
         time = hour + ":" + minute;
         this.setState({ trainingTime: moment(new Date()).format('YYYY-MM-DD') + " " + time + ":00.000" });
     }
 
     createNewTraining() {
         const isLocationValid = this.validateLocation();
-        
+
         if (
             isLocationValid
         ) {
@@ -76,22 +87,22 @@ export default class CreateNewTrainingModal extends Component {
                     Latitude: this.state.latitude,
                     Longitude: this.state.longitude,
                     TrainingTime: this.state.trainingTime,
-                    WithTrainer:  this.props.WithTrainer,
+                    WithTrainer: this.props.WithTrainer,
                     Price: 0
                 }
 
-            
+               
 
                 fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/InsertCoupleTraining', {
                     method: 'POST',
                     headers: { "Content-type": "application/json; charset=UTF-8" },
                     body: JSON.stringify(CoupleTraining),
                 })
-                    .then(() => { 
-                        alert('Great');
+                    .then(() => {
+                        alert('Your training is booked! Please notice that the weather will be '+this.state.forecastTemp+"°c with "+this.state.forecastDesc);
                         this.props.createNewTrainingModalVisible(false);
                         this.props.newTrainingButtonDisabled();
-                     })
+                    })
                     .catch(error => console.warn('Error:', error.message));
 
             }, 1500);
@@ -107,12 +118,28 @@ export default class CreateNewTrainingModal extends Component {
         return true;
     }
 
+    getWeather() {
+        index = Math.floor(((inserted_hour - new Date().getHours()) / 3));
+        // Construct the API url to call
+        let url = 'https://api.openweathermap.org/data/2.5/forecast?lat=' + this.state.latitude + '&lon=' + this.state.longitude + "&units=metric&appid=5c2433d8113849df4c21949af64f6f74";
+
+        // Call the API, and set the state of the weather forecast
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                this.setState((prevState, props) => ({
+                    forecastTemp: Math.floor(data.list[index].main.temp), forecastDesc:data.list[index].weather[0].description
+                }));
+                this.createNewTraining();
+            })
+    }
+
     render() {
         return (
 
             <ScrollView style={styles.mainContainer}>
                 <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
-                    <Icon name='close' style={styles.closeIcon} size={20} color='gray' onPress={() => {this.props.createNewTrainingModalVisible(false)}}></Icon>
+                    <Icon name='close' style={styles.closeIcon} size={20} color='gray' onPress={() => { this.props.createNewTrainingModalVisible(false) }}></Icon>
                     <Text style={styles.headline}>Create New Training</Text>
                 </View>
 
@@ -123,7 +150,7 @@ export default class CreateNewTrainingModal extends Component {
                             <Text style={styles.subHeadline}>
                                 When?
                             </Text>
-                            <View style={{ flex: 1, marginLeft: -600, marginTop:6 }}>
+                            <View style={{ flex: 1, marginLeft: -600, marginTop: 6 }}>
                                 <TimePickerNew setTime={this.onConfirmStartTime} title={''}></TimePickerNew>
                             </View>
                         </View>
@@ -203,7 +230,7 @@ export default class CreateNewTrainingModal extends Component {
                                 justifyContent: 'center',
                                 alignItems: 'center',
                                 //marginBottom: 10,
-                                marginTop:-10
+                                marginTop: -10
                             }}
                             buttonStyle={{
                                 height: 40,
@@ -221,7 +248,7 @@ export default class CreateNewTrainingModal extends Component {
                                 textAlign: 'center',
                             }}
                             onPress={() => {
-                                this.createNewTraining();
+                                this.getWeather();
                             }}
                             activeOpacity={0.5}
                         />
@@ -240,11 +267,11 @@ export default class CreateNewTrainingModal extends Component {
 
 const styles = StyleSheet.create({
     mainContainer: {
-        width: SCREEN_WIDTH - 40,        
+        width: SCREEN_WIDTH - 40,
         height: 250,
         backgroundColor: 'rgba(255,255,255,1)',
-        borderWidth:3,
-        borderColor:'gray',
+        borderWidth: 3,
+        borderColor: 'gray',
         position: 'absolute',
         borderRadius: 40,
         top: 100,
@@ -297,7 +324,7 @@ const styles = StyleSheet.create({
         flex: 2,
         width: SCREEN_WIDTH - 100,
         justifyContent: 'center',
-        marginLeft:20
+        marginLeft: 20
     },
 
     locationIcon: {

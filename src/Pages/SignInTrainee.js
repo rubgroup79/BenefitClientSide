@@ -45,7 +45,6 @@ export default class SigninTrainee extends Component {
     this.setSelectedGenderPartner = this.setSelectedGenderPartner.bind(this);
     this.setSelectedGenderTrainer = this.setSelectedGenderTrainer.bind(this);
     this.setPicturePath = this.setPicturePath.bind(this);
-
   }
 
   async componentDidMount() {
@@ -60,6 +59,11 @@ export default class SigninTrainee extends Component {
       fontLoaded: true,
     });
   }
+
+  UNSAFE_componentWillMount() {
+    this.setState({ picture: this.props.navigation.getParam('gender') == 'Male' ? "http://proj.ruppin.ac.il/bgroup79/test1/tar6/uploadFiles/Male.jpg" : "http://proj.ruppin.ac.il/bgroup79/test1/tar6/uploadFiles/Female.jpg" })
+  }
+
 
   nextStep() {
     const partnerGenderValid = this.validatePartnerGender();

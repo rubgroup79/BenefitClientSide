@@ -60,30 +60,13 @@ class Trainings extends Component {
   }
 
   UNSAFE_componentWillMount() {
-    this.getLocalStorage();
-
-    //     fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetPastCoupleTrainings?UserCode=1', {
-    //   method: 'GET',
-    //   headers: { "Content-type": "application/json; charset=UTF-8" },
-    // })
-    //   .then(res => res.json())
-    //   .then(response => {
-    //     this.setState({ pastCoupleTrainings: response })
-    //     response.map((training)=>{
-    //          this.getAddress(training.Latitude, training.Longitude, true);
-
-    //     })
-
-    //   })
-    //   .catch(error => console.warn('Error:', error.message));
-
-
-
+   this.getLocalStorage();
   }
 
   getLocalStorage = async () => {
     await AsyncStorage.getItem('UserCode', (err, result) => {
       if (result != null) {
+        console.warn(result)
         this.setState({ userCode: result }, this.getCoupleTrainings);
       }
       else alert('error local storage user code');
@@ -92,6 +75,8 @@ class Trainings extends Component {
 
     await AsyncStorage.getItem('IsTrainer', (err, result) => {
       if (result != null) {
+        console.warn(result)
+
         this.setState({ isTrainer: result });
       }
       else alert('error local storage is trainer');
@@ -234,7 +219,7 @@ class Trainings extends Component {
                         rightSubtitle={training.Price == 0 ? null : '$' + training.Price}
                         rightSubtitleStyle={{ textAlign: 'center', fontFamily: 'regular' }}
                         bottomDivider
-                        rightIcon={() => <Icon color='#f7d84c' name='star' size={30} onPress={() => this.props.navigation.navigate('Rate', { UserCode: this.state.userCode, RatedUserCode: training.PartnerUserCode, FullName: training.PartnerFirstName + " " + training.PartnerLastName, Picture: training.PartnerPicture })} />}
+                        rightIcon={() => this.state.isTrainer==0 ? <Icon color='#f7d84c' name='star' size={30} onPress={() => this.props.navigation.navigate('Rate', { UserCode: this.state.userCode, RatedUserCode: training.PartnerUserCode, FullName: training.PartnerFirstName + " " + training.PartnerLastName, Picture: training.PartnerPicture })} /> : null}
                         onPress={() => this.props.navigation.navigate('UserProfile', { UserCode: training.PartnerUserCode })}
                       />
 
@@ -291,11 +276,11 @@ const styles = StyleSheet.create({
   },
   heading: {
     color: 'black',
-    marginTop: 10,
-    fontSize: 30,
+    fontSize: 23,
     flex: 1,
-    textAlign: 'center',
-    fontFamily: 'bold'
+    justifyContent: "center",
+    marginLeft: 15,
+    fontFamily: 'light',
   },
 
   headline: {

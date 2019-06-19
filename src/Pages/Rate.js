@@ -187,7 +187,7 @@ class Rate extends Component {
                         <View
                             style={[
                                 styles.headerContainer,
-                                { backgroundColor: '#f5f5f5', marginTop: 20, zIndex: 1, },
+                                { marginTop: 20, zIndex: 1, },
                             ]}
                         >
                             <View style={{ flex: 1, }}>
@@ -196,9 +196,8 @@ class Rate extends Component {
                                         <Icon name='left' size={20} />}
                                     style={{
                                         justifyContent: 'center',
-                                        alignItems: 'center',
-                                        margin: 8,
-                                        marginLeft: 10
+                                       
+                                       
                                     }}
                                     buttonStyle={{
                                         height: 45,
@@ -211,16 +210,16 @@ class Rate extends Component {
                                     activeOpacity={0.5}
                                 />
                             </View>
-                            <View style={{ flex: 3, flexDirection: 'row', justifyContent: 'center', alignContent: 'flex-end', }}>
+                            <View style={{ flex: 7, flexDirection: 'row', justifyContent: 'center', alignContent: 'flex-start', }}>
 
                                 <Text style={styles.heading}>{"Rate " + this.props.navigation.getParam('FullName', null)}</Text>
                             </View>
                         </View>
 
                         <View style={{ flex: 1 }}>
-                            <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', alignContent: 'center', alignItems: 'center', marginBottom: 10 }}>
+                            <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', alignContent: 'center', alignItems: 'center', marginBottom: 10, marginTop:20 }}>
                                 <Image style={{ width: 80, height: 80, borderRadius: 40 }} source={{ uri: this.props.navigation.getParam('Picture', null) }} />
-                                {this.state.ratingExists ? <Text style={{ fontFamily: 'regular', fontSize: 8 }}>{'You already rated this user with total rate of ' + this.state.oldRate + ' stars. The new rate will delete this rate'}</Text> : null}
+                                {this.state.ratingExists ? <Text style={{ fontFamily: 'regular', fontSize: 13, marginTop:5 }}>{'You rated '+this.props.navigation.getParam('FullName', null)+ ' ' + this.state.oldRate + ' stars'}</Text> : null}
                             </View>
                             <View style={{ flex: 6 }}>
 
@@ -296,19 +295,20 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         marginTop: 25,
-        backgroundColor: '#d0d4db',
-        height: 60,
+        backgroundColor: '#f5f5f5',
+        height: 80,
         //paddingBottom:10
     },
 
     heading: {
-        color: 'black',
-        marginTop: 10,
-        fontSize: 15,
+        color: '#f34573',
+        //marginTop: 10,
+        fontSize: 20,
         flex: 1,
-        textAlign: 'center',
-        fontFamily: 'bold',
-        marginLeft: -110
+        //textAlign: 'center',
+        fontFamily: 'regular',
+        //marginLeft: -110,
+        justifyContent:'center'
     },
     fonts: {
         marginBottom: 8,
