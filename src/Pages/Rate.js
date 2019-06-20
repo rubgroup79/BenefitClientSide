@@ -29,7 +29,9 @@ class Rate extends Component {
             fontLoaded: false,
             ratingExists: false,
             oldRate: 0,
-            oldRateCode: 0
+            oldRateCode: 0,
+            rateParameters:[],
+            status:0
 
         };
         this.setParameterRate1 = this.setParameterRate1.bind(this);
@@ -37,6 +39,9 @@ class Rate extends Component {
         this.setParameterRate3 = this.setParameterRate3.bind(this);
         this.setParameterRate4 = this.setParameterRate4.bind(this);
         this.setParameterRate5 = this.setParameterRate5.bind(this);
+        this.getRateParameters=this.getRateParameters.bind(this);
+        this.checkIfRateExists=this.checkIfRateExists.bind(this);
+
 
         this.submitRate = this.submitRate.bind(this);
     }
@@ -76,7 +81,25 @@ class Rate extends Component {
     }
 
     async UNSAFE_componentWillMount() {
-       
+        this.getRateParameters();
+        this.checkIfRateExists();
+    }
+
+    getRateParameters()
+    {
+        fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetParametersDescription', {
+            method: 'GET',
+            headers: { "Content-type": "application/json; charset=UTF-8" },
+        })
+            .then(res => res.json())
+            .then(response => {
+                    this.setState({ rateParameters:response, status:1});
+            })
+            .catch(error => console.warn('Error:', error.message));
+    }
+
+    checkIfRateExists(){
+     
         fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/CheckIfRateExists?UserCode=' + this.props.navigation.getParam('UserCode', null) + '&RatedUserCode=' + this.props.navigation.getParam('RatedUserCode', null), {
             method: 'GET',
             headers: { "Content-type": "application/json; charset=UTF-8" },
@@ -89,7 +112,6 @@ class Rate extends Component {
                 }
             })
             .catch(error => console.warn('Error:', error.message));
-
     }
 
     submitRate() {
@@ -180,7 +202,7 @@ class Rate extends Component {
         return (
             <View>
 
-                {this.state.fontLoaded ?
+                {this.state.fontLoaded && this.state.status==1?
 
                     <View style={{ width: SCREEN_WIDTH, height: SCREEN_HEIGHT, position: 'absolute' }}>
 
@@ -224,27 +246,27 @@ class Rate extends Component {
                             <View style={{ flex: 6 }}>
 
                                 <View style={{ flex: 1, marginBottom: 5 }}>
-                                    <Text style={{ fontFamily: 'bold', color: '#f34573', textAlign: 'center' }}>Parameter 1</Text>
+                                    <Text style={{ fontFamily: 'bold', color: '#f34573', textAlign: 'center' }}>{this.state.rateParameters[0].Description}</Text>
                                     <RatingStars setParameterRate={this.setParameterRate1}></RatingStars>
                                 </View>
 
                                 <View style={{ flex: 1, marginBottom: 5 }}>
-                                    <Text style={{ fontFamily: 'bold', color: '#f34573', textAlign: 'center' }}>Parameter 2</Text>
+                                    <Text style={{ fontFamily: 'bold', color: '#f34573', textAlign: 'center' }}>{this.state.rateParameters[1].Description}</Text>
                                     <RatingStars setParameterRate={this.setParameterRate2}></RatingStars>
                                 </View>
 
                                 <View style={{ flex: 1, marginBottom: 5 }}>
-                                    <Text style={{ fontFamily: 'bold', color: '#f34573', textAlign: 'center' }}>Parameter 3</Text>
+                                    <Text style={{ fontFamily: 'bold', color: '#f34573', textAlign: 'center' }}>{this.state.rateParameters[2].Description}</Text>
                                     <RatingStars setParameterRate={this.setParameterRate3}></RatingStars>
                                 </View>
 
                                 <View style={{ flex: 1, marginBottom: 5 }}>
-                                    <Text style={{ fontFamily: 'bold', color: '#f34573', textAlign: 'center' }}>Parameter 4</Text>
+                                    <Text style={{ fontFamily: 'bold', color: '#f34573', textAlign: 'center' }}>{this.state.rateParameters[3].Description}</Text>
                                     <RatingStars setParameterRate={this.setParameterRate4}></RatingStars>
                                 </View>
 
                                 <View style={{ flex: 1, marginBottom: 5 }}>
-                                    <Text style={{ fontFamily: 'bold', color: '#f34573', textAlign: 'center' }}>Parameter 5</Text>
+                                    <Text style={{ fontFamily: 'bold', color: '#f34573', textAlign: 'center' }}>{this.state.rateParameters[4].Description}</Text>
                                     <RatingStars setParameterRate={this.setParameterRate5}></RatingStars>
                                 </View>
 

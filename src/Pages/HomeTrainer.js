@@ -52,12 +52,12 @@ export default class HomeTrainer extends Component {
       futureGroupTrainings: [],
       approvedRequests: [],
       //searchResultsMapView: true,
-      pendingRequestsMapView: false,
+      pendingRequestsMapView: true,
       approvedRequestsMapView: false,
       futureTrainingsMapView: false,
       listView: false,
       userCode: 0,
-      isTrainer: false,
+      isTrainer: true,
       onlineTrainer: [],
 
     };
@@ -180,8 +180,6 @@ console.warn('this is trainer home page');
       this.setState({ searchResultsMapView: false, pendingRequestsMapView: false, approvedRequestsMapView: true, futureTrainingsMapView: false, })
     if (str == 'future')
       this.setState({ searchResultsMapView: false, pendingRequestsMapView: false, approvedRequestsMapView: false, futureTrainingsMapView: true, })
-
-
   }
 
   goOffline() {
@@ -356,7 +354,7 @@ console.warn('this is trainer home page');
 
           <View style={{ flex: 1, width: SCREEN_WIDTH, backgroundColor: 'white', height: SCREEN_HEIGHT, alignItems: 'center' }}>
             {this.state.createGroupModalVisible ?
-              <CreateGroupModal isTrainer={this.state.isTrainer} createGroupModalVisible={this.createGroupModalVisible} CreatorCode={this.state.userCode} IsTrainer={this.state.isTrainer} ></CreateGroupModal>
+              <CreateGroupModal refresh={this.refresh} isTrainer={this.state.isTrainer} createGroupModalVisible={this.createGroupModalVisible} CreatorCode={this.state.userCode} IsTrainer={this.state.isTrainer} ></CreateGroupModal>
               : null}
 
             {this.state.onlineModalVisible ?

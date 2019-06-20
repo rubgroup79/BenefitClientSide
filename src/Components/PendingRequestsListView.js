@@ -6,7 +6,7 @@ import Icon3 from 'react-native-vector-icons/Foundation';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Icon1 from 'react-native-vector-icons/Entypo';
 import Icon4 from 'react-native-vector-icons/MaterialCommunityIcons';
-
+import Geocode from "react-geocode";
 
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -29,11 +29,10 @@ export default class PendingRequestsListView extends Component {
     UNSAFE_componentWillMount() {
         addresses = [];
 
-        {
             this.props.PendingRequests.map((x, index) => {
                 this.getAddress(x.Latitude, x.Longitude)
             })
-        }
+     
     }
     replySuggestion(suggestionCode, reply) {
 
@@ -222,24 +221,41 @@ export default class PendingRequestsListView extends Component {
     }
 
     getAddress(latitude, longitude) {
-        var address = '';
-        fetch('https://maps.googleapis.com/maps/api/geocode/json?address=' + latitude + ',' + longitude + '&key=' + 'AIzaSyB_OIuPsnUNvJ-CN0z2dir7cVbqJ7Xj3_Q')
-            .then((response) => response.json())
-            .then((responseJson) => {
-                address = JSON.stringify(responseJson.results[0].address_components.filter(x => x.types.filter(t => t == 'route').length > 0)[0].short_name) + ' ' +
-                    JSON.stringify(responseJson.results[0].address_components.filter(x => x.types.filter(t => t == 'street_number').length > 0)[0].short_name) + ', ' +
-                    JSON.stringify(responseJson.results[0].address_components.filter(x => x.types.filter(t => t == 'locality').length > 0)[0].short_name);
-                address = address.replace(/"/g, '');
+        var address = ''
+        Geocode.setApiKey("AIzaSyB_OIuPsnUNvJ-CN0z2dir7cVbqJ7Xj3_Q");
+    
+        Geocode.fromLatLng(latitude, longitude).then(
+          response => {
+            address = response.results[0].formatted_address;
+    
+          },
+          error => {
+            console.error(error);
+          }
+        );
+        
+        // var address = '';
+        // fetch('https://maps.googleapis.com/maps/api/geocode/json?address=' + latitude + ',' + longitude + '&key=' + 'AIzaSyB_OIuPsnUNvJ-CN0z2dir7cVbqJ7Xj3_Q')
+        //     .then((response) => response.json())
+        //     .then((responseJson) => {
+        //         address = JSON.stringify(responseJson.results[0].address_components.filter(x => x.types.filter(t => t == 'route').length > 0)[0].short_name) + ' ' +
+        //             JSON.stringify(responseJson.results[0].address_components.filter(x => x.types.filter(t => t == 'street_number').length > 0)[0].short_name) + ', ' +
+        //             JSON.stringify(responseJson.results[0].address_components.filter(x => x.types.filter(t => t == 'locality').length > 0)[0].short_name);
+        //         address = address.replace(/"/g, '');
 
-                addresses.push(address);
+               
+
+        //     }); 
+            setTimeout(() => {
+                  addresses.push(address);
 
                 if (addresses.length == this.props.PendingRequests.length) {
                     this.setState({ status: 1 });
 
 
                 }
-
-            });
+            }, 1000);
+          
     }
     render() {
         return (

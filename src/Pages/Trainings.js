@@ -11,7 +11,7 @@ import {
   Avatar,
   ButtonGroup
 } from 'react-native-elements';
-import colors from '../config/colors';
+
 
 var coupleAddresses = [];
 var groupAddresses = [];
@@ -60,13 +60,12 @@ class Trainings extends Component {
   }
 
   UNSAFE_componentWillMount() {
-   this.getLocalStorage();
+    this.getLocalStorage();
   }
 
   getLocalStorage = async () => {
     await AsyncStorage.getItem('UserCode', (err, result) => {
       if (result != null) {
-        console.warn(result)
         this.setState({ userCode: result }, this.getCoupleTrainings);
       }
       else alert('error local storage user code');
@@ -75,7 +74,6 @@ class Trainings extends Component {
 
     await AsyncStorage.getItem('IsTrainer', (err, result) => {
       if (result != null) {
-        console.warn(result)
 
         this.setState({ isTrainer: result });
       }
@@ -94,10 +92,11 @@ class Trainings extends Component {
         this.setState({ pastCoupleTrainings: response }, this.getGroupTrainings);
         response.map((training) => {
           this.getAddress(training.Latitude, training.Longitude, true);
-        
-         } )})
-          .catch(error => console.warn('Error:', error.message));
-    }
+
+        })
+      })
+      .catch(error => console.warn('Error:', error.message));
+  }
 
   getGroupTrainings() {
     fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetPastGroupTrainings?UserCode=' + this.state.userCode, {
@@ -109,8 +108,9 @@ class Trainings extends Component {
         this.setState({ pastGroupTrainings: response });
         response.map((training) => {
           this.getAddress(training.Latitude, training.Longitude, false);
-        
-         } )})
+
+        })
+      })
       .catch(error => console.warn('Error:', error.message));
   }
 
@@ -149,25 +149,43 @@ class Trainings extends Component {
 
 
   getAddress(latitude, longitude, couple) {
-    var address = '';
+    var address = ''
+    Geocode.setApiKey("AIzaSyB_OIuPsnUNvJ-CN0z2dir7cVbqJ7Xj3_Q");
 
-    fetch('https://maps.googleapis.com/maps/api/geocode/json?address=' + latitude + ',' + longitude + '&key=' + 'AIzaSyB_OIuPsnUNvJ-CN0z2dir7cVbqJ7Xj3_Q')
-      .then((response) => response.json())
-      .then((responseJson) => {
-        address = JSON.stringify(responseJson.results[0].address_components.filter(x => x.types.filter(t => t == 'route').length > 0)[0].short_name) + ' ' +
-          JSON.stringify(responseJson.results[0].address_components.filter(x => x.types.filter(t => t == 'street_number').length > 0)[0].short_name) + ', ' +
-          JSON.stringify(responseJson.results[0].address_components.filter(x => x.types.filter(t => t == 'locality').length > 0)[0].short_name);
-        address = address.replace(/"/g, '');
-        
-        if(couple)
-          coupleAddresses.push(address);
-        else groupAddresses.push(address);
+    Geocode.fromLatLng(latitude, longitude).then(
+      response => {
+        address = response.results[0].formatted_address;
 
-        if ((coupleAddresses.length == this.state.pastCoupleTrainings.length) && (groupAddresses.length == this.state.pastGroupTrainings.length) )
-          this.setState({ coupleAddresses: coupleAddresses, groupAddresses: groupAddresses, status:1 });
+      },
+      error => {
+        console.error(error);
+      }
+    );
 
-      });
+    // var address = '';
+
+    // fetch('https://maps.googleapis.com/maps/api/geocode/json?address=' + latitude + ',' + longitude + '&key=' + 'AIzaSyB_OIuPsnUNvJ-CN0z2dir7cVbqJ7Xj3_Q')
+    //   .then((response) => response.json())
+    //   .then((responseJson) => {
+    //     address = JSON.stringify(responseJson.results[0].address_components.filter(x => x.types.filter(t => t == 'route').length > 0)[0].short_name) + ' ' +
+    //       JSON.stringify(responseJson.results[0].address_components.filter(x => x.types.filter(t => t == 'street_number').length > 0)[0].short_name) + ', ' +
+    //       JSON.stringify(responseJson.results[0].address_components.filter(x => x.types.filter(t => t == 'locality').length > 0)[0].short_name);
+    //     address = address.replace(/"/g, '');
+
+
+
+    //   });
+    setTimeout(() => {
+      if (couple)
+        coupleAddresses.push(address);
+      else groupAddresses.push(address);
+
+      if ((coupleAddresses.length == this.state.pastCoupleTrainings.length) && (groupAddresses.length == this.state.pastGroupTrainings.length))
+        this.setState({ coupleAddresses: coupleAddresses, groupAddresses: groupAddresses, status: 1 });
+    }, 1000);
+
   }
+
 
 
   render() {
@@ -176,7 +194,7 @@ class Trainings extends Component {
     const buttons = ['Couple Trainings', 'Group Trainings'];
     return (
       <View style={{ width: SCREEN_WIDTH, height: SCREEN_HEIGHT }}>
-        {this.state.fontLoaded && this.state.status==1?
+        {this.state.fontLoaded && this.state.status == 1 ?
           <View style={{ flex: 1 }}>
             <View
               style={[
@@ -219,7 +237,7 @@ class Trainings extends Component {
                         rightSubtitle={training.Price == 0 ? null : '$' + training.Price}
                         rightSubtitleStyle={{ textAlign: 'center', fontFamily: 'regular' }}
                         bottomDivider
-                        rightIcon={() => this.state.isTrainer==0 ? <Icon color='#f7d84c' name='star' size={30} onPress={() => this.props.navigation.navigate('Rate', { UserCode: this.state.userCode, RatedUserCode: training.PartnerUserCode, FullName: training.PartnerFirstName + " " + training.PartnerLastName, Picture: training.PartnerPicture })} /> : null}
+                        rightIcon={() => this.state.isTrainer == 0 ? <Icon color='#f7d84c' name='star' size={30} onPress={() => this.props.navigation.navigate('Rate', { UserCode: this.state.userCode, RatedUserCode: training.PartnerUserCode, FullName: training.PartnerFirstName + " " + training.PartnerLastName, Picture: training.PartnerPicture })} /> : null}
                         onPress={() => this.props.navigation.navigate('UserProfile', { UserCode: training.PartnerUserCode })}
                       />
 
@@ -245,9 +263,9 @@ class Trainings extends Component {
                         subtitle={this.state.groupAddresses[index]}
                         rightTitle={training.TrainingTime.split(" ")[0]}
                         rightTitleStyle={{ color: 'green', fontSize: 15, fontFamily: 'regular' }}
-                        rightSubtitle={training.Price == 0 ? null :'$'+ training.Price}
+                        rightSubtitle={training.Price == 0 ? null : '$' + training.Price}
                         rightSubtitleStyle={{ textAlign: 'center', fontFamily: 'regular' }}
-                        onPress={() => this.props.navigation.navigate('GroupProfile',{ GroupCode:training.TrainingCode })}
+                        onPress={() => this.props.navigation.navigate('GroupProfile', { GroupCode: training.TrainingCode })}
                         bottomDivider
                       />
 

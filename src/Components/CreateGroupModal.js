@@ -98,6 +98,7 @@ export default class CreateGroupModal extends Component {
             method: 'GET',
             headers: { "Content-type": "application/json; charset=UTF-8" },
         })
+        .then(res => res.json())
             .then(response => {
                 if (response)
                     Alert.alert(
@@ -113,6 +114,7 @@ export default class CreateGroupModal extends Component {
                         ],
                         { cancelable: false },
                     );
+                    else this.createGroup();
             })
             .catch(error => console.warn('Error:', error.message));
     }
@@ -154,10 +156,12 @@ export default class CreateGroupModal extends Component {
                     .then(response => {
                         alert('Your group is now open for partners!');
                         this.props.createGroupModalVisible();
+                        this.props.refresh('future');
                     })
                     .catch(error => console.warn('Error:', error.message));
 
             }, 1500);
+           
         }
     }
 

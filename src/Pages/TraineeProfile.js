@@ -202,7 +202,7 @@ export default class TraineeProfile extends Component {
       MaxPartnerAge: this.state.maxPartnerAge,
       SportCategories: filtered
     }
-
+    console.warn( JSON.stringify(Trainee))
 
     fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/UpdateTraineeDetails', {
       method: 'POST',

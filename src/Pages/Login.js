@@ -22,7 +22,7 @@ import SimpleIcon from 'react-native-vector-icons/SimpleLineIcons';
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
-const BG_IMAGE = require('../../assets/images/bg_screen4.jpg');
+const BG_IMAGE = require('../../Images/LogoWithName.png');
 
 // Enable LayoutAnimation on Android
 UIManager.setLayoutAnimationEnabledExperimental &&
@@ -306,21 +306,14 @@ export default class Login extends Component {
     return (
       <View style={styles.container}>
 
-        <ImageBackground source={BG_IMAGE} style={styles.bgImage}>
+        <ImageBackground source={BG_IMAGE} style={styles.bgImage}> 
           {this.state.fontLoaded ? (
             <View>
               <KeyboardAvoidingView
                 contentContainerStyle={styles.loginContainer}
                 behavior="position"
               >
-                <View style={styles.titleContainer}>
-                  <View style={{ flexDirection: 'row' }}>
-                    <Text style={styles.titleText}>BeneFIT</Text>
-                  </View>
-                  <View style={{ marginTop: -10, marginLeft: 10 }}>
-                    <Text style={styles.titleText}>Better Together</Text>
-                  </View>
-                </View>
+
                 <View style={{ flexDirection: 'row' }}>
                   <Button
                     disabled={isLoading}
@@ -468,7 +461,7 @@ export default class Login extends Component {
           ) : (
               <Text>Loading...</Text>
             )}
-        </ImageBackground>
+         </ImageBackground>
       </View>
     );
   }
@@ -477,6 +470,7 @@ export default class Login extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor:'#e5e5e5'
   },
   rowSelector: {
     height: 20,
@@ -501,6 +495,7 @@ const styles = StyleSheet.create({
   loginContainer: {
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop:-100
   },
   loginTextButton: {
     fontSize: 16,
@@ -508,7 +503,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   loginButton: {
-    backgroundColor: 'rgba(232, 147, 142, 1)',
+    backgroundColor: '#f34573',
     borderRadius: 10,
     height: 50,
     width: 200,
@@ -533,18 +528,18 @@ const styles = StyleSheet.create({
   },
   bgImage: {
     flex: 1,
-    top: 0,
+    top: 100,
     left: 0,
-    width: SCREEN_WIDTH,
-    height: SCREEN_HEIGHT,
+    width: 410,
+    height: 100,
     justifyContent: 'center',
     alignItems: 'center',
   },
   categoryText: {
     textAlign: 'center',
-    color: 'white',
+    color: '#75cac3',
     fontSize: 24,
-    fontFamily: 'light',
+    fontFamily: 'regular',
     backgroundColor: 'transparent',
     opacity: 0.54,
   },

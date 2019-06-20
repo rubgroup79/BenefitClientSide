@@ -82,7 +82,7 @@ export default class SigninTrainee extends Component {
       PersonalTrainingPrice: this.state.personalTrainingPrice
     }
 
-    console.warn(Trainer);
+    console.warn(JSON.stringify(Trainer));
     fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/InsertTrainer', {
       method: 'POST',
       headers: { "Content-type": "application/json; charset=UTF-8" },

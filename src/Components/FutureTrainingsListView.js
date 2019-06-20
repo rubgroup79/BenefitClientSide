@@ -6,8 +6,8 @@ import Icon3 from 'react-native-vector-icons/Foundation';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Icon1 from 'react-native-vector-icons/Entypo';
 import { NavigationApps, actions, googleMapsTravelModes } from "react-native-navigation-apps";
-import Geocoder from 'react-native-geocoding';
 
+import Geocode from "react-geocode";
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -26,6 +26,14 @@ export default class FutureTrainingsListView extends Component {
             creatorDetails: [],
         }
         this.getCreatorDetails = this.getCreatorDetails.bind(this);
+        this.setTime = this.setTime.bind(this);
+        this.cancelCoupleTraining = this.cancelCoupleTraining.bind(this);
+        this.cancelGroupParticipant = this.cancelGroupParticipant.bind(this);
+        this.getAddress = this.getAddress.bind(this);
+        this.getWeather = this.getWeather.bind(this);
+        this.getCoupleAdresses=this.getCoupleAdresses.bind(this);
+        this.getGroupsAdresses=this.getGroupsAdresses.bind(this);
+
     }
 
     setTime(trainingTime) {
@@ -107,31 +115,42 @@ export default class FutureTrainingsListView extends Component {
         })
             .then(res => res.json())
             .then(response => {
-                this.setState({ creatorDetails: response })
+                //this.setState({ creatorDetails: response })
+                return response;
             })
             .catch(error => console.warn('Error:', error.message));
     }
 
 
-    UNSAFE_componentWillMount() {
-        {
-            console.warn('hi');
-            coupleTrainingAddresses = [];
-            groupTrainingAddresses = [];
-            coupleForecasts = [];
-            groupForecasts = [];
+ async   UNSAFE_componentWillMount() {
+        coupleTrainingAddresses = [];
+        groupTrainingAddresses = [];
+        coupleForecasts = [];
+        groupForecasts = [];
 
-            this.props.FutureCoupleTrainings.map((x) => {
-                this.getAddress(x.Latitude, x.Longitude, true)
-                this.getWeather(x.Latitude, x.Longitude, x.TrainingTime, true)
-            });
+      this.props.FutureCoupleTrainings.length!=0 && await this.getCoupleAdresses();
+      this.props.FutureGroupTrainings.length!=0 &&  await this.getGroupsAdresses();
+    }
 
-            this.props.FutureGroupTrainings.map((x) => {
-                this.getAddress(x.Latitude, x.Longitude, false)
-                this.getWeather(x.Latitude, x.Longitude, x.TrainingTime, false)
-            });
 
-        }
+ async   getCoupleAdresses() {
+
+    await    this.props.FutureCoupleTrainings.map((x) => {
+            this.getAddress(x.Latitude, x.Longitude, true)
+            this.getWeather(x.Latitude, x.Longitude, x.TrainingTime, true)
+        });
+    }
+
+  async getGroupsAdresses() {
+await this.props.FutureGroupTrainings.map((x) => {
+            this.getAddress(x.Latitude, x.Longitude, false)
+           // this.getWeather(x.Latitude, x.Longitude, x.TrainingTime, false)
+        });
+
+      await  this.props.FutureGroupTrainings.map((x) => {
+            //this.getAddress(x.Latitude, x.Longitude, false)
+            this.getWeather(x.Latitude, x.Longitude, x.TrainingTime, false)
+        });
     }
 
     sendPushNotification(Token, message) {
@@ -247,7 +266,7 @@ export default class FutureTrainingsListView extends Component {
                 >
 
 
-                    {x.StatusCode == 1 ? <View style={{ flex: 1, flexDirection: 'row', alignContent: 'center', justifyContent: 'center' }}>
+                    {x.StatusCode != 2 ? <View style={{ flex: 1, flexDirection: 'row', alignContent: 'center', justifyContent: 'center' }}>
                         <View style={{ flex: 1, justifyContent: 'center', alignContent: 'center' }}>
                             <NavigationApps
                                 iconSize={20}
@@ -311,7 +330,7 @@ export default class FutureTrainingsListView extends Component {
 
 
     renderFutureGroupTrainings(x, index) {
-        this.getCreatorDetails(x.CreatorCode);
+        var CreatorDetails = this.getCreatorDetails(x.CreatorCode);
 
         return (
 
@@ -408,7 +427,7 @@ export default class FutureTrainingsListView extends Component {
                         flex: 1
                     }}
                 >
-                    {x.StatusCode == 1 ?
+                    {x.StatusCode != 2 ?
                         <View style={{ flex: 1, flexDirection: 'row', alignContent: 'center', justifyContent: 'center' }}>
                             <View style={{ flex: 1, justifyContent: 'center', alignContent: 'center' }}>
                                 <NavigationApps
@@ -425,8 +444,7 @@ export default class FutureTrainingsListView extends Component {
 
                                 />
                             </View>
-                            {this.props.UserCode != x.CreatorCode && this.state.creatorDetails.length != 0 ?
-
+                            {/* {this.props.UserCode != x.CreatorCode && this.state.creatorDetails.length != 0 ?
                                 <TouchableOpacity
                                     style={{
                                         backgroundColor: 'rgba(222,222,222,1)',
@@ -442,7 +460,27 @@ export default class FutureTrainingsListView extends Component {
                                     }}
                                 >
                                     <Icon2 name="message1" color="green" size={20} />
-                                </TouchableOpacity> : null}
+                                </TouchableOpacity> : null} */}
+
+
+                              {this.props.UserCode != x.CreatorCode && this.CreatorDetails.length != 0 ?
+                                <TouchableOpacity
+                                    style={{
+                                        backgroundColor: 'rgba(222,222,222,1)',
+                                        width: 28,
+                                        height: 28,
+                                        borderRadius: 100,
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        marginRight: 23,
+                                    }}
+                                    onPress={() => {
+                                        this.props.navigation.navigate('Chat', { UserCode: this.props.UserCode, PartnerUserCode: x.CreatorCode, FullName: CreatorDetails.FirstName + " " + CreatorDetails.LastName, Picture: CreatorDetails.Picture })
+                                    }}
+                                >
+                                    <Icon2 name="message1" color="green" size={20} />
+                                </TouchableOpacity> : null} 
+
                             <TouchableOpacity
                                 style={{
                                     backgroundColor: 'rgba(222,222,222,1)',
@@ -466,13 +504,23 @@ export default class FutureTrainingsListView extends Component {
     }
 
     getAddress(latitude, longitude, couple) {
-        Geocoder.init('AIzaSyB_OIuPsnUNvJ-CN0z2dir7cVbqJ7Xj3_Q');
-        Geocoder.from(latitude, longitude)
-        .then(json => {
-        	var addressComponent = json.results[0].address_components[0];
-            console.warn(addressComponent);
-        })
-        .catch(error => console.warn(error));
+        var address = ''
+        Geocode.setApiKey("AIzaSyB_OIuPsnUNvJ-CN0z2dir7cVbqJ7Xj3_Q");
+
+        Geocode.fromLatLng(latitude, longitude).then(
+            response => {
+                //address = response.results[0].formatted_address;
+                if (couple)
+                coupleTrainingAddresses.push(response.results[0].formatted_address);
+            else groupTrainingAddresses.push(response.results[0].formatted_address);
+            if (coupleTrainingAddresses.length == this.props.FutureCoupleTrainings.length && groupTrainingAddresses.length == this.props.FutureGroupTrainings.length) {
+                this.setState({ status: 1 });
+            }
+            },
+            error => {
+                console.error(error);
+            }
+        );
 
         // var address = '';
         // fetch('https://maps.googleapis.com/maps/api/geocode/json?address=' + latitude + ',' + longitude + '&key=' + 'AIzaSyB_OIuPsnUNvJ-CN0z2dir7cVbqJ7Xj3_Q')
@@ -484,15 +532,17 @@ export default class FutureTrainingsListView extends Component {
         //         address = address.replace(/"/g, '');
         //     });
 
-  
-            if (couple)
-                coupleTrainingAddresses.push(address);
-            else groupTrainingAddresses.push(address);
+        // setTimeout(() => {
+        //     if (couple)
+        //         coupleTrainingAddresses.push(address);
+        //     else groupTrainingAddresses.push(address);
 
-            if (coupleTrainingAddresses.length == this.props.FutureCoupleTrainings.length && groupTrainingAddresses.length == this.props.FutureGroupTrainings.length) {
-                this.setState({ status: 1 });
-            }
-       
+        //     if (coupleTrainingAddresses.length == this.props.FutureCoupleTrainings.length && groupTrainingAddresses.length == this.props.FutureGroupTrainings.length) {
+        //         this.setState({ status: 1 });
+        //     }
+        // },3000);
+
+
     }
 
     getWeather(lat, lon, time, couple) {
@@ -513,28 +563,28 @@ export default class FutureTrainingsListView extends Component {
 
                 if (couple) {
                     coupleForecasts.push(forecast);
+                    
                 }
 
                 else groupForecasts.push(forecast);
+                if (coupleForecasts.length == this.props.FutureCoupleTrainings.length && groupForecasts.length == this.props.FutureGroupTrainings.length) {
+
+                    this.setState({ forecastStatus: 1 })
+                }
             });
 
-        setTimeout(() => {
-            if (coupleForecasts.length == this.props.FutureCoupleTrainings.length && groupForecasts.length == this.props.FutureGroupTrainings.length) {
+        // setTimeout(() => {
+        //     if (coupleForecasts.length == this.props.FutureCoupleTrainings.length && groupForecasts.length == this.props.FutureGroupTrainings.length) {
 
-                this.setState({ forecastStatus: 1 })
-            }
-        }, 3000);
+        //         this.setState({ forecastStatus: 1 })
+        //     }
+        // }, 3000);
     }
 
     render() {
         return (
             <View style={{ flex: 1, flexDirection: 'column', backgroundColor: 'rgba(255,255,255,0.9)', alignContent: "center", position: 'absolute', zIndex: 2, top: 90, width: SCREEN_WIDTH }}>
 
-                {this.props.FutureCoupleTrainings.map((x) =>
-                    this.getAddress(x.Latitude, x.Longitude, true))}
-
-                {this.props.FutureGroupTrainings.map((x) =>
-                    this.getAddress(x.Latitude, x.Longitude, false))}
 
                 <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
                     <Icon name='close' style={styles.closeIcon} size={20} color='gray' onPress={() => this.props.closeListView()}></Icon>
@@ -545,7 +595,7 @@ export default class FutureTrainingsListView extends Component {
                         {this.state.status == 1 && this.state.forecastStatus == 1 ?
                             <View>
                                 {this.props.FutureCoupleTrainings.map((x, index) => {
-                                    return (<View kew={index}>{this.renderFutureCoupleTrainings(x, index)}</View>)
+                                    return (<View key={index}>{this.renderFutureCoupleTrainings(x, index)}</View>)
                                 }
                                 )}
 

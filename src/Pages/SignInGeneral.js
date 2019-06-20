@@ -120,16 +120,31 @@ export default class SigninGeneral extends Component {
 
     ) {
 
+      temp = this.state.selectedSportCategories.map((category) => {
+        if (category.Selected)
+          return category;
+      });
+  
+      var filtered = temp.filter(function (el) {
+        return el != null;
+      });
+  
+      year=this.state.dateOfBirth.split("-")[2];
+      month=this.state.dateOfBirth.split("-")[1];
+      day=this.state.dateOfBirth.split("-")[0];
+
+      birthDay=year+"-"+month+"-"+day;
+
       this.setState({ isLoading: true });
       setTimeout(() => {
         LayoutAnimation.easeInEaseOut();
         this.setState({ isLoading: false });
         // IF THE USER IS TRAINEE
         if (this.state.isTrainer == 0)
-          this.props.navigation.navigate('SigninTrainee', { email: this.props.navigation.getParam('email', null), password: this.props.navigation.getParam('password', null), firstName: this.state.firstName, lastName: this.state.lastName, gender: this.state.gender, dateOfBirth: this.state.dateOfBirth, userSportCategories: this.state.userSportCategories });
+          this.props.navigation.navigate('SigninTrainee', { email: this.props.navigation.getParam('email', null), password: this.props.navigation.getParam('password', null), firstName: this.state.firstName, lastName: this.state.lastName, gender: this.state.gender, dateOfBirth: birthDay, userSportCategories: filtered });
         // USER IS TRAINER
         else {
-          this.props.navigation.navigate('SigninTrainer', { email: this.props.navigation.getParam('email', null), password: this.props.navigation.getParam('password', null), firstName: this.state.firstName, lastName: this.state.lastName, gender: this.state.gender, dateOfBirth: this.state.dateOfBirth, userSportCategories: this.state.userSportCategories });
+          this.props.navigation.navigate('SigninTrainer', { email: this.props.navigation.getParam('email', null), password: this.props.navigation.getParam('password', null), firstName: this.state.firstName, lastName: this.state.lastName, gender: this.state.gender, dateOfBirth: birthDay, userSportCategories: filtered });
 
          
         }

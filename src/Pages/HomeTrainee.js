@@ -366,7 +366,7 @@ seachGroups(onlineDetails){
 
           <View style={{ flex: 1, width: SCREEN_WIDTH, backgroundColor: 'white', height: SCREEN_HEIGHT, alignItems: 'center' }}>
             {this.state.createGroupModalVisible ?
-              <CreateGroupModal isTrainer={this.state.isTrainer} createGroupModalVisible={this.createGroupModalVisible} CreatorCode={this.state.userCode} IsTrainer={this.state.isTrainer} ></CreateGroupModal>
+              <CreateGroupModal refresh={this.props.refresh} isTrainer={this.state.isTrainer} createGroupModalVisible={this.createGroupModalVisible} CreatorCode={this.state.userCode} IsTrainer={this.state.isTrainer} ></CreateGroupModal>
               : null}
 
             {this.state.searchModalVisible ?

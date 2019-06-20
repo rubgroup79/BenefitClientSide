@@ -6,6 +6,7 @@ import Icon3 from 'react-native-vector-icons/Foundation';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Icon1 from 'react-native-vector-icons/Entypo';
 import Icon4 from 'react-native-vector-icons/MaterialCommunityIcons';
+import Geocode from "react-geocode";
 
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -72,129 +73,145 @@ export default class ApprovedRequestsListView extends Component {
               onPress={() => this.props.navigation.navigate('UserProfile', { UserCode: x.SenderCode == this.props.UserCode ? x.ReceiverCode : x.SenderCode })}
             />
           </View>
-          <View style={{flex:1, flexDirection:'column'}}>
-          <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignContent: 'flex-start', marginLeft: 10 }}>
-            {x.IsTrainer == 1 ? <Icon4 name={'whistle'} size={20} color={'blue'} style={{ transform: [{ rotate: '-30deg' }], flex: 1 }} ></Icon4> : null}
-            <Text
-              style={{
-                fontFamily: 'regular',
-                fontSize: 15,
-                //marginLeft: 10,
-                color: 'gray',
-                flex: 5
-              }}
-            >
-              {x.FirstName + ' ' + x.LastName + ', ' + x.Age}
-            </Text>
-          </View>
-          <View style={{ flex: 1, flexDirection: 'row', marginRight: 25, justifyContent: 'center' }}>
+          <View style={{ flex: 1, flexDirection: 'column' }}>
+            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignContent: 'flex-start', marginLeft: 10 }}>
+              {x.IsTrainer == 1 ? <Icon4 name={'whistle'} size={20} color={'blue'} style={{ transform: [{ rotate: '-30deg' }], flex: 1 }} ></Icon4> : null}
+              <Text
+                style={{
+                  fontFamily: 'regular',
+                  fontSize: 15,
+                  //marginLeft: 10,
+                  color: 'gray',
+                  flex: 5
+                }}
+              >
+                {x.FirstName + ' ' + x.LastName + ', ' + x.Age}
+              </Text>
+            </View>
+            <View style={{ flex: 1, flexDirection: 'row', marginRight: 25, justifyContent: 'center' }}>
 
-            <Text
+              <Text
+                style={{
+                  fontFamily: 'regular',
+                  fontSize: 12,
+                  marginLeft: 10,
+                  color: 'gray',
+                  flex: 6,
+                  justifyContent: 'center',
+                  textAlign: 'right',
+                  marginTop: 3
+                }}
+              >
+                {((addresses[index]).length > 25) ?
+                  (((addresses[index]).substring(0, 25 - 3)) + '...') :
+                  addresses[index]}
+              </Text>
+              <Icon1 style={{ flex: 1, marginLeft: 5 }} name='location-pin' color='gray' textAlign='center' size={20} onPress={() => this.props.setLatLon(x.Latitude, x.Longitude)}></Icon1>
+            </View>
+            {x.IsTrainer ? <Text
               style={{
-                fontFamily: 'regular',
+                fontFamily: 'light',
                 fontSize: 12,
                 marginLeft: 10,
-                color: 'gray',
-                flex: 6,
-                justifyContent: 'center',
-                textAlign: 'right',
-                marginTop: 3
+                color: 'blue',
               }}
             >
-              {((addresses[index]).length > 25) ?
-                (((addresses[index]).substring(0, 25 - 3)) + '...') :
-                addresses[index]}
-            </Text>
-            <Icon1 style={{ flex: 1, marginLeft: 5 }} name='location-pin' color='gray' textAlign='center' size={20} onPress={() => this.props.setLatLon(x.Latitude, x.Longitude)}></Icon1>
-          </View>
-          {x.IsTrainer ? <Text
-                            style={{
-                                fontFamily: 'light',
-                                fontSize: 12,
-                                marginLeft: 10,
-                                color: 'blue',
-                            }}
-                        >
-                            {x.Price + "$"}
-                        </Text> : null}
+              {x.Price + "$"}
+            </Text> : null}
           </View>
 
         </View>
-    
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'flex-end',
-          marginRight: 10,
-          flex: 1
-        }}
-      >
+
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'flex-end',
+            marginRight: 10,
+            flex: 1
+          }}
+        >
 
 
-        <View style={{ flex: 1, flexDirection: 'row', alignContent: 'center', justifyContent: 'flex-end' }}>
-          <TouchableOpacity
-            style={{
-              backgroundColor: 'rgba(222,222,222,1)',
-              width: 28,
-              height: 28,
-              borderRadius: 100,
-              justifyContent: 'center',
-              alignItems: 'center',
-              marginHorizontal: 10,
-            }}
-            onPress={() => {
-              this.props.UserCode == x.SenderCode ? partnerUserCode = x.ReceiverCode : partnerUserCode = x.SenderCode;
-              this.props.navigation.navigate('Chat', { UserCode: this.props.UserCode, PartnerUserCode: partnerUserCode, FullName: x.FirstName + " " + x.LastName, Picture: x.Picture })
-            }
-            }
-          >
-            <Icon2 name="message1" color="green" size={20} />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={{
-              backgroundColor: 'rgba(222,222,222,1)',
-              width: 28,
-              height: 28,
-              borderRadius: 100,
-              justifyContent: 'center',
-              alignItems: 'center',
-              marginHorizontal: 10,
-            }}
-            onPress={() => {
-              this.cancelSuggestion(x.SuggestionCode)
-              this.props.refresh("approved");
-            }}
-          >
-            <Icon2 name="close" color="red" size={20} />
-          </TouchableOpacity>
+          <View style={{ flex: 1, flexDirection: 'row', alignContent: 'center', justifyContent: 'flex-end' }}>
+            <TouchableOpacity
+              style={{
+                backgroundColor: 'rgba(222,222,222,1)',
+                width: 28,
+                height: 28,
+                borderRadius: 100,
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginHorizontal: 10,
+              }}
+              onPress={() => {
+                this.props.UserCode == x.SenderCode ? partnerUserCode = x.ReceiverCode : partnerUserCode = x.SenderCode;
+                this.props.navigation.navigate('Chat', { UserCode: this.props.UserCode, PartnerUserCode: partnerUserCode, FullName: x.FirstName + " " + x.LastName, Picture: x.Picture })
+              }
+              }
+            >
+              <Icon2 name="message1" color="green" size={20} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{
+                backgroundColor: 'rgba(222,222,222,1)',
+                width: 28,
+                height: 28,
+                borderRadius: 100,
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginHorizontal: 10,
+              }}
+              onPress={() => {
+                this.cancelSuggestion(x.SuggestionCode)
+                this.props.refresh("approved");
+              }}
+            >
+              <Icon2 name="close" color="red" size={20} />
+            </TouchableOpacity>
+          </View>
+
+
         </View>
-
-
-      </View>
       </View >
 
     )
   }
 
   getAddress(latitude, longitude) {
-    var address = '';
-    fetch('https://maps.googleapis.com/maps/api/geocode/json?address=' + latitude + ',' + longitude + '&key=' + 'AIzaSyB_OIuPsnUNvJ-CN0z2dir7cVbqJ7Xj3_Q')
-      .then((response) => response.json())
-      .then((responseJson) => {
-        address = JSON.stringify(responseJson.results[0].address_components.filter(x => x.types.filter(t => t == 'route').length > 0)[0].short_name) + ' ' +
-          JSON.stringify(responseJson.results[0].address_components.filter(x => x.types.filter(t => t == 'street_number').length > 0)[0].short_name) + ', ' +
-          JSON.stringify(responseJson.results[0].address_components.filter(x => x.types.filter(t => t == 'locality').length > 0)[0].short_name);
-        address = address.replace(/"/g, '');
 
-        addresses.push(address);
+    var address = ''
+    Geocode.setApiKey("AIzaSyB_OIuPsnUNvJ-CN0z2dir7cVbqJ7Xj3_Q");
 
-        if (addresses.length == this.props.ApprovedRequests.length) {
-          this.setState({ status: 1 });
+    Geocode.fromLatLng(latitude, longitude).then(
+      response => {
+        address = response.results[0].formatted_address;
+
+      },
+      error => {
+        console.error(error);
+      }
+    );
+
+    // var address = '';
+    // fetch('https://maps.googleapis.com/maps/api/geocode/json?address=' + latitude + ',' + longitude + '&key=' + 'AIzaSyB_OIuPsnUNvJ-CN0z2dir7cVbqJ7Xj3_Q')
+    //   .then((response) => response.json())
+    //   .then((responseJson) => {
+    //     address = JSON.stringify(responseJson.results[0].address_components.filter(x => x.types.filter(t => t == 'route').length > 0)[0].short_name) + ' ' +
+    //       JSON.stringify(responseJson.results[0].address_components.filter(x => x.types.filter(t => t == 'street_number').length > 0)[0].short_name) + ', ' +
+    //       JSON.stringify(responseJson.results[0].address_components.filter(x => x.types.filter(t => t == 'locality').length > 0)[0].short_name);
+    //     address = address.replace(/"/g, '');
+
+    //     
 
 
-        }
+    //   });
 
-      });
+    setTimeout(() => {
+      addresses.push(address);
+      if (addresses.length == this.props.ApprovedRequests.length) {
+        this.setState({ status: 1 });
+      }
+    }, 1000);
   }
 
   render() {
