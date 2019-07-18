@@ -373,8 +373,8 @@ seachGroups(onlineDetails){
               <SearchModal changeSearchMode={this.changeSearchMode} searchModalVisible={this.searchModalVisible} insertOnlineTrainee={this.insertOnlineTrainee} userCode={this.state.userCode} searchModalVisible={this.searchModalVisible} style={{ zIndex: 1000 }}></SearchModal>
               : null}
 
-            <View style={{ flex: 6, zIndex: 0, width: SCREEN_WIDTH, height: SCREEN_HEIGHT }} >
-              <Map refresh={this.refresh} style={{ zIndex: 0 }} navigation={this.props.navigation} SenderCode={this.state.userCode} HomeTraineeStates={this.state}></Map>
+            <View style={{ flex: 6, zIndex: 0, width: SCREEN_WIDTH, height: SCREEN_HEIGHT, }} >
+              <Map refresh={this.refresh} style={{ zIndex: 0, }} navigation={this.props.navigation} SenderCode={this.state.userCode} HomeTraineeStates={this.state}></Map>
             </View>
 
 

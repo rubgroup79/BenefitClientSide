@@ -1,5 +1,5 @@
 import React, { Component, } from 'react';
-import { View, ScrollView, StyleSheet, Image, ListView, Dimensions, KeyboardAvoidingView, TextInput,AsyncStorage } from 'react-native';
+import { View, ScrollView, StyleSheet, Image, ListView, Dimensions, KeyboardAvoidingView, TextInput, AsyncStorage } from 'react-native';
 import { Font } from 'expo';
 import Icon from 'react-native-vector-icons/AntDesign';
 import Icon1 from 'react-native-vector-icons/Ionicons';
@@ -37,9 +37,9 @@ class Chat extends Component {
             newTrainingButtonDisabled: true,
             suggestionCode: 0,
             createNewTrainingModalVisible: false,
-            chatCode:0,
-            status:0,
-            receiverToken:'',
+            chatCode: 0,
+            status: 0,
+            receiverToken: '',
             userFirstName: ''
 
         };
@@ -49,23 +49,23 @@ class Chat extends Component {
         this.updateIndex = this.updateIndex.bind(this);
         this.renderRow = this.renderRow.bind(this);
         this.getMessages = this.getMessages.bind(this);
-        this.openChat=this.openChat.bind(this);
-        this.getToken=this.getToken.bind(this);
-        this.getLocalStorage=this.getLocalStorage.bind(this);
+        this.openChat = this.openChat.bind(this);
+        this.getToken = this.getToken.bind(this);
+        this.getLocalStorage = this.getLocalStorage.bind(this);
     }
 
 
     getLocalStorage = async () => {
-   
-    
+
+
         await AsyncStorage.getItem('Details', (err, result) => {
-          if (result != null) {
-            this.setState({ userFirstName: JSON.parse(result) });
-          }
-          else alert('error local storage is trainer');
+            if (result != null) {
+                this.setState({ userFirstName: JSON.parse(result) });
+            }
+            else alert('error local storage is trainer');
         }
         )
-      }
+    }
 
 
     async componentDidMount() {
@@ -84,18 +84,18 @@ class Chat extends Component {
 
 
     }
-getToken(){
-       fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetToken?UserCode=' + this.props.navigation.getParam('PartnerUserCode', null), {
-        method: 'GET',
-        headers: { "Content-type": "application/json; charset=UTF-8" },
-    })
-        .then(res => res.json())
-        .then(response => {
-            this.setState({receiverToken:response})
+    getToken() {
+        fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetToken?UserCode=' + this.props.navigation.getParam('PartnerUserCode', null), {
+            method: 'GET',
+            headers: { "Content-type": "application/json; charset=UTF-8" },
         })
-        .catch(error => console.warn('Error:', error.message));
-}
- 
+            .then(res => res.json())
+            .then(response => {
+                this.setState({ receiverToken: response })
+            })
+            .catch(error => console.warn('Error:', error.message));
+    }
+
 
     async UNSAFE_componentWillMount() {
         this.getLocalStorage();
@@ -125,9 +125,9 @@ getToken(){
             .catch(error => console.warn('Error:', error.message));
     }
 
-    openChat(){
-       
-        fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/OpenChat?UserCode1=' + this.props.navigation.getParam('UserCode', null) +"&UserCode2="+this.props.navigation.getParam('PartnerUserCode', null), {
+    openChat() {
+
+        fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/OpenChat?UserCode1=' + this.props.navigation.getParam('UserCode', null) + "&UserCode2=" + this.props.navigation.getParam('PartnerUserCode', null), {
             method: 'POST',
             headers: { "Content-type": "application/json; charset=UTF-8" },
         })
@@ -145,11 +145,11 @@ getToken(){
         })
             .then(res => res.json())
             .then(response => {
-                this.setState({ messages: response, status:1 });
+                this.setState({ messages: response, status: 1 });
             })
             .catch(error => console.warn('Error:', error.message));
     }
-    
+
     checkForActiveSuggestion() {
         fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetSuggestionCode?UserCode1=' + this.props.navigation.getParam('UserCode', null) + '&UserCode2=' + this.props.navigation.getParam('PartnerUserCode', null), {
             method: 'GET',
@@ -213,13 +213,13 @@ getToken(){
 
     sendMessage() {
         this.ScrollView.scrollToEnd();
-      
+
         var message = {
             ChatCode: this.state.chatCode,
             SenderCode: this.props.navigation.getParam('UserCode', null),
             Content: this.state.newMessage
         }
-       
+
         fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/SendMessage', {
             method: 'POST',
             headers: { "Content-type": "application/json; charset=UTF-8" },
@@ -227,11 +227,11 @@ getToken(){
         })
             .then(() => {
                 this.getMessages();
-                this.sendPushNotification(this.state.userFirstName, this.state.newMessage )
+                this.sendPushNotification(this.state.userFirstName, this.state.newMessage)
             })
             .catch(error => console.warn('Error:', error.message));
 
-            this.setState({ newMessage: '', sendButtonDisabled: true })
+        this.setState({ newMessage: '', sendButtonDisabled: true })
     }
 
 
@@ -271,29 +271,31 @@ getToken(){
                                 { backgroundColor: '#f5f5f5', marginTop: 20, zIndex: 1, },
                             ]}
                         >
-                            <View style={{flex: 1,}}>
-                            <Button
-                                icon={() =>
-                                    <Icon name='left' size={20} />}
-                                style={{
-                                    
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                    margin: 8,
-                                    marginLeft: 10
+                            <View style={{ flex: 1, }}>
+                                <Button
+                                    icon={() =>
+                                        <Icon name='left' size={20} />}
+                                    style={{
 
-                                }}
-                                buttonStyle={{
-                                    height: 45,
-                                    width: 45,
-                                    borderRadius: 30,
-                                    backgroundColor: 'transparent',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        margin: 8,
+                                        marginLeft: 10
+
+                                    }}
+                                    buttonStyle={{
+                                        height: 45,
+                                        width: 45,
+                                        borderRadius: 30,
+                                        backgroundColor: 'transparent',
 
 
-                                }}
-                                onPress={() => goBack()}
-                                activeOpacity={0.5}
-                            />
+                                    }}
+                                    onPress={() => 
+                                        goBack()
+                                    }
+                                    activeOpacity={0.5}
+                                />
                             </View>
                             <View style={{ flex: 3, flexDirection: 'row', justifyContent: 'center', alignContent: 'flex-end', }}>
                                 <Image style={{ width: 40, height: 40, borderRadius: 20 }} source={{ uri: this.props.navigation.getParam('Picture', null) }} />
@@ -327,69 +329,69 @@ getToken(){
                                 activeOpacity={0.5}
                             />
                         </View>
-                        {this.state.status==1 ? 
-                        <KeyboardAvoidingView
-                            behavior="position"
-                        >
-                            <View style={{ height: SCREEN_HEIGHT - 80 }}>
-                                <ScrollView style={{ position: 'absolute', width: SCREEN_WIDTH, height: SCREEN_HEIGHT - 150, zIndex: 0 }}
-                                    ref={(ref) => { this.ScrollView = ref }}
-                                    onContentSizeChange={() => this.ScrollView.scrollToEnd({ animated: true })}
-                                >
+                        {this.state.status == 1 ?
+                            <KeyboardAvoidingView
+                                behavior="position"
+                            >
+                                <View style={{ height: SCREEN_HEIGHT - 80 }}>
+                                    <ScrollView style={{ position: 'absolute', width: SCREEN_WIDTH, height: SCREEN_HEIGHT - 150, zIndex: 0 }}
+                                        ref={(ref) => { this.ScrollView = ref }}
+                                        onContentSizeChange={() => this.ScrollView.scrollToEnd({ animated: true })}
+                                    >
 
 
-                                    {this.state.messages.map((msg) => {
-                                        return (<View key={msg.MessageCode}>
-                                            {msg.SenderCode == this.props.navigation.getParam('UserCode') ? this.renderSentMessages(msg.Content, msg.SendingTime) : this.renderReceivedMessages(msg.Content, msg.SendingTime)}
+                                        {this.state.messages.map((msg) => {
+                                            return (<View key={msg.MessageCode}>
+                                                {msg.SenderCode == this.props.navigation.getParam('UserCode') ? this.renderSentMessages(msg.Content, msg.SendingTime) : this.renderReceivedMessages(msg.Content, msg.SendingTime)}
 
-                                        </View>)
-                                    })}
-                                </ScrollView>
-                                <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', position: 'absolute', bottom: 0, }}>
-                                    <TextInput
-                                        value={this.state.newMessage}
-                                        placeholder="Type here"
-                                        autoCapitalize="none"
-                                        autoCorrect={false}
-                                        ref={input => (this.usernameInput = input)}
-                                        onChangeText={(Message) => {
-                                            this.setState({ newMessage: Message });
-                                            { Message == "" ? this.setState({ sendButtonDisabled: true }) : this.setState({ sendButtonDisabled: false }) }
-                                        }}
-                                        style={{ flex: 1, fontSize: 20, borderWidth: 1, borderColor: '#e2e2e2', borderRadius: 20, flex: 1, margin: 8, maxHeight: 150, padding: 8 }}
-                                        multiline={true}
-                                        scrollEnabled={true}
+                                            </View>)
+                                        })}
+                                    </ScrollView>
+                                    <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', position: 'absolute', bottom: 0, }}>
+                                        <TextInput
+                                            value={this.state.newMessage}
+                                            placeholder="Type here"
+                                            autoCapitalize="none"
+                                            autoCorrect={false}
+                                            ref={input => (this.usernameInput = input)}
+                                            onChangeText={(Message) => {
+                                                this.setState({ newMessage: Message });
+                                                { Message == "" ? this.setState({ sendButtonDisabled: true }) : this.setState({ sendButtonDisabled: false }) }
+                                            }}
+                                            style={{ flex: 1, fontSize: 20, borderWidth: 1, borderColor: '#e2e2e2', borderRadius: 20, flex: 1, margin: 8, maxHeight: 150, padding: 8 }}
+                                            multiline={true}
+                                            scrollEnabled={true}
 
-                                    />
+                                        />
 
-                                    <Button
-                                        disabled={this.state.sendButtonDisabled}
-                                        icon={() => <Icon1
-                                            name='md-send'
-                                            size={25}
-                                            color={'white'}
-                                            style={{ alignItems: 'center', marginLeft: 4 }}
-                                        />}
-                                        style={{
-                                            flex: 1,
-                                            justifyContent: 'center',
-                                            alignItems: 'center',
-                                            margin: 8
+                                        <Button
+                                            disabled={this.state.sendButtonDisabled}
+                                            icon={() => <Icon1
+                                                name='md-send'
+                                                size={25}
+                                                color={'white'}
+                                                style={{ alignItems: 'center', marginLeft: 4 }}
+                                            />}
+                                            style={{
+                                                flex: 1,
+                                                justifyContent: 'center',
+                                                alignItems: 'center',
+                                                margin: 8
 
-                                        }}
-                                        buttonStyle={{
-                                            height: 45,
-                                            width: 45,
-                                            borderRadius: 30,
+                                            }}
+                                            buttonStyle={{
+                                                height: 45,
+                                                width: 45,
+                                                borderRadius: 30,
 
-                                        }}
-                                        onPress={() => this.sendMessage()}
-                                        activeOpacity={0.5}
-                                    />
+                                            }}
+                                            onPress={() => this.sendMessage()}
+                                            activeOpacity={0.5}
+                                        />
+                                    </View>
+
                                 </View>
-
-                            </View>
-                        </KeyboardAvoidingView> :  null}
+                            </KeyboardAvoidingView> : null}
 
 
                     </View> : null}

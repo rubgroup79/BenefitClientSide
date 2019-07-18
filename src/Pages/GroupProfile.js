@@ -167,7 +167,7 @@ export default class GroupProfile extends Component {
 
               <Text style={styles.nameHeader}>{this.state.sportCategory + ' Group'}</Text>
               <Text style={{ flex: 1, fontFamily: 'regular', textAlign: 'center', color: '#7384B4', fontSize: 18, }}>{this.state.address}</Text>
-              <Text style={{ flex: 1, fontFamily: 'regular', textAlign: 'center', color: '#7384B4', fontSize: 18, }}>{this.setTime(this.state.trainingTime) +' '+ this.state.trainingTime.split(' ')[0] }</Text>
+              <Text style={{ flex: 1, fontFamily: 'regular', textAlign: 'center', color: '#7384B4', fontSize: 18, }}>{this.setTime(this.state.trainingTime) +' '+ this.state.trainingTime.split(' ')[0].split('/')[1]+"."+this.state.trainingTime.split(' ')[0].split('/')[0]+"."+this.state.trainingTime.split(' ')[0].split('/')[2] }</Text>
               <Text style={{ flex: 1, fontFamily: 'light', textAlign: 'center', color: '#7384B4', fontSize: 14, }}>Open For {this.state.minParticipants} - {this.state.maxParticipants} Trainees </Text>
 
             </View>
@@ -206,7 +206,7 @@ export default class GroupProfile extends Component {
 
                 <View style={styles.list}>
                   {this.state.groupParticipants.map((participant, index) => (
-                    participant.UserCode != this.state.creatorCode &&
+                    ((participant.UserCode != this.state.creatorCode )||(participant.UserCode == this.state.creatorCode && this.state.withTrainer==0)) &&
                     <ListItem
                       key={index}
                       leftIcon={() =>

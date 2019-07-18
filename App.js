@@ -220,7 +220,7 @@ export default class AppContainer extends React.Component {
   }
 }
 registerRootComponent(AppContainer);
-console.disableYellowBox = false;
+console.disableYellowBox = true;
 
 
 

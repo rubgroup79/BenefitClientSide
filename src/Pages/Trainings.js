@@ -218,12 +218,13 @@ class Trainings extends Component {
             </View>
 
 
-            <ScrollView style={{ flex: 1 }}>
+            <ScrollView style={{ flex: 1, marginBottom:50 }}>
               {/* <Text style={styles.headline}>Couple Trainings</Text> */}
               <View style={{ flex: 1 }}>
                 {this.state.selectedIndex == 0 ?
                   <View style={styles.list}>
                     {this.state.pastCoupleTrainings.map((training, index) => (
+                      
                       <ListItem
                         key={index}
                         leftIcon={() =>
@@ -232,7 +233,8 @@ class Trainings extends Component {
                         titleStyle={{ color: 'black', fontFamily: 'regular' }}
                         subtitle={this.state.coupleAddresses[index]}
                         subtitleStyle={{ fontFamily: 'regular' }}
-                        rightTitle={training.TrainingTime.split(" ")[0]}
+                        //rightTitle={training.TrainingTime.split(" ")[0]}
+                        rightTitle={training.TrainingTime.split(" ")[0].split('/')[1]+"."+training.TrainingTime.split(" ")[0].split('/')[0]+"."+training.TrainingTime.split(" ")[0].split('/')[2]}
                         rightTitleStyle={{ color: 'green', fontSize: 15, fontFamily: 'regular' }}
                         rightSubtitle={training.Price == 0 ? null : '$' + training.Price}
                         rightSubtitleStyle={{ textAlign: 'center', fontFamily: 'regular' }}
@@ -261,7 +263,8 @@ class Trainings extends Component {
                         titleStyle={{ color: 'black', fontFamily: 'regular' }}
                         subtitleStyle={{ fontFamily: 'regular' }}
                         subtitle={this.state.groupAddresses[index]}
-                        rightTitle={training.TrainingTime.split(" ")[0]}
+                        //rightTitle={training.TrainingTime.split(" ")[0]}
+                        rightTitle={training.TrainingTime.split(" ")[0].split('/')[1]+"."+training.TrainingTime.split(" ")[0].split('/')[0]+"."+training.TrainingTime.split(" ")[0].split('/')[2]}
                         rightTitleStyle={{ color: 'green', fontSize: 15, fontFamily: 'regular' }}
                         rightSubtitle={training.Price == 0 ? null : '$' + training.Price}
                         rightSubtitleStyle={{ textAlign: 'center', fontFamily: 'regular' }}

@@ -31,8 +31,8 @@ export default class FutureTrainingsListView extends Component {
         this.cancelGroupParticipant = this.cancelGroupParticipant.bind(this);
         this.getAddress = this.getAddress.bind(this);
         this.getWeather = this.getWeather.bind(this);
-        this.getCoupleAdresses=this.getCoupleAdresses.bind(this);
-        this.getGroupsAdresses=this.getGroupsAdresses.bind(this);
+        this.getCoupleAdresses = this.getCoupleAdresses.bind(this);
+        this.getGroupsAdresses = this.getGroupsAdresses.bind(this);
 
     }
 
@@ -122,32 +122,34 @@ export default class FutureTrainingsListView extends Component {
     }
 
 
- async   UNSAFE_componentWillMount() {
+    UNSAFE_componentWillMount() {
         coupleTrainingAddresses = [];
         groupTrainingAddresses = [];
         coupleForecasts = [];
         groupForecasts = [];
 
-      this.props.FutureCoupleTrainings.length!=0 && await this.getCoupleAdresses();
-      this.props.FutureGroupTrainings.length!=0 &&  await this.getGroupsAdresses();
+        //this.props.FutureCoupleTrainings.length != 0 && 
+        this.getCoupleAdresses();
+        //this.props.FutureGroupTrainings.length != 0 &&  
+        this.getGroupsAdresses();
     }
 
 
- async   getCoupleAdresses() {
+    getCoupleAdresses() {
 
-    await    this.props.FutureCoupleTrainings.map((x) => {
+        this.props.FutureCoupleTrainings.map((x) => {
             this.getAddress(x.Latitude, x.Longitude, true)
             this.getWeather(x.Latitude, x.Longitude, x.TrainingTime, true)
         });
     }
 
-  async getGroupsAdresses() {
-await this.props.FutureGroupTrainings.map((x) => {
+    getGroupsAdresses() {
+        this.props.FutureGroupTrainings.map((x) => {
             this.getAddress(x.Latitude, x.Longitude, false)
-           // this.getWeather(x.Latitude, x.Longitude, x.TrainingTime, false)
+            // this.getWeather(x.Latitude, x.Longitude, x.TrainingTime, false)
         });
 
-      await  this.props.FutureGroupTrainings.map((x) => {
+        this.props.FutureGroupTrainings.map((x) => {
             //this.getAddress(x.Latitude, x.Longitude, false)
             this.getWeather(x.Latitude, x.Longitude, x.TrainingTime, false)
         });
@@ -463,7 +465,7 @@ await this.props.FutureGroupTrainings.map((x) => {
                                 </TouchableOpacity> : null} */}
 
 
-                              {this.props.UserCode != x.CreatorCode && this.CreatorDetails.length != 0 ?
+                            {this.props.UserCode != x.CreatorCode && this.CreatorDetails.length != 0 ?
                                 <TouchableOpacity
                                     style={{
                                         backgroundColor: 'rgba(222,222,222,1)',
@@ -479,7 +481,7 @@ await this.props.FutureGroupTrainings.map((x) => {
                                     }}
                                 >
                                     <Icon2 name="message1" color="green" size={20} />
-                                </TouchableOpacity> : null} 
+                                </TouchableOpacity> : null}
 
                             <TouchableOpacity
                                 style={{
@@ -509,13 +511,13 @@ await this.props.FutureGroupTrainings.map((x) => {
 
         Geocode.fromLatLng(latitude, longitude).then(
             response => {
-                //address = response.results[0].formatted_address;
-                if (couple)
-                coupleTrainingAddresses.push(response.results[0].formatted_address);
-            else groupTrainingAddresses.push(response.results[0].formatted_address);
-            if (coupleTrainingAddresses.length == this.props.FutureCoupleTrainings.length && groupTrainingAddresses.length == this.props.FutureGroupTrainings.length) {
-                this.setState({ status: 1 });
-            }
+                address = response.results[0].formatted_address;
+                // if (couple)
+                //     coupleTrainingAddresses.push(response.results[0].formatted_address);
+                // else groupTrainingAddresses.push(response.results[0].formatted_address);
+                // if (coupleTrainingAddresses.length == this.props.FutureCoupleTrainings.length && groupTrainingAddresses.length == this.props.FutureGroupTrainings.length) {
+                //     this.setState({ status: 1 });
+                // }
             },
             error => {
                 console.error(error);
@@ -532,15 +534,15 @@ await this.props.FutureGroupTrainings.map((x) => {
         //         address = address.replace(/"/g, '');
         //     });
 
-        // setTimeout(() => {
-        //     if (couple)
-        //         coupleTrainingAddresses.push(address);
-        //     else groupTrainingAddresses.push(address);
+        setTimeout(() => {
+            if (couple)
+                coupleTrainingAddresses.push(address);
+            else groupTrainingAddresses.push(address);
 
-        //     if (coupleTrainingAddresses.length == this.props.FutureCoupleTrainings.length && groupTrainingAddresses.length == this.props.FutureGroupTrainings.length) {
-        //         this.setState({ status: 1 });
-        //     }
-        // },3000);
+            if (coupleTrainingAddresses.length == this.props.FutureCoupleTrainings.length && groupTrainingAddresses.length == this.props.FutureGroupTrainings.length) {
+                this.setState({ status: 1 });
+            }
+        }, 3000);
 
 
     }
@@ -551,34 +553,40 @@ await this.props.FutureGroupTrainings.map((x) => {
         // console.warn(index)
         // Construct the API url to call
         let url = 'https://api.openweathermap.org/data/2.5/forecast?lat=' + lat + '&lon=' + lon + "&units=metric&appid=5c2433d8113849df4c21949af64f6f74";
-
+        forecast = {
+            icon: '',
+            temp: ''
+        }
         // Call the API, and set the state of the weather forecast
         fetch(url)
             .then(response => response.json())
             .then(data => {
+                console.warn(data.list[index].weather[0].icon)
                 forecast = {
                     icon: data.list[index].weather[0].icon,
                     temp: data.list[index].main.temp
                 }
+                // if (coupleForecasts.length == this.props.FutureCoupleTrainings.length && groupForecasts.length == this.props.FutureGroupTrainings.length) {
 
+                //     this.setState({ forecastStatus: 1 })
+                // }
+            })
+            .catch(error => console.warn('Error:', error.message));
+
+          
+
+            setTimeout(() => {
                 if (couple) {
                     coupleForecasts.push(forecast);
-                    
                 }
-
                 else groupForecasts.push(forecast);
                 if (coupleForecasts.length == this.props.FutureCoupleTrainings.length && groupForecasts.length == this.props.FutureGroupTrainings.length) {
 
                     this.setState({ forecastStatus: 1 })
                 }
-            });
+            }, 3000);
 
-        // setTimeout(() => {
-        //     if (coupleForecasts.length == this.props.FutureCoupleTrainings.length && groupForecasts.length == this.props.FutureGroupTrainings.length) {
 
-        //         this.setState({ forecastStatus: 1 })
-        //     }
-        // }, 3000);
     }
 
     render() {

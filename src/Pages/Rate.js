@@ -182,8 +182,10 @@ class Rate extends Component {
                 })
 
         }
-
-        this.props.navigation.navigate('Trainings');
+        alert('Your rate was saved!');
+        const { goBack } = this.props.navigation;
+       // this.props.navigation.navigate('Trainings');
+       goBack();
     }
 
     insertParametersRate(ParameterRate) {
@@ -246,27 +248,27 @@ class Rate extends Component {
                             <View style={{ flex: 6 }}>
 
                                 <View style={{ flex: 1, marginBottom: 5 }}>
-                                    <Text style={{ fontFamily: 'bold', color: '#f34573', textAlign: 'center' }}>{this.state.rateParameters[0].Description}</Text>
+                                    <Text style={{ fontFamily: 'regular', color: '#f34573', textAlign: 'center' }}>{this.state.rateParameters[0].Description}</Text>
                                     <RatingStars setParameterRate={this.setParameterRate1}></RatingStars>
                                 </View>
 
                                 <View style={{ flex: 1, marginBottom: 5 }}>
-                                    <Text style={{ fontFamily: 'bold', color: '#f34573', textAlign: 'center' }}>{this.state.rateParameters[1].Description}</Text>
+                                    <Text style={{ fontFamily: 'regular', color: '#f34573', textAlign: 'center' }}>{this.state.rateParameters[1].Description}</Text>
                                     <RatingStars setParameterRate={this.setParameterRate2}></RatingStars>
                                 </View>
 
                                 <View style={{ flex: 1, marginBottom: 5 }}>
-                                    <Text style={{ fontFamily: 'bold', color: '#f34573', textAlign: 'center' }}>{this.state.rateParameters[2].Description}</Text>
+                                    <Text style={{ fontFamily: 'regular', color: '#f34573', textAlign: 'center' }}>{this.state.rateParameters[2].Description}</Text>
                                     <RatingStars setParameterRate={this.setParameterRate3}></RatingStars>
                                 </View>
 
                                 <View style={{ flex: 1, marginBottom: 5 }}>
-                                    <Text style={{ fontFamily: 'bold', color: '#f34573', textAlign: 'center' }}>{this.state.rateParameters[3].Description}</Text>
+                                    <Text style={{ fontFamily: 'regular', color: '#f34573', textAlign: 'center' }}>{this.state.rateParameters[3].Description}</Text>
                                     <RatingStars setParameterRate={this.setParameterRate4}></RatingStars>
                                 </View>
 
                                 <View style={{ flex: 1, marginBottom: 5 }}>
-                                    <Text style={{ fontFamily: 'bold', color: '#f34573', textAlign: 'center' }}>{this.state.rateParameters[4].Description}</Text>
+                                    <Text style={{ fontFamily: 'regular', color: '#f34573', textAlign: 'center' }}>{this.state.rateParameters[4].Description}</Text>
                                     <RatingStars setParameterRate={this.setParameterRate5}></RatingStars>
                                 </View>
 
