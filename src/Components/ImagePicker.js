@@ -36,11 +36,7 @@ export default class ImageUpload extends Component {
                 <Image
                      source={this.state.image=="null"? (this.props.gender=='Male' ? Male : Female) :{uri:this.state.image}}
                     
-                    style={{
-                        width: IMAGE_SIZE,
-                        height: IMAGE_SIZE,
-                        borderRadius: IMAGE_SIZE/2,
-                    }}
+                    style={styles.image}
                 />
                 <ActionButton style={styles.editImageButton}
                     renderIcon={active => active ? (<Icon1
@@ -82,50 +78,11 @@ export default class ImageUpload extends Component {
                     </ActionButton.Item>
                 </ActionButton>
 
-{/* 
-                {this._maybeRenderImage()}
-                {this._maybeRenderUploadingOverlay()} */}
             </View>
         );
     }
 
-    // _maybeRenderUploadingOverlay = () => {
-    //     if (this.state.uploading) {
-    //         return (
-    //             <View
-    //                 style={[StyleSheet.absoluteFill, styles.maybeRenderUploading]}>
-    //                 <ActivityIndicator color="#fff" size="large" />
-    //             </View>
-    //         );
-    //     }
-    // };
-
-    // _maybeRenderImage = () => {
-    //     let {
-    //         image
-    //     } = this.state;
-
-    //     if (!this.state.image) {
-    //         return;
-    //     }
-
-    //     return (
-    //         <View
-    //             style={styles.maybeRenderContainer}>
-    //             <View
-    //                 style={styles.maybeRenderImageContainer}>
-    //                 <Image source={{ uri: image }} style={styles.maybeRenderImage} />
-    //             </View>
-
-    //             <Text
-    //                 onPress={this._copyToClipboard}
-    //                 onLongPress={this._share}
-    //                 style={styles.maybeRenderImageText}>
-    //                 {image}
-    //             </Text>
-    //         </View>
-    //     )};
-
+   
     _share = () => {
         Share.share({
             message: this.state.image,
@@ -286,5 +243,11 @@ const styles = StyleSheet.create({
       editImageButton:{
         marginRight:95,
         marginTop:-30
-      }
+      },
+      image:
+      {
+        width: IMAGE_SIZE,
+        height: IMAGE_SIZE,
+        borderRadius: IMAGE_SIZE/2}
+    ,
 });

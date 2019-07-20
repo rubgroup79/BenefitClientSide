@@ -44,9 +44,6 @@ export default class RatingStarsShowOnly extends Component {
     })
   }
 
-//   starSelectedInPosition(position){
-// console.warn(position)
-//   }
 
   render() {
     const { position } = this.state

@@ -41,67 +41,28 @@ const CustomDrawerContentComponent = props => (
 const MainRoot = DrawerNavigator(
   {
 
-    // HomeTrainee: {
-    //   path: '/homeTrainee',
-    //   screen: HomeTrainee,
-    //   // navigationOptions: {
-    //   //   drawerLabel:()=>null
-    //   // }
-    // },
-    // HomeTrainer: {
-    //   path: '/homeTrainer',
-    //   screen: HomeTrainer,
-    //   // navigationOptions: {
-    //   //   drawerLabel:()=>null
-    //   // }
-    // },
-    // TraineeProfile: {
-    //   path: '/traineeProfile',
-    //   screen: TraineeProfile,
-    // },
-    // CreateGroup: {
-    //   path: '/createGroup',
-    //   screen: CreateGroup,
-    //   // navigationOptions: {
-    //   //   drawerLabel:()=>null
-    //   // }
-    // },
+ 
     SigninGeneral: {
       path: '/signinGeneral',
       screen: SigninGeneral,
-      // navigationOptions: {
-      //   drawerLabel:()=>null
-      // }
+
     },
     SigninTrainee: {
       path: '/signinTrainee',
       screen: SigninTrainee,
-      // navigationOptions: {
-      //   drawerLabel:()=>null
-      // }
+ 
     },
     SigninTrainer: {
       path: '/signinTrainer',
       screen: SigninTrainer,
-      // navigationOptions: {
-      //   drawerLabel:()=>null
-      // }
+    
     },
-    // Chat: {
-    //   path: '/chat',
-    //   screen: Chat,
-    //   navigationOptions: {
-    //     drawerLabel: () => null
-    //   }
-    // },
+
     Login: {
       path: '/login',
       screen: Login,
     },
-    // Profile: {
-    //   path: '/profile',
-    //   screen: Profile,
-    // },
+ 
     Lists: {
       path: '/lists',
       screen: Lists,
@@ -139,10 +100,6 @@ const MainRoot = DrawerNavigator(
       path: '/pricing',
       screen: Pricing,
     },
-    // Settings: {
-    //   path: '/settings',
-    //   screen: Settings,
-    // },
   },
   {
     initialRouteName: 'Login',

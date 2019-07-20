@@ -120,7 +120,7 @@ export default class SearchModal extends Component {
         return (
 
             <ScrollView style={styles.mainContainer}>
-                <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                <View style={styles.headerContainer}>
                     <Icon name='close' style={styles.closeIcon} size={20} color='gray' onPress={() => this.props.searchModalVisible()}></Icon>
                     <Text style={styles.headline}>Find Your BeneFIT</Text>
                 </View>
@@ -258,27 +258,10 @@ export default class SearchModal extends Component {
 
                             <Button
                                 containerStyle={{ marginVertical: 20 }}
-                                style={{
-                                    flex: 1,
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                    marginBottom: 10,
-                                }}
-                                buttonStyle={{
-                                    height: 60,
-                                    width: 140,
-                                    borderRadius: 30,
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                    backgroundColor: '#f34573'
-                                }}
+                                style={styles.buttonStyle1}
+                                buttonStyle={styles.buttonStyle2}
                                 title="Go"
-                                titleStyle={{
-                                    fontFamily: 'bold',
-                                    fontSize: 15,
-                                    color: 'white',
-                                    textAlign: 'center',
-                                }}
+                                titleStyle={styles.titleStyle}
                                 onPress={() => {
                                     this.validateSearchInput();
                                     
@@ -309,7 +292,31 @@ const styles = StyleSheet.create({
         top: 200,
         zIndex: 1,
     },
-
+headerContainer:
+{ flex: 1, flexDirection: 'row', alignItems: 'center' },
+buttonStyle1:
+{
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 10,
+},
+buttonStyle2:
+{
+    height: 60,
+    width: 140,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f34573'
+},
+titleStyle:
+{
+    fontFamily: 'bold',
+    fontSize: 15,
+    color: 'white',
+    textAlign: 'center',
+},
     closeIcon: {
         top: 20,
         left: 20,

@@ -5,22 +5,15 @@ import {
   View,
   SafeAreaView,
   ScrollView,
-  LayoutAnimation,
   Dimensions,
   StatusBar,
 
 } from 'react-native';
-import { Slider, Divider, Button } from 'react-native-elements';
+import { Slider, Button } from 'react-native-elements';
 import { Font } from 'expo';
-import AvatarImage from '../Components/AvatarImage';
-import NumericInput from 'react-native-numeric-input';
-import Icon from "react-native-vector-icons/Entypo";
-import ActionButton from 'react-native-action-button';
+
 import ImageUpload from '../Components/ImagePicker';
 
-const MALE_AVATAR = require('../../Images/MaleAvatar.png');
-const FEMALE_AVATAR = require('../../Images/FemaleAvatar.png');
-const BOTH_AVATAR = require('../../Images/BothAvatar.png');
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SLIDER_SIZE = SCREEN_WIDTH - 150;
 
@@ -36,8 +29,6 @@ export default class SigninTrainee extends Component {
       personalTrainingPrice: 150
     };
 
-    // this.setSelectedGenderPartner = this.setSelectedGenderPartner.bind(this);
-    // this.setSelectedGenderTrainer = this.setSelectedGenderTrainer.bind(this);
     this.setPicturePath = this.setPicturePath.bind(this);
 
   }
@@ -111,32 +102,6 @@ export default class SigninTrainee extends Component {
   }
 
 
-  // validatePartnerGender() {
-  //   if (this.state.partnerGender == null) {
-  //     alert('Please select prefered partner gender');
-  //     return false;
-  //   }
-  //   else return true;
-
-  // }
-
-  // validateTrainerGender() {
-  //   if (this.state.trainerGender == null) {
-  //     alert('Please select prefered trainer gender');
-  //     return false;
-  //   }
-  //   else return true;
-
-  // }
-
-  // setSelectedGenderPartner = selectedType =>
-  //   LayoutAnimation.easeInEaseOut() || this.setState({ partnerGender: selectedType });
-
-
-  // setSelectedGenderTrainer = selectedType =>
-  //   LayoutAnimation.easeInEaseOut() || this.setState({ trainerGender: selectedType });
-
-
   setPicturePath(path) {
     this.setState({ picture: path });
   }
@@ -145,7 +110,6 @@ export default class SigninTrainee extends Component {
   render() {
     return (
       <SafeAreaView style={{ flex: 1 }}>
-{console.warn(this.state.picture)}
         <StatusBar barStyle="light-content" />
 
         {this.state.fontLoaded ? (
@@ -169,7 +133,7 @@ export default class SigninTrainee extends Component {
 
               </View>
 
-              <View style={{ flex: 1, flexDirection: 'column', marginTop: 20 }}>
+              <View style={styles.searchRadiusView}>
 
                 <Text
                   style={style = styles.textHeadlines}
@@ -198,11 +162,11 @@ export default class SigninTrainee extends Component {
 
                 </View>
 
-                <Text style={{ color: '#f34573', textAlign: 'center', fontSize: 13, fontFamily: 'light' }}>Radius: {this.state.searchRadius} km</Text>
+                <Text style={styles.smallHeadlineText}>Radius: {this.state.searchRadius} km</Text>
 
               </View>
 
-              <View style={{ flex: 1, flexDirection: 'column', marginTop: 20 }}>
+              <View style={styles.priceView}>
 
                 <Text
                   style={style = styles.textHeadlines}
@@ -231,36 +195,20 @@ export default class SigninTrainee extends Component {
 
                 </View>
 
-                <Text style={{ color: '#f34573', textAlign: 'center', fontSize: 13, fontFamily: 'light' }}>Price: {this.state.personalTrainingPrice} $</Text>
+                <Text style={styles.smallHeadlineText}>Price: {this.state.personalTrainingPrice} $</Text>
 
               </View>
               <Button
                 containerStyle={{ marginVertical: 20 }}
-                style={{
-                  flex: 1,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  marginBottom: 10
-                }}
-                buttonStyle={{
-                  height: 55,
-                  width: SCREEN_WIDTH - 250,
-                  borderRadius: 30,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
+                style={styles.submitButton}
+                buttonStyle={styles.submitButtonStyle}
                 linearGradientProps={{
                   colors: ['#75cac3', '#75cac3'],
                   start: [1, 0],
                   end: [0.2, 0],
                 }}
                 title="SUBMIT"
-                titleStyle={{
-                  fontFamily: 'regular',
-                  fontSize: 20,
-                  color: 'white',
-                  textAlign: 'center',
-                }}
+                titleStyle={styles.submitTitle}
                 onPress={() => this.submit()}
                 activeOpacity={0.5}
               />
@@ -285,6 +233,35 @@ export default class SigninTrainee extends Component {
 
 
 const styles = StyleSheet.create({
+  searchRadiusView:
+ { flex: 1, flexDirection: 'column', marginTop: 20 },
+smallHeadlineText:
+{ color: '#f34573', textAlign: 'center', fontSize: 13, fontFamily: 'light' },
+
+priceView:
+{ flex: 1, flexDirection: 'column', marginTop: 20 },
+submitButton:
+{
+  flex: 1,
+  justifyContent: 'center',
+  alignItems: 'center',
+  marginBottom: 10
+},
+submitButtonStyle:
+{
+height: 55,
+width: SCREEN_WIDTH - 250,
+borderRadius: 30,
+justifyContent: 'center',
+alignItems: 'center',
+},
+submitTitle:
+{
+  fontFamily: 'regular',
+  fontSize: 20,
+  color: 'white',
+  textAlign: 'center',
+},
   statusBar: {
     height: 10,
   },

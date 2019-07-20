@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Text, View, StyleSheet, ScrollView, TouchableOpacity, Dimensions, Image, ActivityIndicator } from 'react-native';
 import { Avatar, } from 'react-native-elements';
 import Icon2 from 'react-native-vector-icons/AntDesign';
-import Icon3 from 'react-native-vector-icons/Foundation';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Icon1 from 'react-native-vector-icons/Entypo';
 import { NavigationApps, actions, googleMapsTravelModes } from "react-native-navigation-apps";
@@ -115,7 +114,6 @@ export default class FutureTrainingsListView extends Component {
         })
             .then(res => res.json())
             .then(response => {
-                //this.setState({ creatorDetails: response })
                 return response;
             })
             .catch(error => console.warn('Error:', error.message));
@@ -127,10 +125,7 @@ export default class FutureTrainingsListView extends Component {
         groupTrainingAddresses = [];
         coupleForecasts = [];
         groupForecasts = [];
-
-        //this.props.FutureCoupleTrainings.length != 0 && 
         this.getCoupleAdresses();
-        //this.props.FutureGroupTrainings.length != 0 &&  
         this.getGroupsAdresses();
     }
 
@@ -146,11 +141,9 @@ export default class FutureTrainingsListView extends Component {
     getGroupsAdresses() {
         this.props.FutureGroupTrainings.map((x) => {
             this.getAddress(x.Latitude, x.Longitude, false)
-            // this.getWeather(x.Latitude, x.Longitude, x.TrainingTime, false)
         });
 
         this.props.FutureGroupTrainings.map((x) => {
-            //this.getAddress(x.Latitude, x.Longitude, false)
             this.getWeather(x.Latitude, x.Longitude, x.TrainingTime, false)
         });
     }
@@ -180,7 +173,7 @@ export default class FutureTrainingsListView extends Component {
                 style={styles.trainingCard}
                 key={index}
             >
-                <View style={{ flex: 2, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                <View style={styles.trainingDetails}>
                     <View style={{ marginLeft: 15 }}>
                         <Avatar
                             small
@@ -191,52 +184,27 @@ export default class FutureTrainingsListView extends Component {
                         />
                     </View>
 
-                    <View style={{ flex: 1, flexDirection: "column", justifyContent: 'center' }}>
-                        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }}>
-                            <Text
-                                style={{
-                                    fontFamily: 'regular',
-                                    fontSize: 17,
-                                    marginLeft: 10,
-                                    color: 'green',
-                                    flex: 1
-                                }}
-                            >
+                    <View style={styles.training}>
+                        <View style={styles.timeView}>
+                            <Text style={styles.trainingTimeText}>
                                 {this.setTime(x.TrainingTime)}
-
-
                             </Text>
-                            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }}>
-                                <Image style={{ width: 30, height: 30, marginTop: -5 }} source={{ uri: "https://openweathermap.org/img/w/" + coupleForecasts[index].icon + ".png" }}></Image>
-                                <Text style={{ fontSize: 12, fontFamily: 'light', marginTop: 2 }}>{Math.floor(coupleForecasts[index].temp) + "°c"}</Text>
+                            <View style={styles.forcastView}>
+                                <Image style={styles.forcastImage} source={{ uri: "https://openweathermap.org/img/w/" + coupleForecasts[index].icon + ".png" }}></Image>
+                                <Text style={styles.forcastText}>{Math.floor(coupleForecasts[index].temp) + "°c"}</Text>
                             </View>
 
 
                         </View>
                         <Text
-                            style={{
-                                fontFamily: 'regular',
-                                fontSize: 15,
-                                marginLeft: 10,
-                                color: 'gray',
-                                flex: 1
-                            }}
+                            style={styles.nameText}
                         >
                             {x.PartnerFirstName + ' ' + x.PartnerLastName + ', ' + x.PartnerAge}
                         </Text>
-                        <View style={{ flex: 1, flexDirection: 'row', marginRight: 25, justifyContent: 'center' }}>
-                            <Icon1 style={{ flex: 1, marginLeft: 15 }} name='location-pin' color='gray' textAlign='center' size={20} onPress={() => this.props.setLatLon(x.Latitude, x.Longitude)}></Icon1>
+                        <View style={styles.locationView}>
+                            <Icon1 style={styles.locationIcon} name='location-pin' color='gray' textAlign='center' size={20} onPress={() => this.props.setLatLon(x.Latitude, x.Longitude)}></Icon1>
                             <Text
-                                style={{
-                                    fontFamily: 'regular',
-                                    fontSize: 12,
-                                    marginLeft: 10,
-                                    color: 'gray',
-                                    flex: 5,
-                                    justifyContent: 'center',
-                                    textAlign: 'right',
-                                    marginTop: 3
-                                }}
+                                style={styles.locationText}
                             >
 
                                 {((coupleTrainingAddresses[index]).length > 25) ?
@@ -245,80 +213,55 @@ export default class FutureTrainingsListView extends Component {
 
                             </Text>
                         </View>
-                        {x.WithTrainer ? <Text
-                            style={{
-                                fontFamily: 'light',
-                                fontSize: 12,
-                                marginLeft: 10,
-                                color: 'blue',
-                            }}
-                        >
-                            {x.Price + "$"}
-                        </Text> : null}
+                        {x.WithTrainer ?
+                            <Text
+                                style={styles.priceText}
+                            >
+                                {x.Price + "$"}
+                            </Text> : null}
 
                     </View>
                 </View>
                 <View
-                    style={{
-                        flexDirection: 'row',
-                        justifyContent: 'flex-end',
-                        marginRight: 10,
-                        flex: 1
-                    }}
+                    style={styles.trainingRightView}
                 >
+                    {x.StatusCode != 2 ?
+                        <View style={styles.rightSideView}>
+                            <View style={styles.navigationAppsView}>
+                                <NavigationApps
+                                    iconSize={20}
+                                    row
+                                    viewMode={'sheet'}
+                                    actionSheetBtnCloseTitle={'Cancel'}
+                                    actionSheetBtnOpenTitle={<Icon style={{ flex: 1 }} name='car' color='black' size={17}></Icon>}
+                                    actionSheetBtnOpenStyle={{ backgroundColor: 'rgba(222,222,222,1)', width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center' }}
+                                    address={coupleTrainingAddresses[index]} // address to navigate by for all apps 
+                                    waze={{ lat: '32.6854', lon: '34.5523', action: actions.navigateByAddress }} // specific settings for waze
+                                    googleMaps={{ lat: '', lon: '', action: actions.navigateByAddress }} // specific settings for google maps
+                                    maps={{ lat: '32.6854', lon: '34.5523', action: actions.navigateByAddress }} // specific settings for maps
 
+                                />
+                            </View>
+                            <TouchableOpacity
+                                style={styles.button}
+                                onPress={() => {
+                                    this.props.navigation.navigate('Chat', { UserCode: this.props.UserCode, PartnerUserCode: x.PartnerUserCode, FullName: x.PartnerFirstName + " " + x.PartnerLastName, Picture: x.PartnerPicture })
+                                }}
+                            >
+                                <Icon2 name="message1" color="green" size={20} />
+                            </TouchableOpacity>
 
-                    {x.StatusCode != 2 ? <View style={{ flex: 1, flexDirection: 'row', alignContent: 'center', justifyContent: 'center' }}>
-                        <View style={{ flex: 1, justifyContent: 'center', alignContent: 'center' }}>
-                            <NavigationApps
-                                iconSize={20}
-                                row
-                                viewMode={'sheet'}
-                                actionSheetBtnCloseTitle={'Cancel'}
-                                actionSheetBtnOpenTitle={<Icon style={{ flex: 1 }} name='car' color='black' size={17}></Icon>}
-                                actionSheetBtnOpenStyle={{ backgroundColor: 'rgba(222,222,222,1)', width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center' }}
-                                address={coupleTrainingAddresses[index]} // address to navigate by for all apps 
-                                waze={{ lat: '32.6854', lon: '34.5523', action: actions.navigateByAddress }} // specific settings for waze
-                                googleMaps={{ lat: '', lon: '', action: actions.navigateByAddress }} // specific settings for google maps
-                                maps={{ lat: '32.6854', lon: '34.5523', action: actions.navigateByAddress }} // specific settings for maps
+                            <TouchableOpacity
+                                style={styles.button}
+                                onPress={() => {
+                                    this.cancelCoupleTraining(x)
 
-                            />
-                        </View>
-                        <TouchableOpacity
-                            style={{
-                                backgroundColor: 'rgba(222,222,222,1)',
-                                width: 28,
-                                height: 28,
-                                borderRadius: 14,
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                marginRight: 23
-                            }}
-                            onPress={() => {
-                                this.props.navigation.navigate('Chat', { UserCode: this.props.UserCode, PartnerUserCode: x.PartnerUserCode, FullName: x.PartnerFirstName + " " + x.PartnerLastName, Picture: x.PartnerPicture })
-                            }}
-                        >
-                            <Icon2 name="message1" color="green" size={20} />
-                        </TouchableOpacity>
+                                }}
+                            >
+                                <Icon2 name="close" color="red" size={20} />
+                            </TouchableOpacity>
 
-                        <TouchableOpacity
-                            style={{
-                                backgroundColor: 'rgba(222,222,222,1)',
-                                width: 28,
-                                height: 28,
-                                borderRadius: 14,
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                            }}
-                            onPress={() => {
-                                this.cancelCoupleTraining(x)
-
-                            }}
-                        >
-                            <Icon2 name="close" color="red" size={20} />
-                        </TouchableOpacity>
-
-                    </View> : <Text style={{ fontFamily: 'bold', color: 'red' }}>Canceled</Text>}
+                        </View> : <Text style={styles.canceledText}>Canceled</Text>}
                 </View>
                 <View>
 
@@ -340,7 +283,7 @@ export default class FutureTrainingsListView extends Component {
                 key={index}
                 style={styles.trainingCard}
             >
-                <View style={{ flex: 2, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                <View style={styles.trainingDetails}>
                     <View style={{ marginLeft: 15 }}>
                         <Avatar
                             small
@@ -350,54 +293,33 @@ export default class FutureTrainingsListView extends Component {
                             onPress={() => this.props.navigation.navigate('GroupProfile', { GroupCode: x.TrainingCode })}
                         />
                     </View>
-                    <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center' }}>
-                        <View style={{ flex: 1, justifyContent: 'center', flexDirection: 'row' }}>
+                    <View style={styles.columnView}>
+                        <View style={styles.trainingTimeView}>
                             <Text
-                                style={{
-                                    fontFamily: 'regular',
-                                    fontSize: 17,
-                                    marginLeft: 10,
-                                    color: 'green',
-                                    flex: 1
-                                }}
+                                style={styles.trainingTimeText}
                             >
                                 {this.setTime(x.TrainingTime)}
 
                             </Text>
-                            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }}>
-                                <Image style={{ width: 30, height: 30, marginTop: -5 }} source={{ uri: "https://openweathermap.org/img/w/" + groupForecasts[index].icon + ".png" }}></Image>
-                                <Text style={{ fontSize: 12, fontFamily: 'light', marginTop: 2 }}>{Math.floor(groupForecasts[index].temp) + "°c"}</Text>
+                            <View style={styles.timeView}>
+                                <Image style={styles.forcastImage} source={{ uri: "https://openweathermap.org/img/w/" + groupForecasts[index].icon + ".png" }}></Image>
+                                <Text style={styles.forcastText}>{Math.floor(groupForecasts[index].temp) + "°c"}</Text>
                             </View>
                         </View>
 
-                        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                        <View style={styles.groupHeadlineView}>
                             <Text
-                                style={{
-                                    fontFamily: 'regular',
-                                    fontSize: 15,
-                                    marginLeft: 10,
-                                    color: 'gray',
-                                    flex: 1,
-                                }}
+                                style={styles.groupHeadline}
                             >
                                 {x.SportCategory} Group
                     </Text>
 
                         </View>
 
-                        <View style={{ flex: 1, flexDirection: 'row', marginRight: 25, justifyContent: 'center' }}>
-                            <Icon1 style={{ flex: 1, marginLeft: 15 }} name='location-pin' color='gray' textAlign='center' size={20} onPress={() => this.props.setLatLon(x.Latitude, x.Longitude)}></Icon1>
+                        <View style={styles.locationView}>
+                            <Icon1 style={styles.locationIcon} name='location-pin' color='gray' textAlign='center' size={20} onPress={() => this.props.setLatLon(x.Latitude, x.Longitude)}></Icon1>
                             <Text
-                                style={{
-                                    fontFamily: 'regular',
-                                    fontSize: 12,
-                                    marginLeft: 10,
-                                    color: 'gray',
-                                    flex: 5,
-                                    justifyContent: 'center',
-                                    textAlign: 'right',
-                                    marginTop: 3
-                                }}
+                                style={styles.locationText}
                             >
 
                                 {((groupTrainingAddresses[index]).length > 25) ?
@@ -407,13 +329,7 @@ export default class FutureTrainingsListView extends Component {
                             </Text>
                         </View>
                         <Text
-                            style={{
-                                fontFamily: 'light',
-                                fontSize: 13,
-                                marginLeft: 2,
-                                color: 'blue',
-                                flex: 1,
-                            }}
+                            style={styles.groupPriceText}
                         >
                             {x.WithTrainer ? x.Price + "$" : null}
                         </Text>
@@ -422,16 +338,11 @@ export default class FutureTrainingsListView extends Component {
 
                 </View>
                 <View
-                    style={{
-                        flexDirection: 'row',
-                        justifyContent: 'flex-end',
-                        marginRight: 10,
-                        flex: 1
-                    }}
+                    style={styles.detailsContainer}
                 >
                     {x.StatusCode != 2 ?
-                        <View style={{ flex: 1, flexDirection: 'row', alignContent: 'center', justifyContent: 'center' }}>
-                            <View style={{ flex: 1, justifyContent: 'center', alignContent: 'center' }}>
+                        <View style={styles.rightSideView}>
+                            <View style={styles.navigationAppsView}>
                                 <NavigationApps
                                     iconSize={20}
                                     row
@@ -446,36 +357,11 @@ export default class FutureTrainingsListView extends Component {
 
                                 />
                             </View>
-                            {/* {this.props.UserCode != x.CreatorCode && this.state.creatorDetails.length != 0 ?
-                                <TouchableOpacity
-                                    style={{
-                                        backgroundColor: 'rgba(222,222,222,1)',
-                                        width: 28,
-                                        height: 28,
-                                        borderRadius: 100,
-                                        justifyContent: 'center',
-                                        alignItems: 'center',
-                                        marginRight: 23,
-                                    }}
-                                    onPress={() => {
-                                        this.props.navigation.navigate('Chat', { UserCode: this.props.UserCode, PartnerUserCode: x.CreatorCode, FullName: this.state.creatorDetails.FirstName + " " + this.state.creatorDetails.LastName, Picture: this.state.creatorDetails.Picture })
-                                    }}
-                                >
-                                    <Icon2 name="message1" color="green" size={20} />
-                                </TouchableOpacity> : null} */}
 
 
                             {this.props.UserCode != x.CreatorCode && this.CreatorDetails.length != 0 ?
                                 <TouchableOpacity
-                                    style={{
-                                        backgroundColor: 'rgba(222,222,222,1)',
-                                        width: 28,
-                                        height: 28,
-                                        borderRadius: 100,
-                                        justifyContent: 'center',
-                                        alignItems: 'center',
-                                        marginRight: 23,
-                                    }}
+                                    style={styles.chatButton}
                                     onPress={() => {
                                         this.props.navigation.navigate('Chat', { UserCode: this.props.UserCode, PartnerUserCode: x.CreatorCode, FullName: CreatorDetails.FirstName + " " + CreatorDetails.LastName, Picture: CreatorDetails.Picture })
                                     }}
@@ -484,19 +370,12 @@ export default class FutureTrainingsListView extends Component {
                                 </TouchableOpacity> : null}
 
                             <TouchableOpacity
-                                style={{
-                                    backgroundColor: 'rgba(222,222,222,1)',
-                                    width: 28,
-                                    height: 28,
-                                    borderRadius: 100,
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                }}
+                                style={styles.cancelButton}
                                 onPress={() => this.cancelGroupParticipant(x)}
                             >
                                 <Icon2 name="close" color="red" size={20} />
                             </TouchableOpacity>
-                        </View> : <Text style={{ fontFamily: 'bold', color: 'red' }}>Canceled</Text>}
+                        </View> : <Text style={styles.canceledText}>Canceled</Text>}
 
 
                 </View>
@@ -512,27 +391,12 @@ export default class FutureTrainingsListView extends Component {
         Geocode.fromLatLng(latitude, longitude).then(
             response => {
                 address = response.results[0].formatted_address;
-                // if (couple)
-                //     coupleTrainingAddresses.push(response.results[0].formatted_address);
-                // else groupTrainingAddresses.push(response.results[0].formatted_address);
-                // if (coupleTrainingAddresses.length == this.props.FutureCoupleTrainings.length && groupTrainingAddresses.length == this.props.FutureGroupTrainings.length) {
-                //     this.setState({ status: 1 });
-                // }
+
             },
             error => {
                 console.error(error);
             }
         );
-
-        // var address = '';
-        // fetch('https://maps.googleapis.com/maps/api/geocode/json?address=' + latitude + ',' + longitude + '&key=' + 'AIzaSyB_OIuPsnUNvJ-CN0z2dir7cVbqJ7Xj3_Q')
-        //     .then((response) => response.json())
-        //     .then((responseJson) => {
-        //         address = JSON.stringify(responseJson.results[0].address_components.filter(x => x.types.filter(t => t == 'route').length > 0)[0].short_name) + ' ' +
-        //             JSON.stringify(responseJson.results[0].address_components.filter(x => x.types.filter(t => t == 'street_number').length > 0)[0].short_name) + ', ' +
-        //             JSON.stringify(responseJson.results[0].address_components.filter(x => x.types.filter(t => t == 'locality').length > 0)[0].short_name);
-        //         address = address.replace(/"/g, '');
-        //     });
 
         setTimeout(() => {
             if (couple)
@@ -550,7 +414,6 @@ export default class FutureTrainingsListView extends Component {
     getWeather(lat, lon, time, couple) {
         hour = this.setTime(time).split(":")[0];
         let index = Math.floor(((hour - new Date().getHours()) / 3));
-        // console.warn(index)
         // Construct the API url to call
         let url = 'https://api.openweathermap.org/data/2.5/forecast?lat=' + lat + '&lon=' + lon + "&units=metric&appid=5c2433d8113849df4c21949af64f6f74";
         forecast = {
@@ -566,40 +429,37 @@ export default class FutureTrainingsListView extends Component {
                     icon: data.list[index].weather[0].icon,
                     temp: data.list[index].main.temp
                 }
-                // if (coupleForecasts.length == this.props.FutureCoupleTrainings.length && groupForecasts.length == this.props.FutureGroupTrainings.length) {
 
-                //     this.setState({ forecastStatus: 1 })
-                // }
             })
             .catch(error => console.warn('Error:', error.message));
 
-          
 
-            setTimeout(() => {
-                if (couple) {
-                    coupleForecasts.push(forecast);
-                }
-                else groupForecasts.push(forecast);
-                if (coupleForecasts.length == this.props.FutureCoupleTrainings.length && groupForecasts.length == this.props.FutureGroupTrainings.length) {
 
-                    this.setState({ forecastStatus: 1 })
-                }
-            }, 3000);
+        setTimeout(() => {
+            if (couple) {
+                coupleForecasts.push(forecast);
+            }
+            else groupForecasts.push(forecast);
+            if (coupleForecasts.length == this.props.FutureCoupleTrainings.length && groupForecasts.length == this.props.FutureGroupTrainings.length) {
+
+                this.setState({ forecastStatus: 1 })
+            }
+        }, 3000);
 
 
     }
 
     render() {
         return (
-            <View style={{ flex: 1, flexDirection: 'column', backgroundColor: 'rgba(255,255,255,0.9)', alignContent: "center", position: 'absolute', zIndex: 2, top: 90, width: SCREEN_WIDTH }}>
+            <View style={styles.container}>
 
 
-                <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                <View style={styles.headerContainer}>
                     <Icon name='close' style={styles.closeIcon} size={20} color='gray' onPress={() => this.props.closeListView()}></Icon>
                     <Text style={styles.headline}>Future Trainings</Text>
                 </View>
                 {(this.props.FutureCoupleTrainings.length != 0 || this.props.FutureGroupTrainings.length != 0) ?
-                    <ScrollView style={{ flex: 1, marginBottom: 20, maxHeight: 200 }}>
+                    <ScrollView style={styles.scrollView}>
                         {this.state.status == 1 && this.state.forecastStatus == 1 ?
                             <View>
                                 {this.props.FutureCoupleTrainings.map((x, index) => {
@@ -615,7 +475,7 @@ export default class FutureTrainingsListView extends Component {
                             : <ActivityIndicator style={{ marginTop: 20 }} size="small" color="gray" />}
 
 
-                    </ScrollView> : <Text style={{ fontFamily: 'regular', fontSize: 15, textAlign: 'center', color: 'gray' }}>No Future Trainings</Text>}
+                    </ScrollView> : < Text style={styles.noTrainingText}>No Future Trainings</Text>}
 
             </View>
 
@@ -627,13 +487,79 @@ export default class FutureTrainingsListView extends Component {
 
 const styles = StyleSheet.create({
 
-    trainingsHeadline: {
+    container:
+    {
         flex: 1,
-        fontSize: 23,
-        color: 'rgba(216, 121, 112, 1)',
-        fontFamily: 'regular',
+        flexDirection: 'column',
+        backgroundColor: 'rgba(255,255,255,0.9)',
+        alignContent: "center",
+        position: 'absolute',
+        zIndex: 2,
+        top: 90,
+        width: SCREEN_WIDTH
+    },
+    training:
+    { flex: 1, flexDirection: "column", justifyContent: 'center' },
+    forcastView:
+    { flex: 1, flexDirection: 'row', justifyContent: 'center' },
+    trainingRightView:
+    {
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        marginRight: 10,
+        flex: 1
+    },
+    headerContainer:
+    {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center'
     },
 
+    scrollView:
+    {
+        flex: 1,
+        marginBottom: 20,
+        maxHeight: 200
+    },
+
+    noTrainingText:
+    {
+        fontFamily: 'regular',
+        fontSize: 15,
+        textAlign: 'center',
+        color: 'gray'
+    },
+
+
+    trainingDetails:
+    {
+        flex: 2,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    trainingTimeText:
+    {
+        fontFamily: 'regular',
+        fontSize: 17,
+        marginLeft: 10,
+        color: 'green',
+        flex: 1
+    },
+
+    forcastImage:
+    {
+        width: 30,
+        height: 30,
+        marginTop: -5
+    },
+    forcastText:
+    {
+        fontSize: 12,
+        fontFamily: 'light',
+        marginTop: 2
+    },
     trainingCard: {
         marginHorizontal: 10,
         marginTop: 10,
@@ -645,9 +571,143 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         flex: 1
     },
+    timeView:
+    {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'center'
+    },
+    nameText:
+    {
+        fontFamily: 'regular',
+        fontSize: 15,
+        marginLeft: 10,
+        color: 'gray',
+        flex: 1
+    },
+    locationIcon:
+    {
+        flex: 1,
+        marginLeft: 15
+    },
+    locationView:
+    {
+        flex: 1,
+        flexDirection: 'row',
+        marginRight: 25,
+        justifyContent: 'center'
+    },
+    locationText:
+    {
+        fontFamily: 'regular',
+        fontSize: 12,
+        marginLeft: 10,
+        color: 'gray',
+        flex: 5,
+        justifyContent: 'center',
+        textAlign: 'right',
+        marginTop: 3
+    },
+    priceText: {
+        fontFamily: 'light',
+        fontSize: 12,
+        marginLeft: 10,
+        color: 'blue',
+    },
+    groupPriceText:
+    {
+        fontFamily: 'light',
+        fontSize: 13,
+        marginLeft: 2,
+        color: 'blue',
+        flex: 1,
+    },
+    rightSideView:
+    {
+        flex: 1,
+        flexDirection: 'row',
+        alignContent: 'center',
+        justifyContent: 'center'
+    },
+    navigationAppsView:
+    {
+        flex: 1,
+        justifyContent: 'center',
+        alignContent: 'center'
+    },
+    button:
+    {
+        backgroundColor: 'rgba(222,222,222,1)',
+        width: 28,
+        height: 28,
+        borderRadius: 14,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 23
+    },
+    cancelButton:
+    {
+        backgroundColor: 'rgba(222,222,222,1)',
+        width: 28,
+        height: 28,
+        borderRadius: 100,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    chatButton:
+    {
+        backgroundColor: 'rgba(222,222,222,1)',
+        width: 28,
+        height: 28,
+        borderRadius: 100,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 23,
+    },
+    canceledText:
+    {
+        fontFamily: 'bold',
+        color: 'red'
+    },
     closeIcon: {
         left: 20,
         flex: 1
+    },
+    groupHeadline:
+    {
+        fontFamily: 'regular',
+        fontSize: 15,
+        marginLeft: 10,
+        color: 'gray',
+        flex: 1,
+    },
+    groupHeadlineView:
+    {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+
+    detailsContainer:
+    {
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        marginRight: 10,
+        flex: 1
+    },
+
+    trainingTimeView:
+    {
+        flex: 1,
+        justifyContent: 'center',
+        flexDirection: 'row'
+    },
+    columnView:
+    {
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'center'
     },
     headline: {
         flex: 3,

@@ -62,23 +62,10 @@ export default class ApprovedRequestsListView extends Component {
 
     return (
 
-      <View
-        style={{
-          height: 60,
-          marginHorizontal: 10,
-          marginTop: 10,
-          backgroundColor: 'white',
-          borderRadius: 5,
-          alignItems: 'center',
-          flexDirection: 'row',
-          flex: 1
+      <View style={styles.suggestionsContainer} >
+        <View style={styles.suggestionRow}>
 
-        }}
-      >
-
-        <View style={{ flex: 2, flexDirection: 'row', alignItems: 'center' }}>
-
-          <View style={{ marginLeft: 15 }}>
+          <View style={styles.avatarView}>
 
             <Avatar
               small
@@ -90,39 +77,24 @@ export default class ApprovedRequestsListView extends Component {
 
           </View>
 
-          <View style={{ flex: 1, flexDirection: 'column' }}>
+          <View style={styles.suggestionColumn}>
 
-            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignContent: 'flex-start', marginLeft: 10 }}>
+            <View style={styles.userDetailsView}>
 
-              {x.IsTrainer == 1 ? <Icon4 name={'whistle'} size={20} color={'blue'} style={{ transform: [{ rotate: '-30deg' }], flex: 1 }} ></Icon4> : null}
+              {x.IsTrainer == 1 ? <Icon4 name={'whistle'} size={20} color={'blue'} style={styles.trainerIcon} ></Icon4> : null}
 
               <Text
-                style={{
-                  fontFamily: 'regular',
-                  fontSize: 15,
-                  //marginLeft: 10,
-                  color: 'gray',
-                  flex: 5
-                }}
+                style={styles.nameText}
               >
                 {x.FirstName + ' ' + x.LastName + ', ' + x.Age}
               </Text>
 
             </View>
 
-            <View style={{ flex: 1, flexDirection: 'row', marginRight: 25, justifyContent: 'center' }}>
+            <View style={styles.adressContainer}>
 
               <Text
-                style={{
-                  fontFamily: 'regular',
-                  fontSize: 12,
-                  marginLeft: 10,
-                  color: 'gray',
-                  flex: 6,
-                  justifyContent: 'center',
-                  textAlign: 'right',
-                  marginTop: 3
-                }}
+                style={styles.adressText}
               >
 
                 {((addresses[index]).length > 25) ?
@@ -130,17 +102,12 @@ export default class ApprovedRequestsListView extends Component {
                   addresses[index]}
               </Text>
 
-              <Icon1 style={{ flex: 1, marginLeft: 5 }} name='location-pin' color='gray' textAlign='center' size={20} onPress={() => this.props.setLatLon(x.Latitude, x.Longitude)}></Icon1>
+              <Icon1 style={styles.locationIcon} name='location-pin' color='gray' textAlign='center' size={20} onPress={() => this.props.setLatLon(x.Latitude, x.Longitude)}></Icon1>
 
             </View>
 
             {x.IsTrainer ? <Text
-              style={{
-                fontFamily: 'light',
-                fontSize: 12,
-                marginLeft: 10,
-                color: 'blue',
-              }}
+              style={styles.priceText}
             >
               {x.Price + "$"}
             </Text> : null}
@@ -150,26 +117,13 @@ export default class ApprovedRequestsListView extends Component {
         </View>
 
         <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'flex-end',
-            marginRight: 10,
-            flex: 1
-          }}
+          style={styles.buttonsContainer}
         >
 
-          <View style={{ flex: 1, flexDirection: 'row', alignContent: 'center', justifyContent: 'flex-end' }}>
+          <View style={styles.buttonsView}>
 
             <TouchableOpacity
-              style={{
-                backgroundColor: 'rgba(222,222,222,1)',
-                width: 28,
-                height: 28,
-                borderRadius: 100,
-                justifyContent: 'center',
-                alignItems: 'center',
-                marginHorizontal: 10,
-              }}
+              style={styles.messageButton}
               onPress={() => {
                 this.props.UserCode == x.SenderCode ? partnerUserCode = x.ReceiverCode : partnerUserCode = x.SenderCode;
                 this.props.navigation.navigate('Chat', { UserCode: this.props.UserCode, PartnerUserCode: partnerUserCode, FullName: x.FirstName + " " + x.LastName, Picture: x.Picture })
@@ -182,15 +136,7 @@ export default class ApprovedRequestsListView extends Component {
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={{
-                backgroundColor: 'rgba(222,222,222,1)',
-                width: 28,
-                height: 28,
-                borderRadius: 100,
-                justifyContent: 'center',
-                alignItems: 'center',
-                marginHorizontal: 10,
-              }}
+              style={styles.cancelSuggestionButton}
               onPress={() => {
                 this.cancelSuggestion(x.SuggestionCode)
                 this.props.refresh("approved");
@@ -212,9 +158,9 @@ export default class ApprovedRequestsListView extends Component {
 
   render() {
     return (
-      <View style={{ flex: 1, flexDirection: 'column', backgroundColor: 'rgba(255,255,255,0.9)', alignContent: "center", position: 'absolute', zIndex: 2, top: 90, width: SCREEN_WIDTH }}>
+      <View style={styles.container}>
 
-        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+        <View style={styles.listViewStyle}>
 
           <Icon name='close' style={styles.closeIcon} size={20} color='gray' onPress={() => this.props.closeListView()}></Icon>
 
@@ -222,7 +168,7 @@ export default class ApprovedRequestsListView extends Component {
 
         </View>
         {this.props.ApprovedRequests.length != 0 ?
-          <ScrollView style={{ flex: 1, marginBottom: 20, maxHeight: 200 }}>
+          <ScrollView style={styles.scrollView}>
 
             {this.state.status == 1 ?
 
@@ -233,11 +179,11 @@ export default class ApprovedRequestsListView extends Component {
                 )}
               </View>
 
-              : <ActivityIndicator style={{ marginTop: 20 }} size="small" color="gray" />}
+              : <ActivityIndicator style={styles.activityIndicator} size="small" color="gray" />}
 
           </ScrollView> :
 
-          <Text style={{ fontFamily: 'regular', fontSize: 15, textAlign: 'center', color: 'gray' }}>No Approved Requests</Text>}
+          <Text style={styles.noApprovedText}>No Approved Requests</Text>}
 
       </View>
 
@@ -247,7 +193,151 @@ export default class ApprovedRequestsListView extends Component {
 
 
 const styles = StyleSheet.create({
+  container:
+  {
+    flex: 1,
+    flexDirection: 'column',
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    alignContent: "center",
+    position: 'absolute',
+    zIndex: 2, top: 90,
+    width: SCREEN_WIDTH
+  },
+  activityIndicator:
+  {
+    marginTop: 20
+  },
+  scrollView:
+  {
+    flex: 1,
+    marginBottom: 20,
+    maxHeight: 200
+  },
+  listViewStyle:
+  {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  noApprovedText:
+  {
+    fontFamily: 'regular',
+    fontSize: 15,
+    textAlign: 'center',
+    color: 'gray'
+  },
 
+  suggestionsContainer:
+  {
+    height: 60,
+    marginHorizontal: 10,
+    marginTop: 10,
+    backgroundColor: 'white',
+    borderRadius: 5,
+    alignItems: 'center',
+    flexDirection: 'row',
+    flex: 1
+
+  },
+  avatarView:
+    { marginLeft: 15 },
+  suggestionRow:
+  {
+    flex: 2,
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  suggestionColumn:
+  {
+    flex: 1,
+    flexDirection: 'column'
+  },
+  nameText:
+  {
+    fontFamily: 'regular',
+    fontSize: 15,
+    color: 'gray',
+    flex: 5
+  },
+  trainerIcon:
+  {
+    transform: [{ rotate: '-30deg' }],
+    flex: 1
+  },
+
+  userDetailsView:
+  {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignContent: 'flex-start',
+    marginLeft: 10
+  },
+
+  adressText:
+  {
+    fontFamily: 'regular',
+    fontSize: 12,
+    marginLeft: 10,
+    color: 'gray',
+    flex: 6,
+    justifyContent: 'center',
+    textAlign: 'right',
+    marginTop: 3
+  },
+  adressContainer:
+  {
+    flex: 1,
+    flexDirection: 'row',
+    marginRight: 25,
+    justifyContent: 'center'
+  },
+  locationIcon:
+  {
+    flex: 1,
+    marginLeft: 5
+  },
+  priceText:
+  {
+    fontFamily: 'light',
+    fontSize: 12,
+    marginLeft: 10,
+    color: 'blue',
+  },
+  messageButton:
+  {
+    backgroundColor: 'rgba(222,222,222,1)',
+    width: 28,
+    height: 28,
+    borderRadius: 100,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginHorizontal: 10,
+  },
+  buttonsView:
+  {
+    flex: 1,
+    flexDirection: 'row',
+    alignContent: 'center',
+    justifyContent: 'flex-end'
+  },
+  cancelSuggestionButton:
+  {
+    backgroundColor: 'rgba(222,222,222,1)',
+    width: 28,
+    height: 28,
+    borderRadius: 100,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginHorizontal: 10,
+  },
+  buttonsContainer:
+  {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginRight: 10,
+    flex: 1
+  },
   closeIcon: {
     left: 20,
     flex: 1

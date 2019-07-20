@@ -188,7 +188,7 @@ export default class SigninTrainee extends Component {
 
               </View>
 
-              <View style={{ flex: 1, flexDirection: 'column' }}>
+              <View style={styles.budgetView}>
 
                 <Text
                   style={style = styles.textHeadlines}
@@ -217,15 +217,15 @@ export default class SigninTrainee extends Component {
 
                 </View>
 
-                <Text style={{ color: '#f34573', textAlign: 'center', fontSize: 13, fontFamily: 'light' }}>Radius: {this.state.searchRadius} km</Text>
+                <Text style={styles.radiusText}>Radius: {this.state.searchRadius} km</Text>
 
               </View>
-              <Divider style={{flex:1, marginTop:10}}></Divider>
+              <Divider style={styles.divider}></Divider>
 
               {this.state.step == 1 ?
                 <View>
 
-                  <View style={{ flex: 1, flexDirection: 'column' }}>
+                  <View style={styles.budgetView}>
 
                     <Text style={styles.preferencesHeadlines} > PARTNER PREFERENCES</Text>
 
@@ -302,13 +302,13 @@ export default class SigninTrainee extends Component {
 
                     </View>
 
-                    <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignContent: "center", marginTop: 20 }}>
+                    <View style={styles.ageContainer}>
 
                       <Text style={style = styles.partnersAgeHeadline}>
                         Age
                       </Text>
 
-                      <View style={{ flex: 5, justifyContent: 'center', flexDirection: 'row', marginRight: 25 }}>
+                      <View style={styles.ageView}>
 
                         <NumericInput
                           style={styles.numericInput}
@@ -323,7 +323,7 @@ export default class SigninTrainee extends Component {
                           rounded
                         />
 
-                        <Text style={{ flex: 1, color: 'white', textAlign: 'center', marginTop: 10, fontWeight: 'bold' }}>to</Text>
+                        <Text style={styles.toText}>to</Text>
 
                         <NumericInput
                           style={styles.numericInput}
@@ -343,7 +343,7 @@ export default class SigninTrainee extends Component {
 
                   </View>
 
-                  <View style={{ flex: 1, marginTop:30 }}>
+                  <View style={styles.actionButtonView}>
 
                     <ActionButton
                       buttonColor='#75cac3'
@@ -363,7 +363,7 @@ export default class SigninTrainee extends Component {
                 </View>
 
                 :
-                <View style={{ flex: 1, flexDirection: 'column' }}>
+                <View style={styles.budgetView}>
 
                   <Text style={styles.preferencesHeadlines}>TRAINER PREFERENCES</Text>
 
@@ -440,7 +440,7 @@ export default class SigninTrainee extends Component {
 
                   </View>
 
-                  <View style={{ flex: 1, flexDirection: 'column' }}>
+                  <View style={styles.budgetView}>
 
                     <Text
                       style={ [styles.textHeadlines] }
@@ -469,13 +469,13 @@ export default class SigninTrainee extends Component {
 
                     </View>
 
-                    <Text style={{ color: '#f34573', textAlign: 'center', fontSize: 13 }}>Budget: {this.state.maxBudget} $</Text>
+                    <Text style={styles.budgetText}>Budget: {this.state.maxBudget} $</Text>
 
                   </View>
 
-                  <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center',  }}>
+                  <View style={styles.actionButtonsContainer}>
 
-                    <View style={{ flex: 1, marginRight: 170 }}>
+                    <View style={styles.actionButtonsView}>
 
                       <ActionButton
                         buttonColor='#75cac3'
@@ -632,7 +632,31 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: "bold",
     marginTop: 20,
-  }
+  },
+radiusText:
+{ color: '#f34573', textAlign: 'center', fontSize: 13, fontFamily: 'light' },
+divider:
+{flex:1, marginTop:10},
+
+ageView:
+{ flex: 5, justifyContent: 'center', flexDirection: 'row', marginRight: 25 },
+toText:
+{ flex: 1, color: 'white', textAlign: 'center', marginTop: 10, fontWeight: 'bold' },
+ageContainer:
+{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignContent: "center", marginTop: 20 },
+actionButtonView:
+{ flex: 1, marginTop:30 },
+
+budgetText:
+{ color: '#f34573', textAlign: 'center', fontSize: 13 },
+actionButtonsView:
+{ flex: 1, marginRight: 170 },
+actionButtonsContainer:
+{ flex: 1, flexDirection: 'row', justifyContent: 'center',  },
+
+budgetView:
+{ flex: 1, flexDirection: 'column' },
+
 
 
 });

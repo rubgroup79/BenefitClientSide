@@ -1,12 +1,8 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, } from 'react-native';
 import TimePicker from "react-native-24h-timepicker";
-import Icon from 'react-native-vector-icons/FontAwesome';
 import { Button } from 'react-native-elements';
 
-
-// var hour_now = '10';
-// var minute_now = '00';
 let hour_now = new Date().getHours();
 let minute_now = new Date().getMinutes();
 

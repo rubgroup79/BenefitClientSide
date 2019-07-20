@@ -1,12 +1,11 @@
 import React from 'react';
-import { Text, View, Dimensions, Image, StyleSheet, TouchableHighlight, TouchableOpacity } from 'react-native';
-import { MapView, MapMarkerWaypoint, CalloutSubview, Callout, Font } from 'expo';
+import { Text, View, Dimensions, Image, TouchableHighlight, TouchableOpacity, StyleSheet } from 'react-native';
+import { MapView, Font } from 'expo';
 import Icon from 'react-native-vector-icons/Entypo';
 import Icon1 from 'react-native-vector-icons/FontAwesome';
 import Icon2 from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon3 from 'react-native-vector-icons/AntDesign';
-import { Button, ButtonGroup } from 'react-native-elements';
-import ActionButton from 'react-native-action-button';
+import { Button } from 'react-native-elements';
 
 
 const { Marker } = MapView;
@@ -99,7 +98,7 @@ export default class CoupleResultCallOut extends React.Component {
 
             })
             .catch(error => console.warn('Error:', error.message));
-            this.props.refresh("pending");
+        this.props.refresh("pending");
     }
 
 
@@ -125,25 +124,26 @@ export default class CoupleResultCallOut extends React.Component {
 
     render() {
         return (
-            <View style={{ flex: 1, flexDirection: 'column', justifyContent: "center", alignItems: "center", width: 150, }}>
+            <View style={styles.container}>
                 {this.state.fontLoaded ?
-                    <View style={{ flex: 1 }}>
+                    <View style={styles.flex}>
 
-                        <View style={{ flex: 1, flexDirection: 'row', position: 'absolute', top: 0, left: -35 }}>
+                        <View style={styles.rateView}>
 
-                            <Image style={{ height: 15, width: 15 }} source={require('../../Images/SelectedStar.png')}></Image>
-                            <Text style={{ fontFamily: 'light', fontSize: 12 }}> {this.props.Data.Rate}</Text>
+                            <Image style={styles.starImage} source={require('../../Images/SelectedStar.png')}></Image>
+                            <Text style={styles.rateText}> {this.props.Data.Rate}</Text>
 
                         </View>
 
-                        {this.props.Data.IsTrainer ? <View style={{ flex: 1, flexDirection: 'row', position: 'absolute', top: 0, left: 90 }}>
+                        {this.props.Data.IsTrainer ?
+                            <View style={styles.trainerView}>
 
-                            <Icon2 name={'whistle'} size={20} color={'blue'} style={{ transform: [{ rotate: '-30deg' }] }} ></Icon2>
+                                <Icon2 name={'whistle'} size={20} color={'blue'} style={styles.trainerIcon} ></Icon2>
 
-                        </View> : null}
+                            </View> : null}
 
 
-                        <View style={{ flex: 1, flexDirection: 'row', justifyContent: "center", zIndex: 0 }} >
+                        <View style={styles.touchableHighlightView} >
 
                             <TouchableHighlight
                                 onPress={() => {
@@ -154,155 +154,109 @@ export default class CoupleResultCallOut extends React.Component {
                                 <Image
 
                                     source={{ uri: this.props.Data.Picture.toString() }}
-                                    style={{ width: 60, height: 60, borderRadius: 30 }}
+                                    style={styles.userImage}
                                 />
                             </TouchableHighlight>
 
 
                         </View>
 
-                        <View style={{ flex: 1, flexDirection: 'column', justifyContent: "center", alignItems: 'center' }}>
+                        <View style={styles.detailsView}>
 
-                            <Text style={{ fontFamily: 'regular', fontSize: 15, flex: 1, textAlign: 'center' }}>{this.props.Data.FirstName + ", " + this.props.Data.Age}</Text>
+                            <Text style={styles.nameText}>{this.props.Data.FirstName + ", " + this.props.Data.Age}</Text>
 
-                            {this.props.Data.IsTrainer ? <View style={{ flex: 1, alignItems: 'flex-start', justifyContent: 'center', flexDirection: 'row' }}>
+                            {this.props.Data.IsTrainer ?
+                                <View style={styles.priceView}>
 
-                                <Text style={{ fontFamily: 'regular', color: 'blue' }}>{this.props.Data.Price + "$"}</Text>
-                            </View> : null}
+                                    <Text style={styles.priceText}>{this.props.Data.Price + "$"}</Text>
+                                </View> : null}
                             <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }}>
 
-                                {this.props.type == 1 ? <View style={{ flex: 1, alignItems: 'center' }}>
+                                {this.props.type == 1 ?
+                                    <View style={styles.buttonContainer}>
 
-                                    <Button
-                                        onPress={() => { this.sendSuggestion() }}
-                                        title={'Send Suggestion'}
-                                        titleStyle={{ fontFamily: 'regular', fontSize: 12, marginLeft: 5, marginTop: -3, }}
-                                        buttonStyle={{
-
-                                            borderWidth: 0,
-                                            borderColor: 'transparent',
-                                            borderRadius: 20,
-                                            backgroundColor: '#f34573'
-                                        }}
-                                        containerStyle={{ height: 30, width: 130, alignItems: 'center' }}
-                                        icon={() => <Icon1 name="paper-plane" size={15} color={'white'}></Icon1>}
+                                        <Button
+                                            onPress={() => { this.sendSuggestion() }}
+                                            title={'Send Suggestion'}
+                                            titleStyle={styles.sendSuggestion}
+                                            buttonStyle={styles.sendSuggestionButton}
+                                            containerStyle={styles.sendSuggestionContainer}
+                                            icon={() => <Icon1 name="paper-plane" size={15} color={'white'}></Icon1>}
 
 
-                                    />
-                                </View> : null}
+                                        />
+                                    </View> : null}
 
-                                {this.props.type == 2 ? <View style={{ flex: 1, alignItems: 'center' }}>
+                                {this.props.type == 2 ?
+                                    <View style={styles.cancelOrApproveView}>
 
-                                    {this.props.Data.SenderCode == this.props.UserCode ?
+                                        {this.props.Data.SenderCode == this.props.UserCode ?
 
+                                            <TouchableOpacity
+                                                onPress={() => {
+                                                    this.cancelSuggestion()
+                                                    this.props.refresh("pending");
+                                                }}
+                                                style={styles.cancelSuggestionButton}
+                                            >
+                                                <Icon2 name="close" color="red" size={20} />
+                                            </TouchableOpacity> :
+                                            <View style={styles.buttonsContainer}>
+                                                <TouchableOpacity
+                                                    onPress={() => {
+                                                        this.replySuggestion(false)
+                                                    }}
+                                                    style={styles.replySuggestionView}
+                                                >
+                                                    <Icon2 name="close" color="red" size={20} />
+                                                </TouchableOpacity>
+                                                <TouchableOpacity
+                                                    style={styles.replySuggestionView}
+                                                    onPress={() => {
+                                                        this.replySuggestion(true)
+                                                        this.props.refresh("pending")
+
+                                                    }}
+                                                >
+                                                    <Icon2 name="check" color="green" size={20} />
+                                                </TouchableOpacity>
+                                            </View>
+                                        }
+
+                                    </View> : null}
+
+                                {this.props.type == 3 ?
+                                    <View style={styles.type3ButtonsContainer}>
+                                        <TouchableOpacity
+                                            style={style.sendMessageView}
+                                            onPress={() => {
+                                                this.props.UserCode == this.props.Data.SenderCode ? partnerUserCode = this.props.Data.ReceiverCode : partnerUserCode = this.props.Data.SenderCode;
+                                                this.props.navigation.navigate('Chat', { UserCode: this.props.UserCode, PartnerUserCode: partnerUserCode, FullName: this.props.Data.FirstName + " " + this.props.Data.LastName, Picture: this.props.Data.Picture })
+                                            }
+                                            }
+                                        >
+                                            <Icon3 name="message1" color="green" size={20} />
+                                        </TouchableOpacity>
                                         <TouchableOpacity
                                             onPress={() => {
                                                 this.cancelSuggestion()
-                                                this.props.refresh("pending");
+                                                this.props.refresh("approved");
                                             }}
-                                            style={{
-                                                backgroundColor: 'rgba(222,222,222,1)',
-                                                width: 28,
-                                                height: 28,
-                                                borderRadius: 100,
-                                                justifyContent: 'center',
-                                                alignItems: 'center',
-                                                marginHorizontal: 10,
-                                            }}
+                                            style={styles.sendMessageView}
                                         >
                                             <Icon2 name="close" color="red" size={20} />
-                                        </TouchableOpacity> :
-                                        <View style={{ flex: 1, flexDirection: 'row' }}>
+                                        </TouchableOpacity>
+                                    </View>
+                                    : null}
 
 
-
-                                            <TouchableOpacity
-                                                onPress={() => {
-                                                    this.replySuggestion(false)
-                                                   
-                                                }}
-                                                style={{
-                                                    backgroundColor: 'rgba(222,222,222,1)',
-                                                    width: 28,
-                                                    height: 28,
-                                                    borderRadius: 100,
-                                                    justifyContent: 'center',
-                                                    alignItems: 'center',
-                                                    marginHorizontal: 10,
-                                                }}
-                                            >
-                                                <Icon2 name="close" color="red" size={20} />
-                                            </TouchableOpacity>
-                                            <TouchableOpacity
-                                                style={{
-                                                    backgroundColor: 'rgba(222,222,222,1)',
-                                                    width: 28,
-                                                    height: 28,
-                                                    borderRadius: 100,
-                                                    justifyContent: 'center',
-                                                    alignItems: 'center',
-                                                    marginHorizontal: 10,
-                                                }}
-                                                onPress={() => {
-                                                    this.replySuggestion(true)
-                                                    this.props.refresh("pending")
-
-                                                }}
-                                            >
-                                                <Icon2 name="check" color="green" size={20} />
-                                            </TouchableOpacity>
-                                        </View>
-                                    }
-
-                                </View> : null}
-
-                                {this.props.type == 3 ? 
-                                <View style={{ flex: 1, alignItems: 'center',justifyContent:'center' ,flexDirection:'row'}}>
-                                    <TouchableOpacity
-                                        style={{
-                                            backgroundColor: 'rgba(222,222,222,1)',
-                                            width: 28,
-                                            height: 28,
-                                            borderRadius: 100,
-                                            justifyContent: 'center',
-                                            alignItems: 'center',
-                                           marginHorizontal: 5,
-                                        }}
-                                        onPress={() => {
-                                            this.props.UserCode==this.props.Data.SenderCode ? partnerUserCode=this.props.Data.ReceiverCode  :  partnerUserCode=this.props.Data.SenderCode;
-                                            this.props.navigation.navigate('Chat', { UserCode: this.props.UserCode, PartnerUserCode: partnerUserCode, FullName: this.props.Data.FirstName + " " + this.props.Data.LastName, Picture: this.props.Data.Picture })}
-                                        }
-                                            >
-                                        <Icon3 name="message1" color="green" size={20} />
-                                    </TouchableOpacity>
-                                    <TouchableOpacity
-                                        onPress={() => {
-                                            this.cancelSuggestion()
-                                            this.props.refresh("approved");
-                                        }}
-                                        style={{
-                                            backgroundColor: 'rgba(222,222,222,1)',
-                                            width: 28,
-                                            height: 28,
-                                            borderRadius: 100,
-                                            justifyContent: 'center',
-                                            alignItems: 'center',
-                                        marginHorizontal: 5,
-                                        }}
-                                    >
-                                        <Icon2 name="close" color="red" size={20} />
-                                    </TouchableOpacity>
-                                </View> 
-                                : null}
-
-                          
 
                             </View>
-                            {this.props.type == 1 ? <View style={{ flex: 6, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginLeft: -45, }}>
+                            {this.props.type == 1 ? <View style={styles.distanceView}>
 
-                                <Icon style={{ flex: 1 }} name='location-pin' color='gray' size={16}></Icon>
+                                <Icon style={styles.flex} name='location-pin' color='gray' size={16}></Icon>
 
-                                <Text style={{ fontSize: 10, fontFamily: 'light', flex: 4, justifyContent: 'center' }}>{(Math.floor(this.props.Data.Distance * 10) / 10).toString() + ' KM'}</Text>
+                                <Text style={styles.distanceText}>{(Math.floor(this.props.Data.Distance * 10) / 10).toString() + ' KM'}</Text>
 
 
                             </View> : null}
@@ -317,3 +271,175 @@ export default class CoupleResultCallOut extends React.Component {
         )
     }
 }
+
+
+
+const styles = StyleSheet.create({
+    container:
+    {
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: "center",
+        alignItems: "center",
+        width: 150,
+    },
+    flex:
+    {
+        flex: 1
+    },
+    rateView:
+    {
+        flex: 1,
+        flexDirection: 'row',
+        position: 'absolute',
+        top: 0,
+        left: -35
+    },
+    starImage:
+    {
+        height: 15,
+        width: 15
+    },
+    rateText:
+    {
+        fontFamily: 'light',
+        fontSize: 12
+    },
+    trainerView:
+    {
+        flex: 1,
+        flexDirection: 'row',
+        position: 'absolute',
+        top: 0,
+        left: 90
+    },
+    trainerIcon:
+    {
+        transform: [{ rotate: '-30deg' }]
+    },
+
+    userImageView:
+    {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: "center",
+        zIndex: 0
+    },
+    userImage:
+    {
+        width: 60,
+        height: 60,
+        borderRadius: 30
+    },
+    nameText:
+    {
+        fontFamily: 'regular',
+        fontSize: 15,
+        flex: 1,
+        textAlign: 'center'
+    },
+    priceText:
+    {
+        fontFamily: 'regular',
+        color: 'blue'
+    },
+    priceView:
+    {
+        flex: 1,
+        alignItems: 'flex-start',
+        justifyContent: 'center',
+        flexDirection: 'row'
+    },
+    detailsView:
+    {
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: "center",
+        alignItems: 'center'
+    },
+    sendSuggestionButton:
+    {
+
+        borderWidth: 0,
+        borderColor: 'transparent',
+        borderRadius: 20,
+        backgroundColor: '#f34573'
+    },
+    sendSuggestionContainer:
+    {
+        height: 30,
+        width: 130,
+        alignItems: 'center'
+    },
+    buttonContainer:
+    {
+        flex: 1,
+        alignItems: 'center'
+    },
+
+    cancelOrApproveView:
+    {
+        flex: 1,
+        flexDirection: 'row'
+    },
+    cancelSuggestionButton:
+    {
+        backgroundColor: 'rgba(222,222,222,1)',
+        width: 28,
+        height: 28,
+        borderRadius: 100,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginHorizontal: 10,
+    },
+    replySuggestionView:
+    {
+        backgroundColor: 'rgba(222,222,222,1)',
+        width: 28,
+        height: 28,
+        borderRadius: 100,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginHorizontal: 10,
+    },
+    sendMessageView:
+    {
+        backgroundColor: 'rgba(222,222,222,1)',
+        width: 28,
+        height: 28,
+        borderRadius: 100,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginHorizontal: 5,
+    },
+    distanceText:
+    {
+        fontSize: 10,
+        fontFamily: 'light',
+        flex: 4,
+        justifyContent: 'center'
+    },
+    distanceView:
+    {
+        flex: 6,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginLeft: -45,
+    },
+
+    type3ButtonsContainer:
+    {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'row'
+    },
+    touchableHighlightView:
+    {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: "center",
+        zIndex: 0
+    },
+})

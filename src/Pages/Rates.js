@@ -1,16 +1,8 @@
 import React, { Component, } from 'react';
-import { View, ScrollView, StyleSheet, Image, ListView, Dimensions, KeyboardAvoidingView, TextInput, AsyncStorage } from 'react-native';
+import { View, StyleSheet, Image, Dimensions, AsyncStorage } from 'react-native';
 import { Font } from 'expo';
 import RatingStarsShowOnly from '../Components/RatingStarsShowOnly';
-import {
-    Text,
-    Card,
-    Tile,
-    ListItem,
-    Avatar,
-
-    Button
-} from 'react-native-elements';
+import { Text } from 'react-native-elements';
 import colors from '../config/colors';
 import _ from 'lodash';
 
@@ -26,7 +18,7 @@ class Rates extends Component {
             userCode: 0,
             isTrainer: 0,
             averageRates: [],
-            totalRate:0
+            totalRate: 0
 
         };
         this.getLocalStorage = this.getLocalStorage.bind(this);
@@ -52,8 +44,8 @@ class Rates extends Component {
     async UNSAFE_componentWillMount() {
         setTimeout(() => {
             this.getLocalStorage();
-          }, 1000);
-        
+        }, 1000);
+
 
     }
 
@@ -87,19 +79,19 @@ class Rates extends Component {
             })
             .catch(error => console.warn('Error:', error.message));
     }
-    
+
     getTotalRate() {
-        fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/ShowProfile?UserCode='+this.state.userCode, {
-    
-          method: 'GET',
-          headers: { "Content-type": "application/json; charset=UTF-8" },
+        fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/ShowProfile?UserCode=' + this.state.userCode, {
+
+            method: 'GET',
+            headers: { "Content-type": "application/json; charset=UTF-8" },
         })
-          .then(res => res.json())
-          .then(response => {
-            this.setState({  totalRate: response.Rate})
-          })
-          .catch(error => console.warn('Error:', error.message));
-      }
+            .then(res => res.json())
+            .then(response => {
+                this.setState({ totalRate: response.Rate })
+            })
+            .catch(error => console.warn('Error:', error.message));
+    }
 
 
 
@@ -108,11 +100,11 @@ class Rates extends Component {
             this.state.averageRates.map((rate, index) => {
                 return (
                     <View style={{ flex: 1 }}
-                    key={index}
+                        key={index}
                     >
-                        <Text style={{ fontFamily: 'regular', color: '#f34573', textAlign: 'center' }}>{rate.Parameter.Description}</Text>
+                        <Text style={styles.descriptionTxt}>{rate.Parameter.Description}</Text>
                         <RatingStarsShowOnly Position={rate.AverageRate} ></RatingStarsShowOnly>
-                        <Text style={{ fontFamily: 'regular', color: '#7384B4', textAlign: 'center' }}>{rate.AverageRate}</Text>
+                        <Text style={styles.rateTxt}>{rate.AverageRate}</Text>
 
                     </View>)
             })
@@ -123,24 +115,18 @@ class Rates extends Component {
 
         return (
             <View>
-                
                 {this.state.fontLoaded ?
                     <View>
-                        <View
-                            style={[
-                                styles.headerContainer,
-                                { backgroundColor: '#f5f5f5', marginTop: 20 },
-                            ]}
-                        >
-                            <Image style={{ width: 57, height: 38, marginLeft: 18 }} source={require('../../Images/LogoOnly.png')} />
+                        <View style={[styles.headerContainer]}>
+                            <Image style={styles.logoImage} source={require('../../Images/LogoOnly.png')} />
                             <Text style={styles.heading}>Rates</Text>
                         </View>
-                        <View style={{ width: SCREEN_WIDTH, height: SCREEN_HEIGHT-180, alignItems: 'center', marginTop: 20 }}>
-
-                            <View style={{ flex: 1, alignItems: 'center' }}>
-                                <View style={{ flex: 1 }}>
-                                    <Image style={{ width: 60, height: 60, alignItems: 'center' }} source={require('../../Images/SelectedStar.png')}></Image>
-                                    <Text style={{ alignItems: 'center', flex: 1, padding: 0, marginLeft: 20, fontSize: 15, fontFamily: 'bold', color: '#7384B4' }}>{this.state.totalRate}</Text>
+                        <View style={styles.ratesContatiner}>
+                            <View style={styles.ratesTopStar}>
+                                <View style={styles.container}>
+                                    <Image style={styles.startImage}
+                                        source={require('../../Images/SelectedStar.png')}></Image>
+                                    <Text style={styles.totalRateTxt}>{this.state.totalRate}</Text>
                                 </View>
                                 <View style={{ flex: 5 }}>
                                     {this.renderRates()}
@@ -148,7 +134,8 @@ class Rates extends Component {
                             </View>
 
                         </View>
-                    </View> : null}
+                    </View>
+                    : null}
             </View>
         );
     }
@@ -172,6 +159,8 @@ const styles = StyleSheet.create({
         marginTop: 25,
         backgroundColor: '#d0d4db',
         height: 80,
+        backgroundColor: '#f5f5f5',
+        // marginTop: 20
     },
 
     heading: {
@@ -181,7 +170,45 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         marginLeft: 15,
         fontFamily: 'light',
-      },
+    },
+    ratesContatiner:
+    {
+        width: SCREEN_WIDTH,
+        height: SCREEN_HEIGHT - 180,
+        alignItems: 'center',
+        marginTop: 20
+    },
+    ratesTopStar:
+        { flex: 1, 
+            alignItems: 'center' },
+    descriptionTxt:
+    {
+        fontFamily: 'regular',
+        color: '#f34573',
+        textAlign: 'center'
+    },
+    rateTxt:
+    {
+        fontFamily: 'regular',
+        color: '#7384B4',
+        textAlign: 'center'
+    },
+    totalRateTxt:
+    {
+        alignItems: 'center',
+        flex: 1,
+        padding: 0,
+        marginLeft: 20,
+        fontSize: 15,
+        fontFamily: 'bold',
+        color: '#7384B4'
+    },
+    startImage:
+    {
+        width: 60,
+        height: 60,
+        alignItems: 'center'
+    },
     fonts: {
         marginBottom: 8,
     },
@@ -224,6 +251,12 @@ const styles = StyleSheet.create({
         flex: 1,
         position: 'absolute',
     },
+    logoImage:
+    {
+        width: 57,
+        height: 38,
+        marginLeft: 18
+    }
 });
 
 export default Rates;

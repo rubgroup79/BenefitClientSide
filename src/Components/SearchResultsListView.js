@@ -116,23 +116,12 @@ export default class SearchResultsListView extends Component {
     renderCoupleResults(x, index) {
         return (
             <View
-                style={{
-                    height: 60,
-                    marginHorizontal: 10,
-                    marginTop: 10,
-                    justifyContent: 'center',
-                    backgroundColor: 'white',
-                    borderRadius: 5,
-                    alignItems: 'center',
-                    flexDirection: 'row',
-                    flex: 1
-
-                }}
+                style={styles.resultContainer}
             >
 
-                <View style={{ flex: 2, flexDirection: 'row', alignItems: 'center' }}>
+                <View style={styles.leftView}>
 
-                    <View style={{ marginLeft: 15 }}>
+                    <View style={styles.avatarView}>
                         <Avatar
                             small
                             rounded
@@ -142,84 +131,54 @@ export default class SearchResultsListView extends Component {
 
                         />
                     </View>
-                    <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', justifyContent: 'center' }}>
+                    <View style={styles.detailsView}>
 
-                        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignContent: 'flex-start', marginLeft: 10 }}>
-                            {x.IsTrainer == 1 ? <Icon2 name={'whistle'} size={20} color={'blue'} style={{ transform: [{ rotate: '-30deg' }], flex: 1 }} ></Icon2> : null}
+                        <View style={styles.nameView}>
+                            {x.IsTrainer == 1 ? <Icon2 name={'whistle'} size={20} color={'blue'} style={styles.iconStyle} ></Icon2> : null}
                             <Text
-                                style={{
-                                    fontFamily: 'regular',
-                                    fontSize: 15,
-                                    //marginLeft: 10,
-                                    color: 'gray',
-                                    flex: 5
-                                }}
+                                style={styles.nameText}
                             >
                                 {x.FirstName + ' ' + x.LastName + ', ' + x.Age}
                             </Text>
                         </View>
-                        <View style={{ flex: 1, flexDirection: 'row', marginRight: 25, justifyContent: 'center' }}>
+                        <View style={styles.addressView}>
 
 
                             <Text
-                                style={{
-                                    fontFamily: 'regular',
-                                    fontSize: 12,
-                                    marginLeft: 10,
-                                    color: 'gray',
-                                    flex: 5,
-                                    justifyContent: 'center',
-                                    textAlign: 'right',
-                                    marginTop: 3
-                                }}
+                                style={styles.addressText}
                             >
                                 {((coupleAddresses[index]).length > 25) ?
                                     (((coupleAddresses[index]).substring(0, 25 - 3)) + '...') :
                                     coupleAddresses[index]}
 
                             </Text>
-                            <Icon1 style={{ flex: 1, marginLeft: 5 }} name='location-pin' color='gray' textAlign='center' size={20} onPress={() => this.props.setLatLon(x.Latitude, x.Longitude)}></Icon1>
+                            <Icon1 style={styles.locationIcon} name='location-pin' color='gray' textAlign='center' size={20} onPress={() => this.props.setLatLon(x.Latitude, x.Longitude)}></Icon1>
 
 
                         </View>
                         {x.IsTrainer ? <Text
-                            style={{
-                                fontFamily: 'light',
-                                fontSize: 12,
-                                marginLeft: 10,
-                                color: 'blue',
-                            }}
+                            style={styles.priceText}
                         >
                             {x.Price + "$"}
                         </Text> : null}
                     </View>
                 </View>
                 <View
-                    style={{
-                        flexDirection: 'row',
-                        justifyContent: 'flex-end',
-                        marginRight: 10,
-                        flex: 1
-                    }}
+                    style={styles.bottom}
                 >
 
-                    <View style={{ flex: 1, alignItems: 'center' }}>
+                    <View style={styles.buttonView}>
 
                         <Button
                             style={{ flex: 1 }}
-                            titleStyle={{ fontWeight: 'bold', fontSize: 10 }}
+                            titleStyle={styles.title}
                             title={'Send Suggestion'}
                             onPress={() => {
                                 this.sendSuggestion(x.UserCode)
 
                             }}
-                            buttonStyle={{
-                                borderWidth: 0,
-                                borderColor: 'transparent',
-                                borderRadius: 20,
-                                backgroundColor: '#f34573'
-                            }}
-                            containerStyle={{ marginVertical: 3, height: 30, width: 115, alignItems: 'center' }}
+                            buttonStyle={styles.buttonStyle}
+                            containerStyle={styles.buttonContainer}
                             icon={{
                                 name: 'mail',
                                 type: 'Octicons',
@@ -252,18 +211,7 @@ export default class SearchResultsListView extends Component {
           }
         );
         
-        
-        // var address = '';
-
-        // fetch('https://maps.googleapis.com/maps/api/geocode/json?address=' + latitude + ',' + longitude + '&key=' + 'AIzaSyB_OIuPsnUNvJ-CN0z2dir7cVbqJ7Xj3_Q')
-        //     .then((response) => response.json())
-        //     .then((responseJson) => {
-        //         address = JSON.stringify(responseJson.results[0].address_components.filter(x => x.types.filter(t => t == 'route').length > 0)[0].short_name) + ' ' +
-        //             JSON.stringify(responseJson.results[0].address_components.filter(x => x.types.filter(t => t == 'street_number').length > 0)[0].short_name) + ', ' +
-        //             JSON.stringify(responseJson.results[0].address_components.filter(x => x.types.filter(t => t == 'locality').length > 0)[0].short_name);
-        //         address = address.replace(/"/g, '');
-              
-        //     });
+    
 
             setTimeout(() => {
                 if (couple)
@@ -281,23 +229,12 @@ export default class SearchResultsListView extends Component {
 
         return (
             <View
-                style={{
-                    height: 60,
-                    marginHorizontal: 10,
-                    marginTop: 10,
-                    justifyContent: 'center',
-                    backgroundColor: 'white',
-                    borderRadius: 5,
-                    alignItems: 'center',
-                    flexDirection: 'row',
-                    flex: 1
-
-                }}
+                style={styles.resultContainer}
             >
 
-                <View style={{ flex: 2, flexDirection: 'row', alignItems: 'center' }}>
+                <View style={style.leftView}>
 
-                    <View style={{ marginLeft: 15, }}>
+                    <View style={styles.avatarView}>
                         <Avatar
                             small
                             rounded
@@ -306,84 +243,54 @@ export default class SearchResultsListView extends Component {
                             onPress={() => this.props.navigation.navigate('GroupProfile', { GroupCode: x.TrainingCode })}
                         />
                     </View>
-                    <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center' }}>
-                        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignContent: 'flex-start', marginLeft: 10 }}>
-                            {x.WithTrainer == 1 ? <Icon2 name={'whistle'} size={20} color={'blue'} style={{ transform: [{ rotate: '-30deg' }], flex: 1 }} ></Icon2> : null}
+                    <View style={styles.groupDetailsView}>
+                        <View style={styles.groupHeaderView}>
+                            {x.WithTrainer == 1 ? 
+                            <Icon2 name={'whistle'} size={20} color={'blue'} style={styles.iconStyle} ></Icon2> : null}
                             <Text
-                                style={{
-                                    marginTop: 5,
-                                    fontFamily: 'regular',
-                                    fontSize: 15,
-                                    //marginLeft: 10,
-                                    color: 'gray',
-                                    flex: 5
-                                }}
+                                style={styles.groupHeadline}
                             >
                                 {x.SportCategory + " Group"}
                             </Text>
                         </View>
 
 
-                        <View style={{ flex: 1, flexDirection: 'row', marginRight: 25, justifyContent: 'center' }}>
+                        <View style={styles.addressView}>
 
 
                             <Text
-                                style={{
-                                    fontFamily: 'regular',
-                                    fontSize: 12,
-                                    marginLeft: 10,
-                                    color: 'gray',
-                                    flex: 5,
-                                    justifyContent: 'center',
-                                    textAlign: 'right',
-                                    marginTop: 3
-                                }}
+                                style={styles.addressText}
                             >
                                 {((groupAddresses[index]).length > 25) ?
                                     (((groupAddresses[index]).substring(0, 25 - 3)) + '...') :
                                     groupAddresses[index]}
 
                             </Text>
-                            <Icon1 style={{ flex: 1, marginLeft: 5 }} name='location-pin' color='gray' textAlign='center' size={20} onPress={() => this.props.setLatLon(x.Latitude, x.Longitude)}></Icon1>
+                            <Icon1 style={styles.locationIcon} name='location-pin' color='gray' textAlign='center' size={20} onPress={() => this.props.setLatLon(x.Latitude, x.Longitude)}></Icon1>
 
                         </View>
                         {x.WithTrainer ? <Text
-                            style={{
-                                fontFamily: 'light',
-                                fontSize: 12,
-                                marginLeft: 10,
-                                color: 'blue',
-                            }}
+                            style={styles.priceText}
                         >
                             {x.Price + "$"}
                         </Text> : null}
                     </View>
                 </View>
                 <View
-                    style={{
-                        flexDirection: 'row',
-                        justifyContent: 'flex-end',
-                        marginRight: 10,
-                        flex: 1
-                    }}
+                    style={styles.bottom}
                 >
 
-                    <View style={{ flex: 1, alignItems: 'center' }}>
+                    <View style={styles.joinGroupView}>
                         <Button
                             style={{ flex: 1 }}
-                            titleStyle={{ fontWeight: 'bold', fontSize: 10 }}
+                            titleStyle={styles.title}
                             title={'Join Group'}
                             onPress={() => {
                                 this.joinGroup(x.TrainingCode, x.CreatorCode);
 
                             }}
-                            buttonStyle={{
-                                borderWidth: 0,
-                                borderColor: 'transparent',
-                                borderRadius: 20,
-                                backgroundColor: '#f34573'
-                            }}
-                            containerStyle={{ marginVertical: 3, height: 30, width: 115, alignItems: 'center' }}
+                            buttonStyle={styles.buttonStyle}
+                            containerStyle={styles.buttonContainer}
                             icon={{
                                 name: 'mail',
                                 type: 'Octicons',
@@ -405,15 +312,15 @@ export default class SearchResultsListView extends Component {
 
     render() {
         return (
-            <View style={{ flex: 1, alignItems: 'center', flexDirection: 'column', backgroundColor: 'rgba(255,255,255,0.9)', alignContent: "center", position: 'absolute', zIndex: 2, top: 90, width: SCREEN_WIDTH, }}>
+            <View style={styles.conatiner}>
 
-                <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                <View style={styles.headerView}>
                     <Icon name='close' style={styles.closeIcon} size={20} color='gray' onPress={() => this.props.closeListView()}></Icon>
                     <Text style={styles.headline}>Search Results</Text>
                 </View>
 
                 {(this.props.CoupleResults.length != 0 || this.props.GroupResults.length != 0) ?
-                    <ScrollView style={{ flex: 1, marginBottom: 20, width: SCREEN_WIDTH, maxHeight: 200 }}>
+                    <ScrollView style={style.scrollView}>
                         {this.state.status == 1 ?
                             <View>
                                 {this.props.CoupleResults.map((x, index) => {
@@ -441,7 +348,95 @@ export default class SearchResultsListView extends Component {
 
 
 const styles = StyleSheet.create({
+resultContainer:
+{
+    height: 60,
+    marginHorizontal: 10,
+    marginTop: 10,
+    justifyContent: 'center',
+    backgroundColor: 'white',
+    borderRadius: 5,
+    alignItems: 'center',
+    flexDirection: 'row',
+    flex: 1
 
+},
+container:
+{ flex: 1, alignItems: 'center', flexDirection: 'column', backgroundColor: 'rgba(255,255,255,0.9)', alignContent: "center", position: 'absolute', zIndex: 2, top: 90, width: SCREEN_WIDTH, },
+headerView:
+{ flex: 1, flexDirection: 'row', alignItems: 'center' },
+leftView:
+{ flex: 2, flexDirection: 'row', alignItems: 'center' },
+detailsView:
+{ flex: 1, flexDirection: 'column', justifyContent: 'center', justifyContent: 'center' },
+groupDetailsView:
+{ flex: 1, flexDirection: 'column', justifyContent: 'center' },
+avatarView:
+{ marginLeft: 15 },
+iconStyle:
+{ transform: [{ rotate: '-30deg' }], flex: 1 },
+nameText:
+{
+    fontFamily: 'regular',
+    fontSize: 15,
+    color: 'gray',
+    flex: 5
+},
+nameView:
+{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignContent: 'flex-start', marginLeft: 10 },
+addressText:{
+    fontFamily: 'regular',
+    fontSize: 12,
+    marginLeft: 10,
+    color: 'gray',
+    flex: 5,
+    justifyContent: 'center',
+    textAlign: 'right',
+    marginTop: 3
+},
+
+addressView:
+{ flex: 1, flexDirection: 'row', marginRight: 25, justifyContent: 'center' },
+locationIcon:
+{ flex: 1, marginLeft: 5 },
+priceText:
+{
+    fontFamily: 'light',
+    fontSize: 12,
+    marginLeft: 10,
+    color: 'blue',
+},
+
+groupHeadline:
+{
+    marginTop: 5,
+    fontFamily: 'regular',
+    fontSize: 15,
+    color: 'gray',
+    flex: 5
+},
+groupHeaderView:
+{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignContent: 'flex-start', marginLeft: 10 },
+buttonView:
+{ flex: 1, alignItems: 'center' },
+buttonStyle:
+{
+    borderWidth: 0,
+    borderColor: 'transparent',
+    borderRadius: 20,
+    backgroundColor: '#f34573'
+},
+buttonContainer:
+{ marginVertical: 3, height: 30, width: 115, alignItems: 'center' },
+title:
+{ fontWeight: 'bold', fontSize: 10 },
+bottom:
+{
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginRight: 10,
+    flex: 1
+},
     closeIcon: {
         left: 20,
         flex: 1
@@ -453,5 +448,15 @@ const styles = StyleSheet.create({
         fontFamily: 'regular',
         marginLeft: 20
     },
+
+joinGroupView:
+{ flex: 1, alignItems: 'center' },
+ 
+scrollView:
+{ flex: 1, marginBottom: 20, width: SCREEN_WIDTH, maxHeight: 200 },
+
+
+
+
 
 })

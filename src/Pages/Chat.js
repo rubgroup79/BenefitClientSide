@@ -184,10 +184,7 @@ class Chat extends Component {
 
     renderSentMessages(content, sendingTime) {
         return (
-            <View style={{
-                flex: 1, borderRadius: 20, backgroundColor: '#cbf2cd',
-                justifyContent: 'center', paddingHorizontal: 20, paddingVertical: 20, width: 200, marginLeft: 20, marginTop: 10
-            }}>
+            <View style={styles.sentMessages}>
                 <Text style={{ flex: 1 }}>{content}</Text>
             </View>
         )
@@ -197,10 +194,7 @@ class Chat extends Component {
         return (
             <View>
                 <View
-                    style={{
-                        flex: 1, borderRadius: 20, backgroundColor: '#dbd9d9',
-                        justifyContent: 'center', paddingHorizontal: 20, paddingVertical: 20, marginLeft: SCREEN_WIDTH - 220, width: 200, marginTop: 10
-                    }}
+                    style={styles.receivedMessages}
                     onPress={() => this.setState({ DateVisible: !this.state.DateVisible })}
                 >
 
@@ -255,50 +249,31 @@ class Chat extends Component {
 
                 {this.state.fontLoaded ?
 
-                    <View style={{ width: SCREEN_WIDTH, height: SCREEN_HEIGHT, position: 'absolute' }}>
+                    <View style={styles.container}>
                         {this.state.createNewTrainingModalVisible ?
 
-                            <View style={{ flex: 1, zIndex: 2, width: SCREEN_WIDTH, backgroundColor: 'transparent', height: SCREEN_HEIGHT, alignItems: 'center', position: 'absolute' }}>
+                            <View style={styles.trainingModal}>
                                 <CreateNewTrainingModal newTrainingButtonDisabled={this.newTrainingButtonDisabled} SuggestionCode={this.state.suggestionCode} WithTrainer={0} createNewTrainingModalVisible={this.createNewTrainingModalVisible}></CreateNewTrainingModal>
                             </View>
                             : null}
 
 
 
-                        <View
-                            style={[
-                                styles.headerContainer,
-                                { backgroundColor: '#f5f5f5', marginTop: 20, zIndex: 1, },
-                            ]}
-                        >
-                            <View style={{ flex: 1, }}>
+                        <View style={styles.headerContainer}>
+                            <View style={{ flex: 1 }}>
                                 <Button
                                     icon={() =>
                                         <Icon name='left' size={20} />}
-                                    style={{
-
-                                        justifyContent: 'center',
-                                        alignItems: 'center',
-                                        margin: 8,
-                                        marginLeft: 10
-
-                                    }}
-                                    buttonStyle={{
-                                        height: 45,
-                                        width: 45,
-                                        borderRadius: 30,
-                                        backgroundColor: 'transparent',
-
-
-                                    }}
-                                    onPress={() => 
+                                    style={styles.backButtonConatiner}
+                                    buttonStyle={styles.backButton}
+                                    onPress={() =>
                                         goBack()
                                     }
                                     activeOpacity={0.5}
                                 />
                             </View>
-                            <View style={{ flex: 3, flexDirection: 'row', justifyContent: 'center', alignContent: 'flex-end', }}>
-                                <Image style={{ width: 40, height: 40, borderRadius: 20 }} source={{ uri: this.props.navigation.getParam('Picture', null) }} />
+                            <View style={styles.partnerImageContainer}>
+                                <Image style={styles.partnerImage} source={{ uri: this.props.navigation.getParam('Picture', null) }} />
                                 <Text style={styles.heading}>{this.props.navigation.getParam('FullName', null)}</Text>
                             </View>
                             <Button
@@ -308,23 +283,10 @@ class Chat extends Component {
                                     size={25}
                                     color={'white'}
 
-                                    style={{ alignItems: 'center', marginLeft: 2, marginBottom: 1 }}
+                                    style={styles.newTrainingIcon}
                                 />}
-                                style={{
-                                    flex: 1,
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                    margin: 8
-
-                                }}
-                                buttonStyle={{
-                                    height: 45,
-                                    width: 45,
-                                    borderRadius: 30,
-                                    backgroundColor: '#f34573',
-
-
-                                }}
+                                style={styles.newTrainingContainer}
+                                buttonStyle={styles.newTrainingButton}
                                 onPress={() => this.createNewTrainingModalVisible(true)}
                                 activeOpacity={0.5}
                             />
@@ -334,7 +296,7 @@ class Chat extends Component {
                                 behavior="position"
                             >
                                 <View style={{ height: SCREEN_HEIGHT - 80 }}>
-                                    <ScrollView style={{ position: 'absolute', width: SCREEN_WIDTH, height: SCREEN_HEIGHT - 150, zIndex: 0 }}
+                                    <ScrollView style={styles.scrollView}
                                         ref={(ref) => { this.ScrollView = ref }}
                                         onContentSizeChange={() => this.ScrollView.scrollToEnd({ animated: true })}
                                     >
@@ -347,7 +309,7 @@ class Chat extends Component {
                                             </View>)
                                         })}
                                     </ScrollView>
-                                    <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', position: 'absolute', bottom: 0, }}>
+                                    <View style={styles.textInputContainer}>
                                         <TextInput
                                             value={this.state.newMessage}
                                             placeholder="Type here"
@@ -358,7 +320,7 @@ class Chat extends Component {
                                                 this.setState({ newMessage: Message });
                                                 { Message == "" ? this.setState({ sendButtonDisabled: true }) : this.setState({ sendButtonDisabled: false }) }
                                             }}
-                                            style={{ flex: 1, fontSize: 20, borderWidth: 1, borderColor: '#e2e2e2', borderRadius: 20, flex: 1, margin: 8, maxHeight: 150, padding: 8 }}
+                                            style={styles.textInput}
                                             multiline={true}
                                             scrollEnabled={true}
 
@@ -370,21 +332,10 @@ class Chat extends Component {
                                                 name='md-send'
                                                 size={25}
                                                 color={'white'}
-                                                style={{ alignItems: 'center', marginLeft: 4 }}
+                                                style={styles.sendMessageIcon}
                                             />}
-                                            style={{
-                                                flex: 1,
-                                                justifyContent: 'center',
-                                                alignItems: 'center',
-                                                margin: 8
-
-                                            }}
-                                            buttonStyle={{
-                                                height: 45,
-                                                width: 45,
-                                                borderRadius: 30,
-
-                                            }}
+                                            style={styles.sendMessageContainer}
+                                            buttonStyle={styles.sendMessageButton}
                                             onPress={() => this.sendMessage()}
                                             activeOpacity={0.5}
                                         />
@@ -401,24 +352,114 @@ class Chat extends Component {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
+    scrollView:
+    {
+        position: 'absolute',
+        width: SCREEN_WIDTH,
+        height: SCREEN_HEIGHT - 150,
+        zIndex: 0
     },
-    list: {
-        marginTop: 20,
-        borderTopWidth: 1,
-        borderColor: colors.greyOutline,
-        backgroundColor: '#fff',
+    textInputContainer:
+    {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        position: 'absolute',
+        bottom: 0,
+    },
+    textInput:
+    {
+        flex: 1,
+        fontSize: 20,
+        borderWidth: 1,
+        borderColor: '#e2e2e2',
+        borderRadius: 20,
+        flex: 1,
+        margin: 8,
+        maxHeight: 150,
+        padding: 8
+    },
+    sentMessages:
+    {
+        flex: 1,
+        borderRadius: 20,
+        backgroundColor: '#cbf2cd',
+        justifyContent: 'center',
+        paddingHorizontal: 20,
+        paddingVertical: 20,
+        width: 200,
+        marginLeft: 20,
+        marginTop: 10
+    },
+    receivedMessages:
+    {
+        flex: 1,
+        borderRadius: 20,
+        backgroundColor: '#dbd9d9',
+        justifyContent: 'center',
+        paddingHorizontal: 20,
+        paddingVertical: 20,
+        marginLeft: SCREEN_WIDTH - 220,
+        width: 200,
+        marginTop: 10
+    },
+    container:
+    {
+        width: SCREEN_WIDTH,
+        height: SCREEN_HEIGHT,
+        position: 'absolute'
+    },
+    trainingModal:
+    {
+        flex: 1,
+        zIndex: 2,
+        width: SCREEN_WIDTH,
+        backgroundColor: 'transparent',
+        height: SCREEN_HEIGHT,
+        alignItems: 'center',
+        position: 'absolute'
+    },
+    newTrainingIcon:
+        { alignItems: 'center', marginLeft: 2, marginBottom: 1 },
+    newTrainingContainer:
+    {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        margin: 8
+
+    },
+    newTrainingButton: {
+        height: 45,
+        width: 45,
+        borderRadius: 30,
+        backgroundColor: '#f34573',
+
+
     },
     headerContainer: {
-        //flex: 1,
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: 25,
-        backgroundColor: '#d0d4db',
+        marginTop: 20,
+        backgroundColor: '#f5f5f5',
         height: 60,
-        //paddingBottom:10
+        zIndex: 1,
+    },
+    backButtonContainer:
+    {
+        justifyContent: 'center',
+        alignItems: 'center',
+        margin: 8,
+        marginLeft: 10
+
+    },
+    backButton:
+    {
+        height: 45,
+        width: 45,
+        borderRadius: 30,
+        backgroundColor: 'transparent',
     },
     heading: {
         color: 'black',
@@ -429,47 +470,38 @@ const styles = StyleSheet.create({
         fontFamily: 'bold',
         marginLeft: -80
     },
-    fonts: {
-        marginBottom: 8,
-    },
-    user: {
-        flexDirection: 'row',
-        marginBottom: 6,
-    },
-    image: {
-        width: 30,
-        height: 30,
-        marginRight: 10,
-    },
-    name: {
-        fontSize: 16,
-        marginTop: 5,
-    },
-    social: {
+    partnerImageContainer:
+    {
+        flex: 3,
         flexDirection: 'row',
         justifyContent: 'center',
+        alignContent: 'flex-end',
     },
-    subtitleView: {
-        flexDirection: 'row',
-        paddingLeft: 10,
-        paddingTop: 5,
+    partnerImage:
+    {
+        width: 40,
+        height: 40,
+        borderRadius: 20
     },
-    ratingImage: {
-        height: 19.21,
-        width: 100,
+    sendMessageIcon:
+    {
+        alignItems: 'center',
+        marginLeft: 4
     },
-    ratingText: {
-        paddingLeft: 10,
-        color: 'grey',
-    },
-    newInput: {
-        borderWidth: 1,
-        borderColor: '#ccc',
-        fontSize: 16,
-        padding: 10,
-        height: 50,
+    sendMessageContainer:
+    {
         flex: 1,
-        position: 'absolute',
+        justifyContent: 'center',
+        alignItems: 'center',
+        margin: 8
+
+    },
+    sendMessageButton:
+    {
+        height: 45,
+        width: 45,
+        borderRadius: 30,
+
     },
 });
 

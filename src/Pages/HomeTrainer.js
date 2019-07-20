@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Dimensions, ActivityIndicator, KeyboardAvoidingView, TouchableOpacity, Text, AsyncStorage, Button } from 'react-native';
-import { Avatar, Badge, Image } from 'react-native-elements';
+import { View, StyleSheet, Dimensions, KeyboardAvoidingView, TouchableOpacity, Text, AsyncStorage } from 'react-native';
+import { Image } from 'react-native-elements';
 import Map from '../Components/Map';
 import { Font } from 'expo';
 import ActionButton from 'react-native-action-button';
@@ -11,15 +11,12 @@ import IconNew from 'react-native-vector-icons/Entypo';
 import PendingRequestsListView from '../Components/PendingRequestsListView';
 import ApprovedRequestsListView from '../Components/ApprovedRequestsListView';
 import FutureTrainingsListView from '../Components/FutureTrainingsListView';
-import SearchResultsListView from '../Components/SearchResultsListView';
 import TrainerOnlineModal from '../Components/TrainerOnlineModal';
 import CreateGroupModal from '../Components/CreateGroupModal';
 
 const LOADING = require('../../Images/LoadingLogo.gif');
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
-const SEARCH_VIEW = require('../../Images/SearchView.png');
-const SELECTED_SEARCH_VIEW = require('../../Images/SearchViewSelected.png');
 const APPROVED_REQUESTS = require('../../Images/ApprovedRequests.png');
 const PENDING_REQUESTS = require('../../Images/PendingRequests.png');
 const FUTURE_TRAININGS = require('../../Images/FutureTrainings.png');
@@ -28,7 +25,6 @@ const SELECTED_PENDING_REQUESTS = require('../../Images/PendingRequestsSelected.
 const SELECTED_FUTURE_TRAININGS = require('../../Images/FutureTrainingsSelected.png');
 var hours_now = new Date().getHours();
 var minutes_now = new Date().getMinutes();
-var timeNow = hours_now + ":" + minutes_now;
 
 export default class HomeTrainer extends Component {
   constructor(props) {
@@ -51,7 +47,6 @@ export default class HomeTrainer extends Component {
       futureCoupleTrainings: [],
       futureGroupTrainings: [],
       approvedRequests: [],
-      //searchResultsMapView: true,
       pendingRequestsMapView: true,
       approvedRequestsMapView: false,
       futureTrainingsMapView: false,
@@ -68,7 +63,6 @@ export default class HomeTrainer extends Component {
     this.createGroupModalVisible = this.createGroupModalVisible.bind(this);
     this.checkIfUserOnline = this.checkIfUserOnline.bind(this);
     this.afterLocalStorageFunctions = this.afterLocalStorageFunctions.bind(this);
-    //this.search = this.search.bind(this);
     this.insertOnlineTrainer = this.insertOnlineTrainer.bind(this);
     this.getFutureTrainings = this.getFutureTrainings.bind(this);
     this.setLatLon = this.setLatLon.bind(this);
@@ -100,22 +94,13 @@ export default class HomeTrainer extends Component {
   }
 
   UNSAFE_componentWillMount() {
-console.warn('this is trainer home page');
+    console.warn('this is trainer home page');
 
     setTimeout(() => {
       this.getLocalStorage()
     }, 1500);
 
   }
-
-  // changeMapViewAfterSearch() {
-  //   this.setstate({
-  //     searchResultsMapView: true,
-  //     pendingRequestsMapView: false,
-  //     approvedRequestsMapView: false,
-  //     futureTrainingsMapView: false,
-  //   })
-  // }
 
   getLocalStorage = async () => {
     await AsyncStorage.getItem('UserCode', (err, result) => {
@@ -167,7 +152,6 @@ console.warn('this is trainer home page');
   }
 
   refresh(str) {
-    //this.search(this.state.onlineTrainee);
     this.getRequests(true);
     this.getRequests(false);
     this.getFutureTrainings();
@@ -204,7 +188,7 @@ console.warn('this is trainer home page');
           '\nheading=' + position.coords.heading +
           '\nspeed=' + position.coords.speed;
 
-        this.setState({ partnerLatitude: position.coords.latitude, partnerLongitude: position.coords.longitude,latitude: position.coords.latitude, longitude: position.coords.longitude, status: 1 });// +  Math.random()/1000,
+        this.setState({ partnerLatitude: position.coords.latitude, partnerLongitude: position.coords.longitude, latitude: position.coords.latitude, longitude: position.coords.longitude, status: 1 });// +  Math.random()/1000,
       },
       (error) => alert(error.message),
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
@@ -273,78 +257,9 @@ console.warn('this is trainer home page');
     this.search(onlineDetails);
   }
 
-
-
-  // search(onlineDetails) {
-  //   this.setState({
-  //     onlineTrainer: onlineDetails,
-  //     latitude: onlineDetails.Latitude,
-  //     longitude: onlineDetails.Longitude,
-  //     onlineMode:true,
-  //     searchResultsMapView: true,
-  //     pendingRequestsMapView: false,
-  //     approvedRequestsMapView: false,
-  //     futureTrainingsMapView: false,
-  //   });
-
-
-  //   //נכנס רק אם משתמש חיפש אימון זוגי עם מאמן או מתאמן
-  //   if (onlineDetails.WithPartner == 1 || onlineDetails.WithTrainer == 1) {
-  //     fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/SearchCoupleTraining', {
-  //       method: 'POST',
-  //       headers: { "Content-type": "application/json; charset=UTF-8" },
-  //       body: JSON.stringify(onlineDetails),
-  //     })
-  //       .then(res => res.json())
-  //       .then(response => {
-  //         if (response.length == 0) {
-  //           this.setState({ coupleResults: [] });
-  //         }
-  //         else {
-  //           this.setState({
-  //             coupleResults: response,
-  //           })
-  //         }
-  //       })
-
-  //       .catch(error => console.warn('Error2:', error.message));
-  //   }
-
-  //   //נכנס רק אם משתמש חיפש אימון קבוצתי עם מאמן או בלי מאמן
-
-  //   if (onlineDetails.GroupWithTrainer || onlineDetails.GroupWithPartners) {
-
-  //     fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/SearchGroups', {
-
-  //       method: 'POST',
-  //       headers: { "Content-type": "application/json; charset=UTF-8" },
-  //       body: JSON.stringify(onlineDetails),
-  //     })
-  //       .then(res => res.json())
-  //       .then(response => {
-  //         if (response.length == 0) {
-  //           this.setState({ groupResults: [] });
-
-  //         }
-
-  //         else {
-  //           this.setState({
-  //             groupResults: response,
-  //           })
-  //         }
-
-  //       })
-
-  //       .catch(error => console.warn('Error3:', error.message));
-  //   }
-
-  // }
-
   setLatLon(lat, long) {
     this.setState({ partnerLatitude: lat, partnerLongitude: long, })
   }
-
-
 
   render() {
     return (
@@ -352,72 +267,65 @@ console.warn('this is trainer home page');
       <KeyboardAvoidingView behavior='position' style={styles.formContainer} keyboardVerticalOffset={-70}>
         {this.state.status == 1 && this.state.fontLoaded ?
 
-          <View style={{ flex: 1, width: SCREEN_WIDTH, backgroundColor: 'white', height: SCREEN_HEIGHT, alignItems: 'center' }}>
+          <View style={styles.pageStyle}>
             {this.state.createGroupModalVisible ?
-              <CreateGroupModal refresh={this.refresh} isTrainer={this.state.isTrainer} createGroupModalVisible={this.createGroupModalVisible} CreatorCode={this.state.userCode} IsTrainer={this.state.isTrainer} ></CreateGroupModal>
+              <CreateGroupModal
+                refresh={this.refresh}
+                isTrainer={this.state.isTrainer}
+                createGroupModalVisible={this.createGroupModalVisible}
+                CreatorCode={this.state.userCode}
+                IsTrainer={this.state.isTrainer} ></CreateGroupModal>
               : null}
 
             {this.state.onlineModalVisible ?
-              <TrainerOnlineModal  insertOnlineTrainer={this.insertOnlineTrainer} userCode={this.state.userCode} onlineModalVisible={this.onlineModalVisible} style={{ zIndex: 1000 }}></TrainerOnlineModal>
+              <TrainerOnlineModal
+                insertOnlineTrainer={this.insertOnlineTrainer}
+                userCode={this.state.userCode}
+                onlineModalVisible={this.onlineModalVisible}
+                style={styles.trainerOnlineModal}></TrainerOnlineModal>
               : null}
 
-            <View style={{ flex: 6, zIndex: 0, width: SCREEN_WIDTH, height: SCREEN_HEIGHT }} >
-              <Map refresh={this.refresh} style={{ zIndex: 0 }} navigation={this.props.navigation} SenderCode={this.state.userCode} HomeTraineeStates={this.state}></Map>
+            <View style={styles.mapContainer} >
+              <Map refresh={this.refresh}
+                style={styles.mapStyle}
+                navigation={this.props.navigation}
+                SenderCode={this.state.userCode}
+                HomeTraineeStates={this.state}></Map>
             </View>
 
 
 
-            <View style={{ flex: 1, zIndex: 1000, position: 'absolute', left: 0, top: 20, width: SCREEN_WIDTH, }}>
+            <View style={styles.headerContainer}>
 
               <View style={styles.container}>
 
-                <View style={{ flex: 8, flexDirection: 'row', alignItems: 'center', marginLeft: 25, marginTop: 15 }}>
+                <View style={styles.headerView}>
 
 
-
-                  {/* {this.state.onlineMode ?
-                    <View style={{ flex: 1, }}>
-
-                      <TouchableOpacity
-                        onPress={() => {
-                          this.setState({ searchResultsMapView: true, pendingRequestsMapView: false, approvedRequestsMapView: false, futureTrainingsMapView: false, });
-                          this.refresh('search');
-                          this.setOnlineMode(true);
-                          this.setState({ searchResultsMapView: true })
-                        }}
-                      >
-                        {this.state.searchResultsMapView ? <Image source={SELECTED_SEARCH_VIEW} style={{ width: 60, height: 60 }} /> : <Image source={SEARCH_VIEW} style={{ width: 60, height: 60 }} />}
-                      </TouchableOpacity>
-                      <View style={{ left: -5, top: -58, width: 18, height: 18, borderRadius: 10, borderColor: '#75cac3', borderWidth: 2, backgroundColor: 'white', alignItems: "center", justifyContent: 'center' }}>
-                        <Text
-                          style={{ color: 'black', fontFamily: 'regular', fontSize: 11, position: 'absolute' }}
-                        >{this.state.coupleResults.length + this.state.groupResults.length}
-                        </Text>
-                      </View>
-                    </View> : null} */}
-
-
-
-
-                  <View style={{ flex: 1, }}>
+                  <View style={styles.flex}>
                     <TouchableOpacity
                       onPress={() => {
                         this.setState({ pendingRequestsMapView: true, approvedRequestsMapView: false, futureTrainingsMapView: false, searchResultsMapView: false });
                         this.refresh('pending');
                       }}
                     >
-                      {this.state.pendingRequestsMapView ? <Image source={SELECTED_PENDING_REQUESTS} style={{ width: 60, height: 60 }} /> : <Image source={PENDING_REQUESTS} style={{ width: 60, height: 60 }} />}
+                      {this.state.pendingRequestsMapView ?
+                        <Image source={SELECTED_PENDING_REQUESTS}
+                          style={styles.headerIconImage} /> :
+                        <Image source={PENDING_REQUESTS}
+                          style={styles.headerIconImage} />}
                     </TouchableOpacity>
-                    <View style={{ left: -5, top: -58, width: 18, height: 18, borderRadius: 10, borderColor: '#75cac3', borderWidth: 2, backgroundColor: 'white', alignItems: "center", justifyContent: 'center' }}>
+                    <View
+                      style={styles.badgeContainer}>
                       <Text
-                        style={{ color: 'black', fontFamily: 'regular', fontSize: 11, position: 'absolute' }}
+                        style={styles.badgeText}
                       >{this.state.pendingRequests.length}
                       </Text>
                     </View>
 
                   </View>
 
-                  <View style={{ flex: 1, }}>
+                  <View style={styles.flex}>
                     <TouchableOpacity
                       onPress={() => {
                         this.setState({ approvedRequestsMapView: true, pendingRequestsMapView: false, futureTrainingsMapView: false, searchResultsMapView: false })
@@ -425,30 +333,35 @@ console.warn('this is trainer home page');
                       }}
                     >
 
-                      {this.state.approvedRequestsMapView ? <Image source={SELECTED_APPROVED_REQUESTS} style={{ width: 60, height: 60 }} /> : <Image source={APPROVED_REQUESTS} style={{ width: 60, height: 60 }} />}
+                      {this.state.approvedRequestsMapView ?
+                        <Image source={SELECTED_APPROVED_REQUESTS} style={styles.headerIconImage} /> :
+                        <Image source={APPROVED_REQUESTS} style={styles.headerIconImage} />}
 
 
                     </TouchableOpacity>
-                    <View style={{ left: -5, top: -58, width: 18, height: 18, borderRadius: 10, borderColor: '#75cac3', borderWidth: 2, backgroundColor: 'white', alignItems: "center", justifyContent: 'center' }}>
+                    <View
+                      style={styles.badgeContainer}>
                       <Text
-                        style={{ color: 'black', fontFamily: 'regular', fontSize: 11, position: 'absolute' }}
+                        style={styles.badgeText}
                       >{this.state.approvedRequests.length}
                       </Text>
                     </View>
                   </View>
-                  <View style={{ flex: 1, }}>
+                  <View style={styles.flex}>
                     <TouchableOpacity
                       onPress={() => {
                         this.setState({ futureTrainingsMapView: true, approvedRequestsMapView: false, pendingRequestsMapView: false, searchResultsMapView: false });
                         this.refresh('future');
                       }}
                     >
-                      {this.state.futureTrainingsMapView ? <Image source={SELECTED_FUTURE_TRAININGS} style={{ width: 60, height: 60 }} /> : <Image source={FUTURE_TRAININGS} style={{ width: 60, height: 60 }} />}
+                      {this.state.futureTrainingsMapView ? <Image source={SELECTED_FUTURE_TRAININGS}
+                        style={styles.headerIconImage} /> :
+                        <Image source={FUTURE_TRAININGS} style={styles.headerIconImage} />}
 
                     </TouchableOpacity>
-                    <View style={{ left: -5, top: -58, width: 18, height: 18, borderRadius: 10, borderColor: '#75cac3', borderWidth: 2, backgroundColor: 'white', alignItems: "center", justifyContent: 'center' }}>
+                    <View style={styles.badgeContainer}>
                       <Text
-                        style={{ color: 'black', fontFamily: 'regular', fontSize: 11, position: 'absolute' }}
+                        style={styles.badgeText}
                       >{this.state.futureCoupleTrainings.length + this.state.futureGroupTrainings.length}
                       </Text>
                     </View>
@@ -457,10 +370,6 @@ console.warn('this is trainer home page');
                 </View>
 
               </View>
-
-              {/* {this.state.searchResultsMapView && this.state.listView ?
-                <SearchResultsListView navigation={this.props.navigation} refresh={this.refresh} setLatLon={this.setLatLon} closeListView={this.closeListView} CoupleResults={this.state.coupleResults} GroupResults={this.state.groupResults} UserCode={this.state.userCode}></SearchResultsListView>
-                : null} */}
 
               {this.state.pendingRequestsMapView && this.state.listView ?
                 <PendingRequestsListView navigation={this.props.navigation} refresh={this.refresh} setLatLon={this.setLatLon} closeListView={this.closeListView} PendingRequests={this.state.pendingRequests} UserCode={this.state.userCode}></PendingRequestsListView>
@@ -478,7 +387,7 @@ console.warn('this is trainer home page');
 
               {!this.state.listView && (this.state.searchResultsMapView || this.state.pendingRequestsMapView || this.state.approvedRequestsMapView || this.state.futureTrainingsMapView)
                 ?
-                <View style={{ flex: 1, top: 80 }}>
+                <View style={styles.listViewButton}>
 
                   <ActionButton
                     onPress={() => this.setState({ listView: !this.state.listView })}
@@ -498,7 +407,7 @@ console.warn('this is trainer home page');
 
 
               <View style={styles.searchButtonsContainer}>
-                <View style={{ flex: 1, left: -85 }}>
+                <View style={styles.actionButtonView}>
                   <ActionButton
                     onPress={() => {
                       this.getCurrentLocation()
@@ -516,7 +425,6 @@ console.warn('this is trainer home page');
                 </View>
                 <View style={{ flex: 1 }}>
                   {this.state.onlineMode ?
-
                     <ActionButton
                       renderIcon={active => active ? (<Icon1
                         name="search"
@@ -531,12 +439,11 @@ console.warn('this is trainer home page');
                       buttonColor='rgba(71, 224, 135,0.7)'
                       size={60}
                     >
-
                       <ActionButton.Item
                         buttonColor='rgba(237,29,26,0.7)'
                         onPress={() => {
                           this.goOffline();
-                          this.setState({listView:false})
+                          this.setState({ listView: false })
                         }}
                       >
                         <Icon2
@@ -549,7 +456,7 @@ console.warn('this is trainer home page');
                         buttonColor='rgba(255,255,255,0.7)'
                         onPress={() => {
                           this.createGroupModalVisible();
-                          this.setState({listView:false})
+                          this.setState({ listView: false })
                           this.setState({ onlineModalVisible: false })
                         }}
                       >
@@ -563,9 +470,8 @@ console.warn('this is trainer home page');
                         buttonColor='rgba(255,255,255,0.7)'
                         onPress={() => {
                           this.onlineModalVisible();
-                          this.setState({listView:false})
+                          this.setState({ listView: false })
                           this.setState({ createGroupModalVisible: false })
-
                         }
                         }
                       >
@@ -629,7 +535,7 @@ console.warn('this is trainer home page');
 
           :
 
-          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <View style={styles.loading}>
 
             <Image source={LOADING}></Image>
           </View>
@@ -641,6 +547,71 @@ console.warn('this is trainer home page');
 }
 
 const styles = StyleSheet.create({
+  mapStyle:
+    { zIndex: 0 },
+  mapContainer:
+  {
+    flex: 6,
+    zIndex: 0,
+    width: SCREEN_WIDTH,
+    height: SCREEN_HEIGHT
+  },
+  pageStyle:
+  {
+    flex: 1,
+    width: SCREEN_WIDTH,
+    backgroundColor: 'white',
+    height: SCREEN_HEIGHT,
+    alignItems: 'center'
+  },
+  trainerOnlineModal:
+    { zIndex: 1000 },
+  listViewButton:
+  {
+    flex: 1,
+    top: 80
+  },
+
+  badgeText:
+  {
+    color: 'black',
+    fontFamily: 'regular',
+    fontSize: 11,
+    position: 'absolute'
+  },
+  badgeContainer:
+  {
+    left: -5,
+    top: -58,
+    width: 18,
+    height: 18,
+    borderRadius: 10,
+    borderColor: '#75cac3',
+    borderWidth: 2,
+    backgroundColor: 'white',
+    alignItems: "center",
+    justifyContent: 'center'
+  },
+  headerContainer:
+  {
+    flex: 1,
+    zIndex: 1000,
+    position: 'absolute',
+    left: 0,
+    top: 20,
+    width: SCREEN_WIDTH
+  },
+
+  headerView:
+    { 
+      flex: 8, 
+      flexDirection: 'row', 
+      alignItems: 'center',
+      marginLeft: 25, 
+      marginTop: 15 
+    },
+  flex:
+    { flex: 1 },
 
   container: {
     flex: 1,
@@ -658,7 +629,8 @@ const styles = StyleSheet.create({
 
 
   },
-
+  headerIconImage:
+    { width: 60, height: 60 },
   searchButtonsContainer: {
     flex: 1,
     flexDirection: 'row',
@@ -668,38 +640,20 @@ const styles = StyleSheet.create({
     height: 200
 
   },
+  actionButtonView:
+    { flex: 1, left: -85 },
 
-  switch: {
-    marginTop: 8,
-  },
 
-  trainingsPreferencesStyle: {
-    flex: 2,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 0
-  },
-
-  trainingsHeadline: {
-    flex: 1,
-    fontSize: 23,
-    color: 'rgba(216, 121, 112, 1)',
-    fontFamily: 'regular',
-  },
-
-  trainingsPreferencesContainerStyle: {
-    flex: 3,
-    flexDirection: 'row',
-  },
-
-  dividerStyle: {
-    backgroundColor: 'gray'
-  },
   formContainer: {
     flex: 1,
     justifyContent: 'space-around',
     alignItems: 'center',
+  },
+  loading:
+  {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center'
   },
 
 })

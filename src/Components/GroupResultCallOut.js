@@ -5,7 +5,6 @@ import Icon from 'react-native-vector-icons/Entypo';
 import Icon1 from 'react-native-vector-icons/FontAwesome';
 import Icon2 from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Button, ButtonGroup } from 'react-native-elements';
-import ActionButton from 'react-native-action-button';
 
 
 const { Marker } = MapView;
@@ -13,7 +12,6 @@ const { Marker } = MapView;
 _Latitude = 0;
 _Longitude = 0;
 
-const SCREEN_WIDTH = Dimensions.get('window').width;
 
 export default class GroupResultCallOut extends React.Component {
     constructor(props) {
@@ -87,73 +85,58 @@ export default class GroupResultCallOut extends React.Component {
 
     render() {
         return (
-            <View style={{ flex: 1, flexDirection: 'column', justifyContent: "center", alignItems: "center", width: 150, }}>
+            <View style={styles.conatiner}>
                 {this.state.fontLoaded ? 
                 <View style={{flex:1}}>
-
-
-                    {this.props.Data.WithTrainer ? <View style={{ flex: 1, flexDirection: 'row', position: 'absolute', top: 0, left: 90 }}>
-
-                        <Icon2 name={'whistle'} size={20} color={'blue'} style={{ transform: [{ rotate: '-30deg'}]}} ></Icon2>
+                    {this.props.Data.WithTrainer ? 
+                    <View style={styles.iconView}>
+                        <Icon2 name={'whistle'} size={20} color={'blue'} style={styles.iconStyle} 
+                        ></Icon2>
 
                     </View> : null}
 
 
-                    <View style={{ flex: 1, flexDirection: 'row', justifyContent: "center", zIndex: 0 }} >
-
+                    <View style={styles.imageView} >
                         <TouchableHighlight
                             onPress={() => {
                                 this.props.navigation.navigate('GroupProfile', { GroupCode: this.props.Data.TrainingCode });
                             }
                             }>
                             <Image
-
                                 source={this.props.Data.WithTrainer ? require('../../Images/GroupWithTrainer.png'): require('../../Images/GroupWithPartners.png') }
-                                style={{ width: 60, height: 60, borderRadius: 30 }}
+                                style={styles.imageStyle}
                             />
                         </TouchableHighlight>
 
 
                     </View>
 
-                    <View style={{ flex: 1, flexDirection: 'column', justifyContent: "center", alignItems: 'center' }}>
+                    <View style={styles.groupDetails}>
 
-                        <Text style={{ fontFamily: 'regular', fontSize: 15, flex: 1, textAlign: 'center' }}>{this.props.Data.SportCategory + " Group" }</Text>
+                        <Text style={styles.groupHeadline}>{this.props.Data.SportCategory + " Group" }</Text>
 
-                        {this.props.Data.WithTrainer ? <View style={{ flex: 1, alignItems: 'flex-start', justifyContent: 'center', flexDirection: 'row' }}>
-
-                        <Text style={{ fontFamily: 'regular', color: 'blue' }}>{this.props.Data.Price + "$"}</Text>
+                        {this.props.Data.WithTrainer ? 
+                        <View style={styles.priceView}>
+                        <Text style={styles.priceText}>{this.props.Data.Price + "$"}</Text>
                         </View> : null}
-                        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }}>
+                        <View style={styles.joinGroup}>
                             
-                            <View style={{ flex: 1, alignItems: 'center' }}>
+                            <View style={styles.joinGroupButtonView}>
 
                                 <Button
                                     onPress={() => { this.joinGroup() }}
                                     title={'Join Group'}
-                                    titleStyle={{fontFamily:'regular', fontSize:12, marginLeft:5,  marginTop:-3,}}
-                                    buttonStyle={{
-                                       
-                                        borderWidth: 0,
-                                        borderColor: 'transparent',
-                                        borderRadius: 20,
-                                        backgroundColor: '#f34573'
-                                    }}
-                                    containerStyle={{ height: 30, width: 130, alignItems: 'center' }}
+                                    titleStyle={styles.joinGroupText}
+                                    buttonStyle={styles.joinGroupButton}
+                                    containerStyle={styles.joinGroupContainer}
                                     icon={() => <Icon1 name="paper-plane" size={15} color={'white'}></Icon1>}
-
-
                                 />
                             </View>
 
                         </View>
-                        <View style={{ flex: 6, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginLeft: -45, }}>
-
-                                <Icon style={{ flex: 1 }} name='location-pin' color='gray' size={16}></Icon>
-
-                                <Text style={{ fontSize: 10, fontFamily: 'light', flex: 4, justifyContent: 'center' }}>{(Math.floor(this.props.Data.Distance * 10) / 10).toString() + ' KM'}</Text>
-
-
+                        <View style={styles.distanceView}>
+                                <Icon style={styles.flex} name='location-pin' color='gray' size={16}></Icon>
+                                <Text style={styles.distanceText}>{(Math.floor(this.props.Data.Distance * 10) / 10).toString() + ' KM'}</Text>
                             </View>
 
 
@@ -166,3 +149,45 @@ export default class GroupResultCallOut extends React.Component {
         )
     }
 }
+const styles = StyleSheet.create({
+conatiner:
+{ flex: 1, flexDirection: 'column', justifyContent: "center", alignItems: "center", width: 150, },
+flex:
+{flex:1},
+iconStyle:
+{ transform: [{ rotate: '-30deg'}]},
+iconView:
+{ flex: 1, flexDirection: 'row', position: 'absolute', top: 0, left: 90 },
+imageView:
+{ flex: 1, flexDirection: 'row', justifyContent: "center", zIndex: 0 },
+imageStyle:
+{ width: 60, height: 60, borderRadius: 30 },
+groupHeadline:
+{ fontFamily: 'regular', fontSize: 15, flex: 1, textAlign: 'center' },
+priceView:
+{ flex: 1, alignItems: 'flex-start', justifyContent: 'center', flexDirection: 'row' },
+distanceText:
+{ fontSize: 10, fontFamily: 'light', flex: 4, justifyContent: 'center' },
+distanceView:
+{ flex: 6, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginLeft: -45, },
+priceText:
+{ fontFamily: 'regular', color: 'blue' },
+joinGroupText:
+{fontFamily:'regular', fontSize:12, marginLeft:5,  marginTop:-3,},
+joinGroupButton:
+{
+                                       
+    borderWidth: 0,
+    borderColor: 'transparent',
+    borderRadius: 20,
+    backgroundColor: '#f34573'
+},
+joinGroupContainer:
+{ height: 30, width: 130, alignItems: 'center' },
+joinGroupButtonView:
+{ flex: 1, alignItems: 'center' },
+joinGroup:
+{ flex: 1, flexDirection: 'row', justifyContent: 'center' },
+groupDetails:
+{ flex: 1, flexDirection: 'column', justifyContent: "center", alignItems: 'center' },
+})

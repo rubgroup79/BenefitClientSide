@@ -5,10 +5,7 @@ import Geocode from "react-geocode";
 import { Font } from 'expo';
 import {
   Text,
-  Card,
-  Tile,
   ListItem,
-  Avatar,
   ButtonGroup
 } from 'react-native-elements';
 
@@ -38,10 +35,6 @@ class Trainings extends Component {
     this.getAddress = this.getAddress.bind(this);
     this.updateIndex = this.updateIndex.bind(this);
     this.getLocalStorage = this.getLocalStorage.bind(this);
-    //this.getCoupleTrainings = this.getCoupleTrainings.bind(this);
-    // this.renderCoupleTraining = this.renderCoupleTraining.bind(this);
-    // this.getAddresses = this.getAddresses.bind(this);
-    // this.getGroupTrainings = this.getGroupTrainings.bind(this);
   }
 
   async componentDidMount() {
@@ -115,33 +108,6 @@ class Trainings extends Component {
   }
 
 
-  //   var promise = new Promise((resolve, reject) => {
-  //     setTimeout(() => {
-  //       console.log('timeout executed after 2s');
-  //       resolve(); // resolve when setTimeout is done.
-  //     }, 2000);
-  // });
-
-  //  getAddresses ()  {
-  //     var address = "";
-  //     var addresses = [];
-  //     addresses = this.state.pastCoupleTrainings.map((x) => {
-  //       address =  setTimeout(this.getAddress(x.Latitude, x.Longitude),2000);
-  //       // while (address=="") {
-  //       // }
-  //       console.warn(address)
-  //       return address;
-  //       // setTimeout(()=>
-  //       //  { console.warn(address)
-  //       //   return address;
-  //       // },4000)
-  //     }, this.setState({ addresses: addresses })
-  //     );
-  //   }
-
-
-
-
   updateIndex(selectedIndex) {
     this.setState({ selectedIndex });
   }
@@ -162,19 +128,6 @@ class Trainings extends Component {
       }
     );
 
-    // var address = '';
-
-    // fetch('https://maps.googleapis.com/maps/api/geocode/json?address=' + latitude + ',' + longitude + '&key=' + 'AIzaSyB_OIuPsnUNvJ-CN0z2dir7cVbqJ7Xj3_Q')
-    //   .then((response) => response.json())
-    //   .then((responseJson) => {
-    //     address = JSON.stringify(responseJson.results[0].address_components.filter(x => x.types.filter(t => t == 'route').length > 0)[0].short_name) + ' ' +
-    //       JSON.stringify(responseJson.results[0].address_components.filter(x => x.types.filter(t => t == 'street_number').length > 0)[0].short_name) + ', ' +
-    //       JSON.stringify(responseJson.results[0].address_components.filter(x => x.types.filter(t => t == 'locality').length > 0)[0].short_name);
-    //     address = address.replace(/"/g, '');
-
-
-
-    //   });
     setTimeout(() => {
       if (couple)
         coupleAddresses.push(address);
@@ -189,57 +142,51 @@ class Trainings extends Component {
 
 
   render() {
-    //&& this.state.addresses.length != 0
     const { selectedIndex } = this.state;
     const buttons = ['Couple Trainings', 'Group Trainings'];
     return (
-      <View style={{ width: SCREEN_WIDTH, height: SCREEN_HEIGHT }}>
+      <View style={styles.container}>
         {this.state.fontLoaded && this.state.status == 1 ?
-          <View style={{ flex: 1 }}>
-            <View
-              style={[
-                styles.headerContainer,
-                { backgroundColor: '#f5f5f5', marginTop: 20 },
-              ]}
-            >
-              <Image style={{ width: 57, height: 38, marginLeft: 18 }} source={require('../../Images/LogoOnly.png')} />
+          <View style={styles.flex}>
+            <View style={styles.headerContainer} >
+              <Image style={styles.logoImage} source={require('../../Images/LogoOnly.png')} />
               <Text style={styles.heading}>Trainings</Text>
             </View>
 
-            <View style={{ margin: 10 }}>
+            <View style={styles.navBar}>
               <ButtonGroup
                 onPress={this.updateIndex}
                 selectedIndex={selectedIndex}
                 buttons={buttons}
-                containerStyle={{ height: 50 }}
-                selectedButtonStyle={{ backgroundColor: '#f34573' }}
-                textStyle={{ fontFamily: 'regular' }}
+                containerStyle={styles.navBarButtonsContainer}
+                selectedButtonStyle={styles.selectedButtonStyle}
+                textStyle={styles.navBarText}
               />
             </View>
 
 
-            <ScrollView style={{ flex: 1, marginBottom:50 }}>
-              {/* <Text style={styles.headline}>Couple Trainings</Text> */}
-              <View style={{ flex: 1 }}>
+            <ScrollView style={styles.scrollView}>
+              <View style={styles.flex}>
                 {this.state.selectedIndex == 0 ?
                   <View style={styles.list}>
                     {this.state.pastCoupleTrainings.map((training, index) => (
-                      
+
                       <ListItem
                         key={index}
                         leftIcon={() =>
-                          <Image source={{ uri: training.PartnerPicture }} style={{ width: 40, height: 40, borderRadius: 20 }}></Image>}
+                          <Image source={{ uri: training.PartnerPicture }}
+                            style={styles.partnerPicture}></Image>}
                         title={training.PartnerFirstName + " " + training.PartnerLastName}
-                        titleStyle={{ color: 'black', fontFamily: 'regular' }}
+                        titleStyle={styles.title}
                         subtitle={this.state.coupleAddresses[index]}
-                        subtitleStyle={{ fontFamily: 'regular' }}
-                        //rightTitle={training.TrainingTime.split(" ")[0]}
-                        rightTitle={training.TrainingTime.split(" ")[0].split('/')[1]+"."+training.TrainingTime.split(" ")[0].split('/')[0]+"."+training.TrainingTime.split(" ")[0].split('/')[2]}
-                        rightTitleStyle={{ color: 'green', fontSize: 15, fontFamily: 'regular' }}
+                        subtitleStyle={styles.subtitleStyle}
+                        rightTitle={training.TrainingTime.split(" ")[0].split('/')[1] + "." + training.TrainingTime.split(" ")[0].split('/')[0] + "." + training.TrainingTime.split(" ")[0].split('/')[2]}
+                        rightTitleStyle={styles.rightTitle}
                         rightSubtitle={training.Price == 0 ? null : '$' + training.Price}
-                        rightSubtitleStyle={{ textAlign: 'center', fontFamily: 'regular' }}
+                        rightSubtitleStyle={styles.rightSubtitle}
                         bottomDivider
-                        rightIcon={() => this.state.isTrainer == 0 ? <Icon color='#f7d84c' name='star' size={30} onPress={() => this.props.navigation.navigate('Rate', { UserCode: this.state.userCode, RatedUserCode: training.PartnerUserCode, FullName: training.PartnerFirstName + " " + training.PartnerLastName, Picture: training.PartnerPicture })} /> : null}
+                        rightIcon={() => this.state.isTrainer == 0 ?
+                          <Icon color='#f7d84c' name='star' size={30} onPress={() => this.props.navigation.navigate('Rate', { UserCode: this.state.userCode, RatedUserCode: training.PartnerUserCode, FullName: training.PartnerFirstName + " " + training.PartnerLastName, Picture: training.PartnerPicture })} /> : null}
                         onPress={() => this.props.navigation.navigate('UserProfile', { UserCode: training.PartnerUserCode })}
                       />
 
@@ -248,26 +195,24 @@ class Trainings extends Component {
                   </View>
                   : null
                 }
-                {/* <Text style={styles.headline}>Group Trainings</Text> */}
                 {this.state.selectedIndex == 1 ?
                   <View style={styles.list}>
                     {this.state.pastGroupTrainings.map((training, index) => (
                       <ListItem
                         leftIcon={training.WithTrainer ?
-                          <Image source={require('../../Images/GroupWithTrainer.png')} style={{ width: 40, height: 40, borderRadius: 20 }}></Image>
+                          <Image source={require('../../Images/GroupWithTrainer.png')} style={styles.partnerPicture}></Image>
                           :
-                          <Image source={require('../../Images/GroupWithPartners.png')} style={{ width: 40, height: 40, borderRadius: 20 }}></Image>}
+                          <Image source={require('../../Images/GroupWithPartners.png')} style={styles.partnerPicture}></Image>}
 
                         key={training.TrainingCode}
                         title={training.SportCategory + ' Group'}
-                        titleStyle={{ color: 'black', fontFamily: 'regular' }}
-                        subtitleStyle={{ fontFamily: 'regular' }}
+                        titleStyle={styles.title}
+                        subtitleStyle={styles.subtitle}
                         subtitle={this.state.groupAddresses[index]}
-                        //rightTitle={training.TrainingTime.split(" ")[0]}
-                        rightTitle={training.TrainingTime.split(" ")[0].split('/')[1]+"."+training.TrainingTime.split(" ")[0].split('/')[0]+"."+training.TrainingTime.split(" ")[0].split('/')[2]}
-                        rightTitleStyle={{ color: 'green', fontSize: 15, fontFamily: 'regular' }}
+                        rightTitle={training.TrainingTime.split(" ")[0].split('/')[1] + "." + training.TrainingTime.split(" ")[0].split('/')[0] + "." + training.TrainingTime.split(" ")[0].split('/')[2]}
+                        rightTitleStyle={styles.rightTitle}
                         rightSubtitle={training.Price == 0 ? null : '$' + training.Price}
-                        rightSubtitleStyle={{ textAlign: 'center', fontFamily: 'regular' }}
+                        rightSubtitleStyle={styles.rightSubtitleStyle}
                         onPress={() => this.props.navigation.navigate('GroupProfile', { GroupCode: training.TrainingCode })}
                         bottomDivider
                       />
@@ -286,14 +231,70 @@ class Trainings extends Component {
 }
 
 const styles = StyleSheet.create({
-
+  container:
+  {
+    width: SCREEN_WIDTH,
+    height: SCREEN_HEIGHT
+  },
+  flex:
+  {
+    flex: 1
+  },
+  logoImage:
+  {
+    width: 57,
+    height: 38,
+    marginLeft: 18
+  },
+  navBar:
+  {
+    margin: 10
+  },
+  navBarButtonsContainer:
+  {
+    height: 50
+  },
+  selectedButtonStyle:
+  {
+    backgroundColor: '#f34573'
+  },
+  navBarText:
+  {
+    fontFamily: 'regular'
+  },
+  title:
+  {
+    color: 'black',
+    fontFamily: 'regular'
+  },
+  subtitle:
+  {
+    fontFamily: 'regular'
+  },
+  rightTitle:
+  {
+    color: 'green',
+    fontSize: 15,
+    fontFamily: 'regular'
+  },
+  rightSubtitle:
+  {
+    textAlign: 'center',
+    fontFamily: 'regular'
+  },
   headerContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 25,
-    backgroundColor: '#d0d4db',
+    marginTop: 20,
+    backgroundColor: '#f5f5f5',
     height: 80,
+  },
+  partnerPicture:
+  {
+    width: 40,
+    height: 40,
+    borderRadius: 20
   },
   heading: {
     color: 'black',
@@ -303,13 +304,10 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     fontFamily: 'light',
   },
-
-  headline: {
+  scrollView:
+  {
     flex: 1,
-    fontSize: 15,
-    color: '#f34573',
-    fontFamily: 'regular',
-    margin: 10
+    marginBottom: 50
   },
 
 });

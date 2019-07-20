@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { Font } from 'expo';
 import { Input, Button, withTheme } from 'react-native-elements';
-import MyDatePicker from '../Components/DatePicker';
+import MyDatePicker from '../Components/datePicker';
 import Icon from 'react-native-vector-icons/SimpleLineIcons';
 import AvatarImage from '../Components/AvatarImage';
 import CustomButton from '../Components/CategoriesButton';
@@ -255,18 +255,9 @@ export default class SigninGeneral extends Component {
             contentContainerStyle={styles.formContainer}
           >
 
-            <ScrollView style={{
-              flex: 1,
-              paddingBottom: 20,
-              paddingTop: 30,
-              //backgroundColor: '#cccccc',
-              width: SCREEN_WIDTH,
-              height: SCREEN_HEIGHT,
-              textAlign: 'center',
-              alignContent: "center"
-            }}>
+            <ScrollView style={styles.scrollView}>
 
-              <View style={{ flex: 1, alignContent: 'center', justifyContent: 'center', textAlign: 'center' }}>
+              <View style={styles.header}>
 
                 <Text style={styles.signUpText}>Sign up</Text>
 
@@ -398,7 +389,7 @@ export default class SigninGeneral extends Component {
 
 
 
-                <View style={{ flex: 1, flexDirection: 'row', }}>
+                <View style={styles.dateOfBirthView}>
 
                   <Text style={styles.dateOfBirthLabel}>
                     Date of Birth
@@ -420,7 +411,7 @@ export default class SigninGeneral extends Component {
                     Favorite Sport Types
                 </Text>
 
-                  <View style={{ flex: 1, width: SCREEN_WIDTH, marginTop: 20, }}>
+                  <View style={styles.categoriesContainer}>
 
                     <ScrollView
                       style={{ flex: 1 }}
@@ -429,16 +420,10 @@ export default class SigninGeneral extends Component {
                     >
 
                       <View
-                        style={{
-                          flex: 1,
-                          flexDirection: 'column',
-                          height: 170,
-                          marginLeft: 40,
-                          marginRight: 10,
-                        }}
+                        style={styles.categoriesView}
                       >
 
-                        <View style={{ flex: 1, flexDirection: 'row' }}>
+                        <View style={styles.categoryRow}>
 
                           <CustomButton selected={this.state.selectedSportCategories[0].Selected} editMode={true} title={this.state.sportCategories[0].Description} setCategories={this.setCategories} />
                           <CustomButton selected={this.state.selectedSportCategories[1].Selected} editMode={true} title={this.state.sportCategories[1].Description}  setCategories={this.setCategories} />
@@ -446,14 +431,14 @@ export default class SigninGeneral extends Component {
 
                         </View>
 
-                        <View style={{ flex: 1, flexDirection: 'row' }}>
+                        <View style={styles.categoryRow}>
 
                           <CustomButton selected={this.state.selectedSportCategories[3].Selected} editMode={true} title={this.state.sportCategories[3].Description}  setCategories={this.setCategories} />
                           <CustomButton selected={this.state.selectedSportCategories[4].Selected} editMode={true} title={this.state.sportCategories[4].Description}  setCategories={this.setCategories} />
                           <CustomButton selected={this.state.selectedSportCategories[5].Selected} editMode={true} title={this.state.sportCategories[5].Description}  setCategories={this.setCategories} />
 
                         </View>
-                        <View style={{ flex: 1, flexDirection: 'row' }}>
+                        <View style={styles.categoryRow}>
 
                           <CustomButton selected={this.state.selectedSportCategories[6].Selected} editMode={true} title={this.state.sportCategories[6].Description}  setCategories={this.setCategories} />
                           <CustomButton selected={this.state.selectedSportCategories[7].Selected} editMode={true} title={this.state.sportCategories[7].Description}  setCategories={this.setCategories} />
@@ -473,31 +458,15 @@ export default class SigninGeneral extends Component {
 
               <Button
                 containerStyle={{ marginVertical: 20 }}
-                style={{
-                  flex: 1,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  marginBottom: 10
-                }}
-                buttonStyle={{
-                  height: 55,
-                  width: SCREEN_WIDTH - 250,
-                  borderRadius: 30,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
+                style={styles.nextButton}
+                buttonStyle={styles.nextButtonStyle}
                 linearGradientProps={{
                   colors: ['#75cac3', '#75cac3'],
                   start: [1, 0],
                   end: [0.2, 0],
                 }}
                 title="NEXT"
-                titleStyle={{
-                  fontFamily: 'regular',
-                  fontSize: 20,
-                  color: 'white',
-                  textAlign: 'center',
-                }}
+                titleStyle={styles.nextButtonTitle}
                 onPress={() => this.signup()}
                 activeOpacity={0.5}
               />
@@ -509,7 +478,7 @@ export default class SigninGeneral extends Component {
         </ScrollView>
 
     ) : (
-      <ActivityIndicator style={{ justifyContent: 'center', top: 350 }} size="large" color="gray" />
+      <ActivityIndicator style={styles.activityIndicator} size="large" color="gray" />
       );
   }
 }
@@ -537,7 +506,18 @@ export const FormInput = props => {
 
 
 const styles = StyleSheet.create({
-
+scrollView:
+{
+  flex: 1,
+  paddingBottom: 20,
+  paddingTop: 30,
+  width: SCREEN_WIDTH,
+  height: SCREEN_HEIGHT,
+  textAlign: 'center',
+  alignContent: "center"
+},
+header:
+{ flex: 1, alignContent: 'center', justifyContent: 'center', textAlign: 'center' },
   container: {
     flex: 1,
     paddingBottom: 20,
@@ -549,13 +529,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-around',
   },
-
+dateOfBirthView:
+{ flex: 1, flexDirection: 'row', },
   formContainer: {
     flex: 1,
     justifyContent: 'space-around',
     alignItems: 'center',
   },
-
+categoriesView:
+{
+  flex: 1,
+  flexDirection: 'column',
+  height: 170,
+  marginLeft: 40,
+  marginRight: 10,
+},
+categoryRow:
+{ flex: 1, flexDirection: 'row' },
   signUpText: {
     flex: 1,
     color: '#f34573',
@@ -564,7 +554,8 @@ const styles = StyleSheet.create({
     marginTop: 15,
     textAlign: 'center',
   },
-
+categoriesContainer:
+{ flex: 1, width: SCREEN_WIDTH, marginTop: 20, },
   whoAreYouText: {
     flex: 1,
     color: '#7384B4',
@@ -573,7 +564,28 @@ const styles = StyleSheet.create({
     marginTop: 15,
     textAlign: 'center',
   },
-
+nextButton:
+{
+  flex: 1,
+  justifyContent: 'center',
+  alignItems: 'center',
+  marginBottom: 10
+},
+nextButtonStyle:
+{
+  height: 55,
+  width: SCREEN_WIDTH - 250,
+  borderRadius: 30,
+  justifyContent: 'center',
+  alignItems: 'center',
+},
+nextButtonTitle:
+{
+  fontFamily: 'regular',
+  fontSize: 20,
+  color: 'white',
+  textAlign: 'center',
+},
   userTypesContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -702,5 +714,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginRight: 40
   },
-
+activityIndicator:
+{ justifyContent: 'center', top: 350 },
 });

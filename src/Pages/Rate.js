@@ -1,21 +1,12 @@
 import React, { Component, } from 'react';
-import { View, ScrollView, StyleSheet, Image, ListView, Dimensions, KeyboardAvoidingView, TextInput, } from 'react-native';
+import { View, StyleSheet, Image, Dimensions } from 'react-native';
 import { Font } from 'expo';
 import Icon from 'react-native-vector-icons/AntDesign';
-import Icon1 from 'react-native-vector-icons/Ionicons';
-import Icon2 from 'react-native-vector-icons/FontAwesome';
-import CreateNewTrainingModal from '../Components/CreateNewTrainingModal';
 import RatingStars from '../Components/RatingStars';
 import {
     Text,
-    Card,
-    Tile,
-    ListItem,
-    Avatar,
-
     Button
 } from 'react-native-elements';
-import colors from '../config/colors';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -30,8 +21,8 @@ class Rate extends Component {
             ratingExists: false,
             oldRate: 0,
             oldRateCode: 0,
-            rateParameters:[],
-            status:0
+            rateParameters: [],
+            status: 0
 
         };
         this.setParameterRate1 = this.setParameterRate1.bind(this);
@@ -39,8 +30,8 @@ class Rate extends Component {
         this.setParameterRate3 = this.setParameterRate3.bind(this);
         this.setParameterRate4 = this.setParameterRate4.bind(this);
         this.setParameterRate5 = this.setParameterRate5.bind(this);
-        this.getRateParameters=this.getRateParameters.bind(this);
-        this.checkIfRateExists=this.checkIfRateExists.bind(this);
+        this.getRateParameters = this.getRateParameters.bind(this);
+        this.checkIfRateExists = this.checkIfRateExists.bind(this);
 
 
         this.submitRate = this.submitRate.bind(this);
@@ -85,21 +76,20 @@ class Rate extends Component {
         this.checkIfRateExists();
     }
 
-    getRateParameters()
-    {
+    getRateParameters() {
         fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/GetParametersDescription', {
             method: 'GET',
             headers: { "Content-type": "application/json; charset=UTF-8" },
         })
             .then(res => res.json())
             .then(response => {
-                    this.setState({ rateParameters:response, status:1});
+                this.setState({ rateParameters: response, status: 1 });
             })
             .catch(error => console.warn('Error:', error.message));
     }
 
-    checkIfRateExists(){
-     
+    checkIfRateExists() {
+
         fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/CheckIfRateExists?UserCode=' + this.props.navigation.getParam('UserCode', null) + '&RatedUserCode=' + this.props.navigation.getParam('RatedUserCode', null), {
             method: 'GET',
             headers: { "Content-type": "application/json; charset=UTF-8" },
@@ -107,7 +97,7 @@ class Rate extends Component {
             .then(res => res.json())
             .then(response => {
                 if (response.AvgTotalRate != 0) {
-                 
+
                     this.setState({ ratingExists: true, oldRate: response.AvgTotalRate, oldRateCode: response.RatingCode });
                 }
             })
@@ -122,39 +112,39 @@ class Rate extends Component {
         AvgRate = TotalRate / parametersRate.length;
 
         if (this.state.ratingExists) {
-            
+
             parametersRate.map((rate, index) => {
                 ParameterRate = {
                     RatingCode: this.state.oldRateCode,
                     ParameterCode: index + 1,
                     Rate: rate
-                }        
-                
-                fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/UpdateExistingParametersRate', {
-                method: 'POST',
-                headers: { "Content-type": "application/json; charset=UTF-8" },
-                body: JSON.stringify(ParameterRate)
-            })
-                .then(() => { })
-                .catch(error => console.warn('Error:', error.message));
-            })
-                
-                Rating = {
-                    RatingCode:this.state.oldRateCode,
-                    AvgTotalRate: AvgRate,
-                    RatedCode: this.props.navigation.getParam('RatedUserCode', null)
                 }
 
-                fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/UpdateExistingAvarageRate', {
+                fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/UpdateExistingParametersRate', {
+                    method: 'POST',
+                    headers: { "Content-type": "application/json; charset=UTF-8" },
+                    body: JSON.stringify(ParameterRate)
+                })
+                    .then(() => { })
+                    .catch(error => console.warn('Error:', error.message));
+            })
+
+            Rating = {
+                RatingCode: this.state.oldRateCode,
+                AvgTotalRate: AvgRate,
+                RatedCode: this.props.navigation.getParam('RatedUserCode', null)
+            }
+
+            fetch('http://proj.ruppin.ac.il/bgroup79/test1/tar6/api/UpdateExistingAvarageRate', {
                 method: 'POST',
                 headers: { "Content-type": "application/json; charset=UTF-8" },
                 body: JSON.stringify(Rating)
             })
                 .then(() => { })
                 .catch(error => console.warn('Error:', error.message));
-            }
+        }
 
-            
+
         else {
             Rating = {
                 TraineeCode: this.props.navigation.getParam('UserCode', null),
@@ -184,8 +174,7 @@ class Rate extends Component {
         }
         alert('Your rate was saved!');
         const { goBack } = this.props.navigation;
-       // this.props.navigation.navigate('Trainings');
-       goBack();
+        goBack();
     }
 
     insertParametersRate(ParameterRate) {
@@ -204,88 +193,67 @@ class Rate extends Component {
         return (
             <View>
 
-                {this.state.fontLoaded && this.state.status==1?
+                {this.state.fontLoaded && this.state.status == 1 ?
 
-                    <View style={{ width: SCREEN_WIDTH, height: SCREEN_HEIGHT, position: 'absolute' }}>
+                    <View style={styles.pageStyle}>
 
-                        <View
-                            style={[
-                                styles.headerContainer,
-                                { marginTop: 20, zIndex: 1, },
-                            ]}
-                        >
-                            <View style={{ flex: 1, }}>
+                        <View style={styles.headerContainer} >
+                            <View style={styles.container}>
                                 <Button
                                     icon={() =>
                                         <Icon name='left' size={20} />}
-                                    style={{
-                                        justifyContent: 'center',
-                                       
-                                       
-                                    }}
-                                    buttonStyle={{
-                                        height: 45,
-                                        width: 45,
-                                        borderRadius: 30,
-                                        backgroundColor: 'transparent',
-
-                                    }}
+                                    style={styles.backButtonContainer}
+                                    buttonStyle={styles.backButton}
                                     onPress={() => goBack()}
                                     activeOpacity={0.5}
                                 />
                             </View>
-                            <View style={{ flex: 7, flexDirection: 'row', justifyContent: 'center', alignContent: 'flex-start', }}>
+                            <View style={styles.nameHeadingContainer}>
 
                                 <Text style={styles.heading}>{"Rate " + this.props.navigation.getParam('FullName', null)}</Text>
                             </View>
                         </View>
 
-                        <View style={{ flex: 1 }}>
-                            <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', alignContent: 'center', alignItems: 'center', marginBottom: 10, marginTop:20 }}>
-                                <Image style={{ width: 80, height: 80, borderRadius: 40 }} source={{ uri: this.props.navigation.getParam('Picture', null) }} />
-                                {this.state.ratingExists ? <Text style={{ fontFamily: 'regular', fontSize: 13, marginTop:5 }}>{'You rated '+this.props.navigation.getParam('FullName', null)+ ' ' + this.state.oldRate + ' stars'}</Text> : null}
+                        <View style={styles.container}>
+                            <View style={styles.userContainer}>
+                                <Image style={styles.ratedUserImage} source={{ uri: this.props.navigation.getParam('Picture', null) }} />
+                                {this.state.ratingExists ?
+                                    <Text style={styles.ratingExistsTxt}>
+                                        {'You rated ' + this.props.navigation.getParam('FullName', null) + ' ' + this.state.oldRate + ' stars'}</Text> : null}
                             </View>
-                            <View style={{ flex: 6 }}>
+                            <View style={styles.ratingsContainer}>
 
-                                <View style={{ flex: 1, marginBottom: 5 }}>
-                                    <Text style={{ fontFamily: 'regular', color: '#f34573', textAlign: 'center' }}>{this.state.rateParameters[0].Description}</Text>
+                                <View style={styles.rateContainer}>
+                                    <Text style={styles.parameterDescription}>{this.state.rateParameters[0].Description}</Text>
                                     <RatingStars setParameterRate={this.setParameterRate1}></RatingStars>
                                 </View>
 
-                                <View style={{ flex: 1, marginBottom: 5 }}>
-                                    <Text style={{ fontFamily: 'regular', color: '#f34573', textAlign: 'center' }}>{this.state.rateParameters[1].Description}</Text>
+                                <View style={styles.rateContainer}>
+                                    <Text style={styles.parameterDescription}>{this.state.rateParameters[1].Description}</Text>
                                     <RatingStars setParameterRate={this.setParameterRate2}></RatingStars>
                                 </View>
 
-                                <View style={{ flex: 1, marginBottom: 5 }}>
-                                    <Text style={{ fontFamily: 'regular', color: '#f34573', textAlign: 'center' }}>{this.state.rateParameters[2].Description}</Text>
+                                <View style={styles.rateContainer}>
+                                    <Text style={styles.parameterDescription}>{this.state.rateParameters[2].Description}</Text>
                                     <RatingStars setParameterRate={this.setParameterRate3}></RatingStars>
                                 </View>
 
-                                <View style={{ flex: 1, marginBottom: 5 }}>
-                                    <Text style={{ fontFamily: 'regular', color: '#f34573', textAlign: 'center' }}>{this.state.rateParameters[3].Description}</Text>
+                                <View style={styles.rateContainer}>
+                                    <Text style={styles.parameterDescription}>{this.state.rateParameters[3].Description}</Text>
                                     <RatingStars setParameterRate={this.setParameterRate4}></RatingStars>
                                 </View>
 
-                                <View style={{ flex: 1, marginBottom: 5 }}>
-                                    <Text style={{ fontFamily: 'regular', color: '#f34573', textAlign: 'center' }}>{this.state.rateParameters[4].Description}</Text>
+                                <View style={styles.rateContainer}>
+                                    <Text style={styles.parameterDescription}>{this.state.rateParameters[4].Description}</Text>
                                     <RatingStars setParameterRate={this.setParameterRate5}></RatingStars>
                                 </View>
 
-                                <View style={{ flex: 1, alignContent: 'center', alignItems: 'center' }}>
+                                <View style={styles.submitContainer}>
                                     <Button
                                         title={'Submit'}
                                         titleStyle={{ fontFamily: 'regular' }}
                                         onPress={() => this.submitRate()}
-                                        buttonStyle={{
-                                            justifyContent: 'center',
-                                            alignItems: 'center',
-
-                                            width: 100,
-                                            height: 45,
-                                            backgroundColor: '#f34573',
-                                            borderRadius: 30
-                                        }}
+                                        buttonStyle={styles.submitButton}
                                     />
                                 </View>
 
@@ -304,77 +272,101 @@ class Rate extends Component {
 }
 
 const styles = StyleSheet.create({
+    pageStyle:
+    {
+        width: SCREEN_WIDTH,
+        height: SCREEN_HEIGHT,
+        position: 'absolute'
+    },
+
     container: {
         flex: 1,
     },
-    list: {
-        marginTop: 20,
-        borderTopWidth: 1,
-        borderColor: colors.greyOutline,
-        backgroundColor: '#fff',
-    },
     headerContainer: {
-        //flex: 1,
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: 25,
+        marginTop: 20,
         backgroundColor: '#f5f5f5',
         height: 80,
-        //paddingBottom:10
+        zIndex: 1,
+    },
+    backButton:
+    {
+        height: 45,
+        width: 45,
+        borderRadius: 30,
+        backgroundColor: 'transparent'
+    },
+    backButtonContainer: {
+        justifyContent: 'center'
+    },
+    nameHeadingContainer:
+    {
+        flex: 7,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignContent: 'flex-start',
     },
 
     heading: {
         color: '#f34573',
-        //marginTop: 10,
         fontSize: 20,
         flex: 1,
-        //textAlign: 'center',
         fontFamily: 'regular',
-        //marginLeft: -110,
-        justifyContent:'center'
+        justifyContent: 'center'
     },
-    fonts: {
-        marginBottom: 8,
+    ratedUserImage:
+    {
+        width: 80,
+        height: 80,
+        borderRadius: 40
     },
-    user: {
-        flexDirection: 'row',
-        marginBottom: 6,
+    ratingExistsTxt:
+    {
+        fontFamily: 'regular',
+        fontSize: 13,
+        marginTop: 5
     },
-    image: {
-        width: 30,
-        height: 30,
-        marginRight: 10,
-    },
-    name: {
-        fontSize: 16,
-        marginTop: 5,
-    },
-    social: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-    },
-    subtitleView: {
-        flexDirection: 'row',
-        paddingLeft: 10,
-        paddingTop: 5,
-    },
-    ratingImage: {
-        height: 19.21,
-        width: 100,
-    },
-    ratingText: {
-        paddingLeft: 10,
-        color: 'grey',
-    },
-    newInput: {
-        borderWidth: 1,
-        borderColor: '#ccc',
-        fontSize: 16,
-        padding: 10,
-        height: 50,
+    userContainer:
+    {
         flex: 1,
-        position: 'absolute',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignContent: 'center',
+        alignItems: 'center',
+        marginBottom: 10,
+        marginTop: 20
+    },
+    ratingsContainer:
+    {
+        flex: 6
+    },
+    rateContainer:
+    {
+        flex: 1,
+        marginBottom: 5
+    },
+    parameterDescription:
+    {
+        fontFamily: 'regular',
+        color: '#f34573',
+        textAlign: 'center'
+    },
+    submitButton:
+    {
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: 100,
+        height: 45,
+        backgroundColor: '#f34573',
+        borderRadius: 30
+    },
+    submitContainer:
+    {
+        flex: 1,
+        alignContent: 'center',
+        alignItems: 'center'
     },
 });
 

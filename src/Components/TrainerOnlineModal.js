@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Text, View, StyleSheet, Dimensions, LayoutAnimation, ScrollView } from 'react-native';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { Button, } from 'react-native-elements';
-import AvatarImage from './AvatarImage';
 import { Font } from 'expo';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Icon4 from 'react-native-vector-icons/Entypo';
@@ -11,10 +10,7 @@ import moment from 'moment';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
-const TRAINER = require('../../Images/Trainer.png');
-const PARTNER = require('../../Images/Partner.png');
-const GROUP_WITH_TRAINER = require('../../Images/GroupWithTrainer.png');
-const GROUP_WITH_PARTNERS = require('../../Images/GroupWithPartners.png');
+
 
 var hours_now = new Date().getHours();
 var minutes_now = new Date().getMinutes();
@@ -29,10 +25,6 @@ export default class TrainerOnlineModal extends Component {
             fontLoaded: false,
             latitude: 0,
             longitude: 0,
-            // withTrainer: false,
-            // withPartner: false,
-            // groupWithTrainer: false,
-            // groupWithPartners: false,
             startTime: (moment(new Date()).format('YYYY-MM-DD HH:mm:ss')),
             endTime: (moment(new Date()).format('YYYY-MM-DD HH:mm:ss')),
             coupleResults: [],
@@ -59,18 +51,7 @@ export default class TrainerOnlineModal extends Component {
         else return 0;
     }
 
-    // setPartnerTraining = () =>
-    //     LayoutAnimation.easeInEaseOut() || this.setState({ withPartner: !this.state.withPartner });
-
-    // setTrainerTraining = () =>
-    //     LayoutAnimation.easeInEaseOut() || this.setState({ withTrainer: !this.state.withTrainer });
-
-    // setPartnersGroupTraining = () =>
-    //     LayoutAnimation.easeInEaseOut() || this.setState({ groupWithPartners: !this.state.groupWithPartners });
-
-    // setTrainerGroupTraining = () =>
-    //     LayoutAnimation.easeInEaseOut() || this.setState({ groupWithTrainer: !this.state.groupWithTrainer });
-
+   
     onConfirmStartTime = (hour, minute) => {
         start = hour + ":" + minute;
         this.setState({ startTime: moment(new Date()).format('YYYY-MM-DD') + " " + start + ":00.000" });
@@ -88,17 +69,13 @@ export default class TrainerOnlineModal extends Component {
             alert("Start time cannot be before end time");
         else {
             if (this.state.latitude != 0 && this.state.longitude != 0) {
-                //this.props.userCode
                 var OnlineDetails = {
                     UserCode: this.props.userCode,
                     Latitude: this.state.latitude,
                     Longitude: this.state.longitude,
                     StartTime: this.state.startTime,
                     EndTime: this.state.endTime,
-                    // WithTrainer: this.boolToInt(this.state.withTrainer),
-                    // WithPartner: this.boolToInt(this.state.withPartner),
-                    // GroupWithTrainer: this.boolToInt(this.state.groupWithTrainer),
-                    // GroupWithPartners: this.boolToInt(this.state.groupWithPartners),
+                 
                 };
                 this.props.onlineModalVisible();
 
@@ -115,70 +92,13 @@ export default class TrainerOnlineModal extends Component {
         return (
 
             <ScrollView style={styles.mainContainer}>
-                <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                <View style={styles.header}>
                     <Icon name='close' style={styles.closeIcon} size={20} color='gray' onPress={() => this.props.onlineModalVisible()}></Icon>
                     <Text style={styles.headline}>Couple Training</Text>
                 </View>
                 {this.state.fontLoaded ?
 
                     <View style={styles.searchContainer}>
-
-                        {/* <View style={styles.trainWithContainer} >
-
-                            <AvatarImage
-                                label={"Partner"}
-                                lableFontSize={9}
-                                labelColor={'#75cac3'}
-                                image={PARTNER}
-                                height={65}
-                                width={65}
-                                selectedHeight={70}
-                                selectedWidth={70}
-                                onPress={() => { this.setPartnerTraining(); }}
-                                selected={this.state.withPartner == true}
-                            />
-
-                            <AvatarImage
-                                label={"Trainer"}
-                                lableFontSize={9}
-                                labelColor={'#75cac3'}
-                                image={TRAINER}
-                                height={65}
-                                width={65}
-                                selectedHeight={70}
-                                selectedWidth={70}
-                                onPress={() => { this.setTrainerTraining(); }}
-                                selected={this.state.withTrainer == true}
-                            />
-
-                            <AvatarImage
-                                label={"Group"}
-                                lableFontSize={9}
-                                labelColor={'#75cac3'}
-                                image={GROUP_WITH_PARTNERS}
-                                height={65}
-                                width={65}
-                                selectedHeight={70}
-                                selectedWidth={70}
-                                onPress={() => { this.setPartnersGroupTraining(); }}
-                                selected={this.state.groupWithPartners == true}
-                            />
-
-                            <AvatarImage
-                                label={"Group&Trainer"}
-                                lableFontSize={9}
-                                labelColor={'#75cac3'}
-                                image={GROUP_WITH_TRAINER}
-                                height={65}
-                                width={65}
-                                selectedHeight={70}
-                                selectedWidth={70}
-                                onPress={() => { this.setTrainerGroupTraining(); }}
-                                selected={this.state.groupWithTrainer == true}
-                            />
-
-                        </View> */}
-
                         <View style={styles.timePickerContainer}>
 
                             <TimePickerNew setTime={this.onConfirmStartTime} title={'From: '}></TimePickerNew>
@@ -252,28 +172,11 @@ export default class TrainerOnlineModal extends Component {
                             />
 
                             <Button
-                                containerStyle={{ marginVertical: 20 }}
-                                style={{
-                                    flex: 1,
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                    marginBottom: 10,
-                                }}
-                                buttonStyle={{
-                                    height: 60,
-                                    width: 140,
-                                    borderRadius: 30,
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                    backgroundColor: '#f34573'
-                                }}
+                                containerStyle={styles.buttonContainer}
+                                style={styles.buttonStyle}
+                                buttonStyle={styles.goButtonStyle}
                                 title="Go"
-                                titleStyle={{
-                                    fontFamily: 'bold',
-                                    fontSize: 15,
-                                    color: 'white',
-                                    textAlign: 'center',
-                                }}
+                                titleStyle={styles.title}
                                 onPress={() => {
                                     this.validateSearchInput();
                                 }}
@@ -303,13 +206,38 @@ const styles = StyleSheet.create({
         top: 200,
         zIndex: 1,
     },
-
+header:
+{ flex: 1, flexDirection: 'row', alignItems: 'center' },
     closeIcon: {
         top: 20,
         left: 20,
         flex: 1
     },
-
+buttonContainer:
+{ marginVertical: 20 },
+buttonStyle:
+{
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 10,
+},
+goButtonStyle:
+{
+    height: 60,
+    width: 140,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f34573'
+},
+title:
+{
+    fontFamily: 'bold',
+    fontSize: 15,
+    color: 'white',
+    textAlign: 'center',
+},
     searchContainer: {
         flex: 1,
         flexDirection: 'column',

@@ -226,7 +226,6 @@ export default class Login extends Component {
           this.registerForPushNotifications();
           alert("Success! User Code= " + this.state.userCode);
           if (this.state.isTrainer == 0) // a trainee
-            //this.props.navigation.navigate('BottomNavigation');
             this.props.navigation.dispatch(navigateActionTrainee);
           else this.props.navigation.dispatch(navigateActionTrainer);
         }
@@ -320,7 +319,7 @@ export default class Login extends Component {
                     type="clear"
                     activeOpacity={0.7}
                     onPress={() => this.selectCategory(0)}
-                    containerStyle={{ flex: 1 }}
+                    containerStyle={styles.flex}
                     titleStyle={[
                       styles.categoryText,
                       isLoginPage && styles.selectedCategoryText,
@@ -332,7 +331,7 @@ export default class Login extends Component {
                     type="clear"
                     activeOpacity={0.7}
                     onPress={() => this.selectCategory(1)}
-                    containerStyle={{ flex: 1 }}
+                    containerStyle={styles.flex}
                     titleStyle={[
                       styles.categoryText,
                       isSignUpPage && styles.selectedCategoryText,
@@ -351,7 +350,7 @@ export default class Login extends Component {
                         name="envelope-o"
                         color="rgba(0, 0, 0, 0.38)"
                         size={25}
-                        style={{ backgroundColor: 'transparent' }}
+                        style={styles.simpleIcon}
                       />
                     }
                     value={email}
@@ -361,7 +360,7 @@ export default class Login extends Component {
                     autoCorrect={false}
                     keyboardType="email-address"
                     returnKeyType="next"
-                    inputStyle={{ marginLeft: 10 }}
+                    inputStyle={styles.inputStyle}
                     placeholder={'Email'}
                     containerStyle={{
                       borderBottomColor: 'rgba(0, 0, 0, 0.38)',
@@ -379,7 +378,7 @@ export default class Login extends Component {
                         name="lock"
                         color="rgba(0, 0, 0, 0.38)"
                         size={25}
-                        style={{ backgroundColor: 'transparent' }}
+                        style={styles.simpleIcon}
                       />
                     }
                     value={password}
@@ -393,7 +392,7 @@ export default class Login extends Component {
                       marginTop: 16,
                       borderBottomColor: 'rgba(0, 0, 0, 0.38)',
                     }}
-                    inputStyle={{ marginLeft: 10 }}
+                    inputStyle={styles.inputStyle}
                     placeholder={'Password'}
                     ref={input => (this.passwordInput = input)}
                     onSubmitEditing={() =>
@@ -415,7 +414,7 @@ export default class Login extends Component {
                           name="lock"
                           color="rgba(0, 0, 0, 0.38)"
                           size={25}
-                          style={{ backgroundColor: 'transparent' }}
+                          style={styles.simpleIcon}
                         />
                       }
                       value={passwordConfirmation}
@@ -430,7 +429,7 @@ export default class Login extends Component {
                         marginTop: 16,
                         borderBottomColor: 'rgba(0, 0, 0, 0.38)',
                       }}
-                      inputStyle={{ marginLeft: 10 }}
+                      inputStyle={styles.inputStyle}
                       placeholder={'Confirm password'}
                       ref={input => (this.confirmationInput = input)}
                       onSubmitEditing={this.signUp}
@@ -468,6 +467,9 @@ export default class Login extends Component {
 }
 
 const styles = StyleSheet.create({
+  flex:{
+    flex: 1
+  },
   container: {
     flex: 1,
     backgroundColor:'#e5e5e5'
@@ -556,4 +558,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  inputStyle:
+  { marginLeft: 10 },
+  simpleIcon:
+  { backgroundColor: 'transparent' },
 });

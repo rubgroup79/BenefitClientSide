@@ -100,15 +100,11 @@ class Chats extends Component {
         {this.state.fontLoaded ?
           <View>
             <View
-              style={[
-                styles.headerContainer,
-                { backgroundColor: '#f5f5f5', marginTop: 20 },
-              ]}
-            >
-              <Image style={{ width: 57, height: 38, marginLeft: 18 }} source={require('../../Images/LogoOnly.png')} />
+              style={styles.headerContainer}>
+              <Image style={styles.logoImage} source={require('../../Images/LogoOnly.png')} />
               <Text style={styles.heading}>Chats</Text>
             </View>
-            <View style={{ paddingVertical: 8 }}>
+            <View style={{paddingVertical: 8}}>
               {this.state.chats.map((chat, index) => (
                 <ListItem
                 key={index}
@@ -127,16 +123,7 @@ class Chats extends Component {
                   chevronColor="white"
                   chevron
 
-                  containerStyle={{
-                    marginHorizontal: 16,
-                    marginVertical: 8,
-                    borderRadius: 12,
-                    backgroundColor: 'white',
-                    borderColor: '#75cac3',
-                    borderWidth: 2,
-
-                  }}
-                />
+                  containerStyle={styles.conatinerStyle}/>
               ))}
             </View>
 
@@ -151,6 +138,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+
   list: {
     marginTop: 20,
     borderTopWidth: 1,
@@ -165,8 +153,25 @@ const styles = StyleSheet.create({
     marginTop: 25,
     backgroundColor: '#d0d4db',
     height: 80,
+    backgroundColor: '#f5f5f5', 
+    marginTop: 20 
     //paddingBottom:10
   },
+  containerStyle:
+  {
+    marginHorizontal: 16,
+    marginVertical: 8,
+    borderRadius: 12,
+    backgroundColor: 'white',
+    borderColor: '#75cac3',
+    borderWidth: 2,
+  },
+ 
+
+  logoImage:
+  { width: 57, 
+    height: 38, 
+    marginLeft: 18 },
   heading: {
     color: 'black',
     fontSize: 23,

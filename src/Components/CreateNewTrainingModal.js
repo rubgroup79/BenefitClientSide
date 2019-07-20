@@ -1,22 +1,13 @@
 import React, { Component } from 'react';
-import { Text, View, StyleSheet, Dimensions, LayoutAnimation, ScrollView, UIManager } from 'react-native';
+import { Text, View, StyleSheet, Dimensions, LayoutAnimation, ScrollView } from 'react-native';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
-import { Input, Button, withTheme } from 'react-native-elements';
+import {  Button } from 'react-native-elements';
 import { Font } from 'expo';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Icon4 from 'react-native-vector-icons/Entypo';
 import TimePickerNew from './TimePicker';
-import NumericInput from 'react-native-numeric-input';
 import moment from 'moment';
-import ActionButton from 'react-native-action-button';
-import { getLocation, getData } from 'react-native-weather-api';
-
 const SCREEN_WIDTH = Dimensions.get('window').width;
-const SCREEN_HEIGHT = Dimensions.get('window').height;
-const MALE_AVATAR = require('../../Images/MaleAvatar.png');
-const FEMALE_AVATAR = require('../../Images/FemaleAvatar.png');
-const TRAINER_AVATAR = require('../../Images/TrainerAvatar.png');
-const TRAINEE_AVATAR = require('../../Images/TraineeAvatar.png');
 
 var hours_now = new Date().getHours();
 var inserted_hour = "20";
@@ -44,9 +35,7 @@ export default class CreateNewTrainingModal extends Component {
 
     }
 
-    UNSAFE_componentWillMount() {
-        
-    }
+  
 
     async componentDidMount() {
         await Font.loadAsync({
@@ -138,7 +127,7 @@ export default class CreateNewTrainingModal extends Component {
         return (
 
             <ScrollView style={styles.mainContainer}>
-                <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                <View style={styles.header}>
                     <Icon name='close' style={styles.closeIcon} size={20} color='gray' onPress={() => { this.props.createNewTrainingModalVisible(false) }}></Icon>
                     <Text style={styles.headline}>Create New Training</Text>
                 </View>
@@ -150,7 +139,7 @@ export default class CreateNewTrainingModal extends Component {
                             <Text style={styles.subHeadline}>
                                 When?
                             </Text>
-                            <View style={{ flex: 1, marginLeft: -600, marginTop: 6 }}>
+                            <View style={styles.timePickerView}>
                                 <TimePickerNew setTime={this.onConfirmStartTime} title={''}></TimePickerNew>
                             </View>
                         </View>
@@ -224,29 +213,11 @@ export default class CreateNewTrainingModal extends Component {
                         </View>
 
                         <Button
-                            containerStyle={{ marginVertical: 20 }}
-                            style={{
-                                flex: 1,
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                //marginBottom: 10,
-                                marginTop: -10
-                            }}
-                            buttonStyle={{
-                                height: 40,
-                                width: 65,
-                                borderRadius: 30,
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                backgroundColor: '#f34573'
-                            }}
+                            containerStyle={styles.goButtonContainerStyle}
+                            style={styles.goButton}
+                            buttonStyle={styles.goButtonStyle}
                             title="Go"
-                            titleStyle={{
-                                fontFamily: 'regular',
-                                fontSize: 15,
-                                color: 'white',
-                                textAlign: 'center',
-                            }}
+                            titleStyle={styles.goButtonTitle}
                             onPress={() => {
                                 this.getWeather();
                             }}
@@ -278,6 +249,36 @@ const styles = StyleSheet.create({
         zIndex: 1,
 
     },
+    header:
+    { flex: 1, flexDirection: 'row', alignItems: 'center' },
+timePickerView:
+{ flex: 1, marginLeft: -600, marginTop: 6 },
+
+goButtonContainerStyle:
+{ marginVertical: 20 },
+goButton:
+{
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: -10
+},
+goButtonStyle:
+{
+    height: 40,
+    width: 65,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f34573'
+},
+goButtonTitle:
+{
+    fontFamily: 'regular',
+    fontSize: 15,
+    color: 'white',
+    textAlign: 'center',
+},
 
     closeIcon: {
         flex: 1,
@@ -300,18 +301,7 @@ const styles = StyleSheet.create({
         top: 20,
     },
 
-    trainWithContainer: {
-        flex: 1,
-        flexDirection: 'row',
-        marginRight: 50,
-        marginLeft: 50,
-        marginTop: 15,
-        justifyContent: 'center',
-    },
 
-    trainWith: {
-        margin: 10
-    },
 
     timePickerContainer: {
         flex: 1,
@@ -339,169 +329,6 @@ const styles = StyleSheet.create({
         color: 'gray',
         fontFamily: 'regular',
         marginLeft: 30,
-    },
-    container: {
-        flex: 1,
-        paddingBottom: 20,
-        paddingTop: 30,
-        backgroundColor: '#293046',
-        width: SCREEN_WIDTH,
-        height: SCREEN_HEIGHT,
-        alignItems: 'center',
-        justifyContent: 'space-around',
-    },
-
-    formContainer: {
-        flex: 1,
-        justifyContent: 'space-around',
-        alignItems: 'center',
-    },
-
-    signUpText: {
-        flex: 1,
-        color: 'white',
-        fontSize: 28,
-        fontFamily: 'light',
-        marginTop: 15,
-        textAlign: 'center',
-    },
-
-    whoAreYouText: {
-        flex: 1,
-        color: '#7384B4',
-        fontFamily: 'bold',
-        fontSize: 14,
-        marginTop: 15,
-        textAlign: 'center',
-    },
-
-    userTypesContainer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        width: SCREEN_WIDTH,
-        alignItems: 'center',
-        marginTop: 30,
-    },
-
-    inputContainer: {
-        paddingLeft: 8,
-        borderRadius: 40,
-        borderWidth: 1,
-        borderColor: 'rgba(110, 120, 170, 1)',
-        height: 45,
-        marginVertical: 10,
-    },
-
-    inputStyle: {
-        flex: 1,
-        marginLeft: 10,
-        color: 'white',
-        fontFamily: 'light',
-        fontSize: 16,
-    },
-
-    errorInputStyle: {
-        marginTop: 0,
-        textAlign: 'center',
-        color: '#F44336',
-    },
-
-    signUpButtonText: {
-        fontFamily: 'bold',
-        fontSize: 13,
-    },
-
-    signUpButton: {
-        width: 250,
-        borderRadius: 50,
-        height: 45,
-    },
-
-    loginHereContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-
-    alreadyAccountText: {
-        fontFamily: 'lightitalic',
-        fontSize: 12,
-        color: 'white',
-    },
-
-    loginHereText: {
-        color: '#FF9800',
-        fontFamily: 'lightitalic',
-        fontSize: 12,
-    },
-
-    viewContainer:
-    {
-        flex: 1,
-        flexDirection: 'column',
-        textAlign: 'center',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        width: '80%',
-        margin: 35,
-    },
-
-    dateOfBirthLabel: {
-        marginTop: 9,
-        color: 'rgba(216, 121, 112, 1)',
-        fontSize: 16,
-        marginLeft: -33,
-        fontFamily: 'light',
-        flex: 1,
-        textAlign: 'center'
-    },
-
-    textHeadlines: {
-        flex: 1,
-        fontSize: 15,
-        color: 'rgba(216, 121, 112, 1)',
-        fontFamily: 'regular',
-        marginLeft: 40,
-        marginTop: 30
-    },
-
-    partnersGenderHeadline: {
-        flex: 1,
-        fontSize: 15,
-        color: 'rgba(216, 121, 112, 1)',
-        fontFamily: 'regular',
-        marginLeft: 40,
-        marginTop: 30
-    },
-
-    genderHeadline: {
-        flex: 1,
-        fontSize: 15,
-        color: 'rgba(216, 121, 112, 1)',
-        fontFamily: 'regular',
-        marginTop: 30
-    },
-
-    genderContainer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        width: SCREEN_WIDTH,
-        alignItems: 'center',
-        marginTop: -18,
-    },
-
-    partnerPreferencesStyle: {
-        flex: 1,
-        flexDirection: 'row',
-        marginTop: 10
-    },
-
-    partnerPreferencesContainerStyle: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'space-around',
-        margin: 10,
-        flexDirection: 'row',
-        marginRight: 40
     },
 
 })

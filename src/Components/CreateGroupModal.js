@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Text, View, StyleSheet, Dimensions, LayoutAnimation, ScrollView, UIManager, Alert } from 'react-native';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
-import { Input, Button, withTheme, Slider } from 'react-native-elements';
+import { Button, Slider } from 'react-native-elements';
 import { Font } from 'expo';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Icon4 from 'react-native-vector-icons/Entypo';
@@ -9,20 +9,8 @@ import TimePickerNew from './TimePicker';
 import NumericInput from 'react-native-numeric-input';
 import CustomButton from '../Components/CategoriesButton';
 import moment from 'moment';
-import ActionButton from 'react-native-action-button';
-const SLIDER_SIZE = SCREEN_WIDTH - 100;
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
-const MALE_AVATAR = require('../../Images/MaleAvatar.png');
-const FEMALE_AVATAR = require('../../Images/FemaleAvatar.png');
-const TRAINER_AVATAR = require('../../Images/TrainerAvatar.png');
-const TRAINEE_AVATAR = require('../../Images/TraineeAvatar.png');
-
-var hours_now = new Date().getHours();
-var minutes_now = new Date().getMinutes();
-var timeNow = hours_now + ":" + minutes_now;
-var MaxDate = "01-01-" + (new Date().getFullYear() - 18);
-
 
 UIManager.setLayoutAnimationEnabledExperimental &&
     UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -45,7 +33,6 @@ export default class CreateGroupModal extends Component {
             price: 0
         };
 
-        //this.validateCategories = this.validateCategories.bind(this);
         this.getSportCategories = this.getSportCategories.bind(this);
         this.setCategories = this.setCategories.bind(this);
 
@@ -98,7 +85,7 @@ export default class CreateGroupModal extends Component {
             method: 'GET',
             headers: { "Content-type": "application/json; charset=UTF-8" },
         })
-        .then(res => res.json())
+            .then(res => res.json())
             .then(response => {
                 if (response)
                     Alert.alert(
@@ -114,7 +101,7 @@ export default class CreateGroupModal extends Component {
                         ],
                         { cancelable: false },
                     );
-                    else this.createGroup();
+                else this.createGroup();
             })
             .catch(error => console.warn('Error:', error.message));
     }
@@ -161,7 +148,7 @@ export default class CreateGroupModal extends Component {
                     .catch(error => console.warn('Error:', error.message));
 
             }, 1500);
-           
+
         }
     }
 
@@ -194,7 +181,7 @@ export default class CreateGroupModal extends Component {
         return (
 
             <ScrollView style={styles.mainContainer}>
-                <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                <View style={styles.headerView}>
                     <Icon name='close' style={styles.closeIcon} size={20} color='gray' onPress={() => { this.props.createGroupModalVisible() }}></Icon>
                     <Text style={styles.headline}>Create Your Group</Text>
                 </View>
@@ -206,7 +193,7 @@ export default class CreateGroupModal extends Component {
                             <Text style={styles.subHeadline}>
                                 When?
                             </Text>
-                            <View style={{ flex: 1, marginLeft: -600, marginTop: 6 }}>
+                            <View style={styles.timePickerView}>
                                 <TimePickerNew setTime={this.onConfirmStartTime} title={''}></TimePickerNew>
                             </View>
                         </View>
@@ -279,7 +266,7 @@ export default class CreateGroupModal extends Component {
 
                         </View>
 
-                        <View style={{ flex: 1, flexDirection: 'column', marginTop: 15, marginBottom: 15 }}>
+                        <View style={styles.groupDetailsView}>
                             <Text style={styles.subHeadline}>
                                 Participants
                             </Text>
@@ -297,7 +284,7 @@ export default class CreateGroupModal extends Component {
                                     rounded
                                 />
 
-                                <Text style={{ flex: 1, color: 'gray', textAlign: 'center', marginTop: 10, fontWeight: 'bold' }}>to</Text>
+                                <Text style={styles.toText}>to</Text>
 
                                 <NumericInput
                                     value={this.state.maxParticipants}
@@ -315,49 +302,40 @@ export default class CreateGroupModal extends Component {
 
 
                         </View>
-                        {this.props.isTrainer==1 ? 
-                        <View style={{flex:1, flexDirection:'column'}}>
-                        <Text style={styles.subHeadline}>
-                            Price
+                        {this.props.isTrainer == 1 ?
+                            <View style={styles.trainerView}>
+                                <Text style={styles.subHeadline}>
+                                    Price
                             </Text>
-                        <View style={styles.sliderContainerStyle} >
+                                <View style={styles.sliderContainerStyle} >
 
-                            <View style={{ flex: 1, flexDirection: 'row' }}>
-                                <Text style={styles.sliderRangeText}>0</Text >
+                                    <View style={styles.sliderView}>
+                                        <Text style={styles.sliderRangeText}>0</Text >
+                                        <Slider
+                                            minimumTrackTintColor='gray'
+                                            maximumTrackTintColor='#c7c9cc'
+                                            thumbTintColor='#f34573'
+                                            style={styles.sliderStyle}
+                                            minimumValue={0}
+                                            step={10}
+                                            maximumValue={500}
+                                            value={this.state.maxBudget}
+                                            onValueChange={value => this.setState({ price: value })}
+                                        />
+                                        <Text style={style = styles.sliderRangeText}>500</Text>
+                                    </View>
+                                    <Text style={styles.priceText}>Price: {this.state.price} $</Text>
+                                </View>
+                            </View> : null}
 
-                                <Slider
-                                    minimumTrackTintColor='gray'
-                                    maximumTrackTintColor='#c7c9cc'
-                                    thumbTintColor='#f34573'
-                                    style={styles.sliderStyle}
-                                    minimumValue={0}
-                                    step={10}
-                                    maximumValue={500}
-                                    value={this.state.maxBudget}
-                                    onValueChange={value => this.setState({ price: value })}
-                                />
 
-                                <Text style={style = styles.sliderRangeText}>500</Text>
-
-                            </View>
-                            <Text style={{ color: '#f34573', textAlign: 'center', fontSize: 13 }}>Price: {this.state.price} $</Text>
-                        </View>
-                        </View> :null}
-                        
-
-                        <View style={{ flex: 1, marginTop: 20, }}>
+                        <View style={styles.categoriesContainer}>
 
                             <View
-                                style={{
-                                    flex: 1,
-                                    flexDirection: 'column',
-                                    height: 150,
-                                    marginLeft: 20,
-                                    marginRight: 10,
-                                }}
+                                style={styles.categories}
                             >
 
-                                <View style={{ flex: 1, flexDirection: 'row' }}>
+                                <View style={styles.categoriesRow}>
 
                                     <CustomButton selected={this.state.selectedSportCategories[0].Selected} editMode={true} title="Short Run" setCategories={this.setCategories} />
                                     <CustomButton selected={this.state.selectedSportCategories[1].Selected} editMode={true} title="Yoga" setCategories={this.setCategories} />
@@ -365,14 +343,14 @@ export default class CreateGroupModal extends Component {
 
                                 </View>
 
-                                <View style={{ flex: 1, flexDirection: 'row' }}>
+                                <View style={styles.categoriesRow}>
 
                                     <CustomButton selected={this.state.selectedSportCategories[3].Selected} editMode={true} title="Long Run" setCategories={this.setCategories} />
                                     <CustomButton selected={this.state.selectedSportCategories[4].Selected} editMode={true} title="Walking" setCategories={this.setCategories} />
                                     <CustomButton selected={this.state.selectedSportCategories[5].Selected} editMode={true} title="Functional" setCategories={this.setCategories} />
 
                                 </View>
-                                <View style={{ flex: 1, flexDirection: 'row' }}>
+                                <View style={styles.categoriesRow}>
 
                                     <CustomButton selected={this.state.selectedSportCategories[6].Selected} editMode={true} title="Pilatis" setCategories={this.setCategories} />
                                     <CustomButton selected={this.state.selectedSportCategories[7].Selected} editMode={true} title="Strength" setCategories={this.setCategories} />
@@ -384,29 +362,11 @@ export default class CreateGroupModal extends Component {
                         </View>
 
                         <Button
-                            containerStyle={{ marginVertical: 20 }}
-                            style={{
-                                flex: 1,
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                //marginBottom: 10,
-                                marginTop: -10
-                            }}
-                            buttonStyle={{
-                                height: 60,
-                                width: 140,
-                                borderRadius: 30,
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                backgroundColor: '#f34573'
-                            }}
+                            containerStyle={styles.goButtonContainer}
+                            style={styles.goButton}
+                            buttonStyle={styles.goButtonStyle}
                             title="Go"
-                            titleStyle={{
-                                fontFamily: 'regular',
-                                fontSize: 15,
-                                color: 'white',
-                                textAlign: 'center',
-                            }}
+                            titleStyle={styles.goButtonTitle}
                             onPress={() => {
                                 this.checkForCloseTrainings();
                             }}
@@ -435,20 +395,43 @@ const styles = StyleSheet.create({
         top: 200,
         zIndex: 1,
     },
+    timePickerView:
+    {
+        flex: 1,
+        marginLeft: -600,
+        marginTop: 6
+    },
+    headerView:
+    {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center'
+    },
 
     closeIcon: {
         flex: 1,
         top: 20,
         left: 20
     },
-
+    toText:
+    {
+        flex: 1,
+        color: 'gray',
+        textAlign: 'center',
+        marginTop: 10,
+        fontWeight: 'bold'
+    },
     searchContainer: {
         flex: 1,
         flexDirection: 'column',
         marginBottom: 15,
         marginTop: 30
     },
-
+    trainerView:
+    {
+        flex: 1,
+        flexDirection: 'column'
+    },
     headline: {
         flex: 3,
         fontSize: 23,
@@ -456,7 +439,11 @@ const styles = StyleSheet.create({
         fontFamily: 'regular',
         top: 20,
     },
-
+    sliderView:
+    {
+        flex: 1,
+        flexDirection: 'row'
+    },
     trainWithContainer: {
         flex: 1,
         flexDirection: 'row',
@@ -465,7 +452,12 @@ const styles = StyleSheet.create({
         marginTop: 15,
         justifyContent: 'center',
     },
-
+    priceText:
+    {
+        color: '#f34573',
+        textAlign: 'center',
+        fontSize: 13
+    },
     trainWith: {
         margin: 10
     },
@@ -497,169 +489,6 @@ const styles = StyleSheet.create({
         fontFamily: 'regular',
         marginLeft: 30,
     },
-    container: {
-        flex: 1,
-        paddingBottom: 20,
-        paddingTop: 30,
-        backgroundColor: '#293046',
-        width: SCREEN_WIDTH,
-        height: SCREEN_HEIGHT,
-        alignItems: 'center',
-        justifyContent: 'space-around',
-    },
-
-    formContainer: {
-        flex: 1,
-        justifyContent: 'space-around',
-        alignItems: 'center',
-    },
-
-    signUpText: {
-        flex: 1,
-        color: 'white',
-        fontSize: 28,
-        fontFamily: 'light',
-        marginTop: 15,
-        textAlign: 'center',
-    },
-
-    whoAreYouText: {
-        flex: 1,
-        color: '#7384B4',
-        fontFamily: 'bold',
-        fontSize: 14,
-        marginTop: 15,
-        textAlign: 'center',
-    },
-
-    userTypesContainer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        width: SCREEN_WIDTH,
-        alignItems: 'center',
-        marginTop: 30,
-    },
-
-    inputContainer: {
-        paddingLeft: 8,
-        borderRadius: 40,
-        borderWidth: 1,
-        borderColor: 'rgba(110, 120, 170, 1)',
-        height: 45,
-        marginVertical: 10,
-    },
-
-    inputStyle: {
-        flex: 1,
-        marginLeft: 10,
-        color: 'white',
-        fontFamily: 'light',
-        fontSize: 16,
-    },
-
-    errorInputStyle: {
-        marginTop: 0,
-        textAlign: 'center',
-        color: '#F44336',
-    },
-
-    signUpButtonText: {
-        fontFamily: 'bold',
-        fontSize: 13,
-    },
-
-    signUpButton: {
-        width: 250,
-        borderRadius: 50,
-        height: 45,
-    },
-
-    loginHereContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-
-    alreadyAccountText: {
-        fontFamily: 'lightitalic',
-        fontSize: 12,
-        color: 'white',
-    },
-
-    loginHereText: {
-        color: '#FF9800',
-        fontFamily: 'lightitalic',
-        fontSize: 12,
-    },
-
-    viewContainer:
-    {
-        flex: 1,
-        flexDirection: 'column',
-        textAlign: 'center',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        width: '80%',
-        margin: 35,
-    },
-
-    dateOfBirthLabel: {
-        marginTop: 9,
-        color: 'rgba(216, 121, 112, 1)',
-        fontSize: 16,
-        marginLeft: -33,
-        fontFamily: 'light',
-        flex: 1,
-        textAlign: 'center'
-    },
-
-    textHeadlines: {
-        flex: 1,
-        fontSize: 15,
-        color: 'rgba(216, 121, 112, 1)',
-        fontFamily: 'regular',
-        marginLeft: 40,
-        marginTop: 30
-    },
-
-    partnersGenderHeadline: {
-        flex: 1,
-        fontSize: 15,
-        color: 'rgba(216, 121, 112, 1)',
-        fontFamily: 'regular',
-        marginLeft: 40,
-        marginTop: 30
-    },
-
-    genderHeadline: {
-        flex: 1,
-        fontSize: 15,
-        color: 'rgba(216, 121, 112, 1)',
-        fontFamily: 'regular',
-        marginTop: 30
-    },
-
-    genderContainer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        width: SCREEN_WIDTH,
-        alignItems: 'center',
-        marginTop: -18,
-    },
-
-    partnerPreferencesStyle: {
-        flex: 1,
-        flexDirection: 'row',
-        marginTop: 10
-    },
-
-    partnerPreferencesContainerStyle: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'space-around',
-        margin: 10,
-        flexDirection: 'row',
-        marginRight: 40
-    },
     sliderRangeText: {
         flex: 1,
         color: '#f34573',
@@ -682,6 +511,57 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         marginTop: -18
     },
-
+    groupDetailsView:
+    {
+        flex: 1,
+        flexDirection: 'column',
+        marginTop: 15,
+        marginBottom: 15
+    },
+    categoriesRow:
+    {
+        flex: 1,
+        flexDirection: 'row'
+    },
+    categories:
+    {
+        flex: 1,
+        flexDirection: 'column',
+        height: 150,
+        marginLeft: 20,
+        marginRight: 10,
+    },
+    categoriesContainer:
+    {
+        flex: 1,
+        marginTop: 20,
+    },
+    goButtonContainer:
+    {
+        marginVertical: 20
+    },
+    goButton:
+    {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: -10
+    },
+    goButtonStyle:
+    {
+        height: 60,
+        width: 140,
+        borderRadius: 30,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#f34573'
+    },
+    goButtonTitle:
+    {
+        fontFamily: 'regular',
+        fontSize: 15,
+        color: 'white',
+        textAlign: 'center',
+    }
 
 })

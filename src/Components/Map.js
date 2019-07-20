@@ -40,9 +40,6 @@ export default class Map extends React.Component {
 
         >
 
-
-
-
           <MapView.Marker
             coordinate={{
               latitude: this.props.HomeTraineeStates.latitude,
@@ -50,10 +47,8 @@ export default class Map extends React.Component {
             }}
             title="That's You!"
           >
-            <Image source={require('../../Images/MyMarker.png')} style={{ width: 30, height: 36 }} />
-            {/* <MapView.Callout>
-              
-            </MapView.Callout>  */}
+            <Image source={require('../../Images/MyMarker.png')} style={styles.markerImage}  />
+            
           </MapView.Marker>
 
 
@@ -69,7 +64,8 @@ export default class Map extends React.Component {
                   longitude: data.Longitude
                 }}
               >
-                {data.IsTrainer ? <Image source={require('../../Images/TrainerMarker.png')} style={{ width: 30, height: 36 }} /> : <Image source={require('../../Images/TraineeMarker.png')} style={{ width: 30, height: 36 }} />}
+                {data.IsTrainer ? <Image source={require('../../Images/TrainerMarker.png')} style={styles.markerImage} /> :
+                 <Image source={require('../../Images/TraineeMarker.png')} style={styles.markerImage} />}
                 <MapView.Callout>
                   <CoupleResultCallOut type={1} Data={data}  refresh={this.props.refresh} navigation={this.props.navigation}  UserCode={this.props.HomeTraineeStates.userCode} ></CoupleResultCallOut>
                 </MapView.Callout>
@@ -90,7 +86,7 @@ export default class Map extends React.Component {
                 longitude: data.Longitude
               }}
             >
-              <Image source={require('../../Images/GroupMarker.png')} style={{ width: 50, height: 50 }} />
+              <Image source={require('../../Images/GroupMarker.png')} style={styles.groupMarker} />
               <MapView.Callout>
                   <GroupResultCallOut type={1} refresh={this.props.refresh}  Data={data} UserCode={this.props.HomeTraineeStates.userCode}  navigation={this.props.navigation}></GroupResultCallOut>
                 </MapView.Callout>
@@ -98,12 +94,6 @@ export default class Map extends React.Component {
           )
           ) : null
           }
-
-
-
-
-
-
 
           {this.props.HomeTraineeStates.pendingRequestsMapView && this.props.HomeTraineeStates.pendingRequests != null ?
             this.props.HomeTraineeStates.pendingRequests.map((data, index) => (
@@ -115,7 +105,7 @@ export default class Map extends React.Component {
                 }}
                 title={'Pending'}
               >
-                <Image source={data.IsTrainer ? require('../../Images/TrainerMarker.png') : require('../../Images/TrainerMarker.png')} style={{ width: 30, height: 36 }} />
+                <Image source={data.IsTrainer ? require('../../Images/TrainerMarker.png') : require('../../Images/TrainerMarker.png')} style={styles.markerImage} />
                 <MapView.Callout>
                   <CoupleResultCallOut type={2} refresh={this.props.refresh}  Data={data} UserCode={this.props.HomeTraineeStates.userCode}  navigation={this.props.navigation}></CoupleResultCallOut>
                 </MapView.Callout>
@@ -140,7 +130,7 @@ export default class Map extends React.Component {
                 }}
                 title={'Approved'}
               >
-                <Image source={data.IsTrainer ? require('../../Images/TrainerMarker.png') : require('../../Images/TrainerMarker.png')} style={{ width: 30, height: 36 }} />
+                <Image source={data.IsTrainer ? require('../../Images/TrainerMarker.png') : require('../../Images/TrainerMarker.png')} style={styles.markerImage} />
                 <MapView.Callout>
                   <CoupleResultCallOut type={3} refresh={this.props.refresh}  Data={data} UserCode={this.props.HomeTraineeStates.userCode}  navigation={this.props.navigation}></CoupleResultCallOut>
                 </MapView.Callout>
@@ -165,7 +155,7 @@ export default class Map extends React.Component {
                 }}
                 title={'Future Couple'}
               >
-                <Image source={data.IsTrainer ? require('../../Images/TrainerMarker.png') : require('../../Images/TrainerMarker.png')} style={{ width: 30, height: 36 }} />
+                <Image source={data.IsTrainer ? require('../../Images/TrainerMarker.png') : require('../../Images/TrainerMarker.png')} style={styles.markerImage} />
                 <MapView.Callout>
                   <FutureTrainingsCallOut couple={true} refresh={this.props.refresh}  Data={data} UserCode={this.props.HomeTraineeStates.userCode}  navigation={this.props.navigation}></FutureTrainingsCallOut>
                 </MapView.Callout>
@@ -190,7 +180,7 @@ export default class Map extends React.Component {
                 }}
                 title={'Future Group'}
               >
-                <Image source={require('../../Images/GroupMarker.png')} style={{ width: 50, height: 50 }} />
+                <Image source={require('../../Images/GroupMarker.png')} style={styles.groupMarker} />
                 <MapView.Callout>
                   <FutureTrainingsCallOut couple={false} refresh={this.props.refresh}  Data={data} UserCode={this.props.HomeTraineeStates.userCode}  navigation={this.props.navigation}></FutureTrainingsCallOut>
                 </MapView.Callout>
@@ -225,15 +215,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
 
   },
-  textBig: {
-    fontSize: 35,
-    color: 'red',
-    margin: 10
-  },
-  textMedium: {
-    fontSize: 30,
-    color: 'blue'
-  },
-
+  markerImage:
+  { width: 30, height: 36 },
+groupMarker:
+{ width: 50, height: 50 },
 });
 

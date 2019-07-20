@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Dimensions, ActivityIndicator, KeyboardAvoidingView, TouchableOpacity, Text, AsyncStorage, Button } from 'react-native';
-import { Avatar, Badge, Image } from 'react-native-elements';
+import {Image } from 'react-native-elements';
 import Map from '../Components/Map';
 import { Font } from 'expo';
 import ActionButton from 'react-native-action-button';
@@ -363,32 +363,47 @@ seachGroups(onlineDetails){
 
       <KeyboardAvoidingView behavior='position' style={styles.formContainer} keyboardVerticalOffset={-70}>
         {this.state.status == 1 && this.state.fontLoaded ?
-
-          <View style={{ flex: 1, width: SCREEN_WIDTH, backgroundColor: 'white', height: SCREEN_HEIGHT, alignItems: 'center' }}>
+// style={{ flex: 1, width: SCREEN_WIDTH, backgroundColor: 'white', height: SCREEN_HEIGHT, alignItems: 'center' }}
+          <View style={styles.homeContainer}>
             {this.state.createGroupModalVisible ?
-              <CreateGroupModal refresh={this.props.refresh} isTrainer={this.state.isTrainer} createGroupModalVisible={this.createGroupModalVisible} CreatorCode={this.state.userCode} IsTrainer={this.state.isTrainer} ></CreateGroupModal>
+              <CreateGroupModal 
+              refresh={this.props.refresh} 
+              isTrainer={this.state.isTrainer} 
+              createGroupModalVisible={this.createGroupModalVisible} 
+              CreatorCode={this.state.userCode} 
+              IsTrainer={this.state.isTrainer} ></CreateGroupModal>
               : null}
 
             {this.state.searchModalVisible ?
-              <SearchModal changeSearchMode={this.changeSearchMode} searchModalVisible={this.searchModalVisible} insertOnlineTrainee={this.insertOnlineTrainee} userCode={this.state.userCode} searchModalVisible={this.searchModalVisible} style={{ zIndex: 1000 }}></SearchModal>
+              <SearchModal 
+              changeSearchMode={this.changeSearchMode} 
+              searchModalVisible={this.searchModalVisible} 
+              insertOnlineTrainee={this.insertOnlineTrainee} 
+              userCode={this.state.userCode} 
+              searchModalVisible={this.searchModalVisible} 
+              style={{ zIndex: 1000 }}></SearchModal>
               : null}
-
-            <View style={{ flex: 6, zIndex: 0, width: SCREEN_WIDTH, height: SCREEN_HEIGHT, }} >
-              <Map refresh={this.refresh} style={{ zIndex: 0, }} navigation={this.props.navigation} SenderCode={this.state.userCode} HomeTraineeStates={this.state}></Map>
+{/* style={{ flex: 6, zIndex: 0, width: SCREEN_WIDTH, height: SCREEN_HEIGHT, }} */}
+            <View style={styles.mapContainer} >
+              <Map refresh={this.refresh} 
+              style={{ zIndex: 0, }} 
+              navigation={this.props.navigation} 
+              SenderCode={this.state.userCode} 
+              HomeTraineeStates={this.state}></Map>
             </View>
 
 
 
-            <View style={{ flex: 1, zIndex: 1000, position: 'absolute', left: 0, top: 20, width: SCREEN_WIDTH, }}>
+            <View style={styles.headerContainer}>
+            {/* <View style={{ flex: 1, zIndex: 1000, position: 'absolute', left: 0, top: 20, width: SCREEN_WIDTH}}> */}
 
               <View style={styles.container}>
 
-                <View style={{ flex: 8, flexDirection: 'row', alignItems: 'center', marginLeft: 25, marginTop: 15 }}>
-
-
+                <View style={styles.header}>
+                {/* <View style={{ flex: 8, flexDirection: 'row', alignItems: 'center', marginLeft: 25, marginTop: 15 }}> */}
 
                   {this.state.searchMode ?
-                    <View style={{ flex: 1, }}>
+                    <View style={{ flex: 1}}>
 
                       <TouchableOpacity
                         onPress={() => {
@@ -398,38 +413,44 @@ seachGroups(onlineDetails){
                           this.setState({ searchResultsMapView: true })
                         }}
                       >
-                        {this.state.searchResultsMapView ? <Image source={SELECTED_SEARCH_VIEW} style={{ width: 60, height: 60 }} /> : <Image source={SEARCH_VIEW} style={{ width: 60, height: 60 }} />}
+                        {this.state.searchResultsMapView ? <Image source={SELECTED_SEARCH_VIEW} style={styles.image} /> : 
+                        // style={{ width: 60, height: 60 }}
+                        <Image source={SEARCH_VIEW} style={styles.image} />}
                       </TouchableOpacity>
-                      <View style={{ left: -5, top: -58, width: 18, height: 18, borderRadius: 10, borderColor: '#75cac3', borderWidth: 2, backgroundColor: 'white', alignItems: "center", justifyContent: 'center' }}>
+                      {/* style={{ left: -5, top: -58, width: 18, height: 18, borderRadius: 10, borderColor: '#75cac3', borderWidth: 2, backgroundColor: 'white', alignItems: "center", justifyContent: 'center' }} */}
+                      <View style={styles.badgeView}>
                         <Text
-                          style={{ color: 'black', fontFamily: 'regular', fontSize: 11, position: 'absolute' }}
+                    // style={{ color: 'black', fontFamily: 'regular', fontSize: 11, position: 'absolute' }}
+                          style={styles.badgeTxt}
                         >{this.state.coupleResults.length + this.state.groupResults.length}
                         </Text>
                       </View>
                     </View> : null}
 
-
-
-
-                  <View style={{ flex: 1, }}>
+                <View style={{ flex: 1}}>
                     <TouchableOpacity
                       onPress={() => {
                         this.setState({ pendingRequestsMapView: true, approvedRequestsMapView: false, futureTrainingsMapView: false, searchResultsMapView: false });
                         this.refresh('pending');
                       }}
                     >
-                      {this.state.pendingRequestsMapView ? <Image source={SELECTED_PENDING_REQUESTS} style={{ width: 60, height: 60 }} /> : <Image source={PENDING_REQUESTS} style={{ width: 60, height: 60 }} />}
+                      {this.state.pendingRequestsMapView ? 
+                      <Image source={SELECTED_PENDING_REQUESTS} style={styles.image} /> : 
+                      <Image source={PENDING_REQUESTS} style={styles.image} />}
                     </TouchableOpacity>
-                    <View style={{ left: -5, top: -58, width: 18, height: 18, borderRadius: 10, borderColor: '#75cac3', borderWidth: 2, backgroundColor: 'white', alignItems: "center", justifyContent: 'center' }}>
+                    {/* style={{ left: -5, top: -58, width: 18, height: 18, borderRadius: 10, borderColor: '#75cac3', borderWidth: 2, backgroundColor: 'white', alignItems: "center", justifyContent: 'center' }} */}
+                    <View style={styles.badgeView}>
+                    {/* style={{ color: 'black', fontFamily: 'regular', fontSize: 11, position: 'absolute' }} */}
+
                       <Text
-                        style={{ color: 'black', fontFamily: 'regular', fontSize: 11, position: 'absolute' }}
+                      style={styles.badgeTxt}
                       >{this.state.pendingRequests.length}
                       </Text>
                     </View>
 
                   </View>
 
-                  <View style={{ flex: 1, }}>
+                  <View style={{ flex: 1}}>
                     <TouchableOpacity
                       onPress={() => {
                         this.setState({ approvedRequestsMapView: true, pendingRequestsMapView: false, futureTrainingsMapView: false, searchResultsMapView: false })
@@ -437,13 +458,19 @@ seachGroups(onlineDetails){
                       }}
                     >
 
-                      {this.state.approvedRequestsMapView ? <Image source={SELECTED_APPROVED_REQUESTS} style={{ width: 60, height: 60 }} /> : <Image source={APPROVED_REQUESTS} style={{ width: 60, height: 60 }} />}
-
+                      {this.state.approvedRequestsMapView ? 
+                      <Image source={SELECTED_APPROVED_REQUESTS} 
+                      // style={{ width: 60, height: 60 }} /> : 
+                        style={styles.image}/>
+                      :
+                      // style={{ width: 60, height: 60 }} 
+                      <Image source={APPROVED_REQUESTS} 
+                      style={styles.image} />}
 
                     </TouchableOpacity>
-                    <View style={{ left: -5, top: -58, width: 18, height: 18, borderRadius: 10, borderColor: '#75cac3', borderWidth: 2, backgroundColor: 'white', alignItems: "center", justifyContent: 'center' }}>
+                    <View style={styles.badgeView}>
                       <Text
-                        style={{ color: 'black', fontFamily: 'regular', fontSize: 11, position: 'absolute' }}
+                        style={styles.badgeTxt}
                       >{this.state.approvedRequests.length}
                       </Text>
                     </View>
@@ -455,12 +482,14 @@ seachGroups(onlineDetails){
                         this.refresh('future');
                       }}
                     >
-                      {this.state.futureTrainingsMapView ? <Image source={SELECTED_FUTURE_TRAININGS} style={{ width: 60, height: 60 }} /> : <Image source={FUTURE_TRAININGS} style={{ width: 60, height: 60 }} />}
+                      {this.state.futureTrainingsMapView ? <Image source={SELECTED_FUTURE_TRAININGS} style={styles.image} /> : <Image source={FUTURE_TRAININGS} style={{ width: 60, height: 60 }} />}
 
                     </TouchableOpacity>
-                    <View style={{ left: -5, top: -58, width: 18, height: 18, borderRadius: 10, borderColor: '#75cac3', borderWidth: 2, backgroundColor: 'white', alignItems: "center", justifyContent: 'center' }}>
+                    {/* style={{ left: -5, top: -58, width: 18, height: 18, borderRadius: 10, borderColor: '#75cac3', borderWidth: 2, backgroundColor: 'white', alignItems: "center", justifyContent: 'center' } */}
+                    <View style={styles.badgeView}>
                       <Text
-                        style={{ color: 'black', fontFamily: 'regular', fontSize: 11, position: 'absolute' }}
+                        // style={{ color: 'black', fontFamily: 'regular', fontSize: 11, position: 'absolute' }}
+                        style={styles.badgeTxt}
                       >{this.state.futureCoupleTrainings.length + this.state.futureGroupTrainings.length}
                       </Text>
                     </View>
@@ -490,7 +519,7 @@ seachGroups(onlineDetails){
 
               {!this.state.listView && (this.state.searchResultsMapView || this.state.pendingRequestsMapView || this.state.approvedRequestsMapView || this.state.futureTrainingsMapView)
                 ?
-                <View style={{ flex: 1, top: 80 }}>
+                <View style={styles.listViewButton}>
 
                   <ActionButton
                     onPress={() => this.setState({ listView: !this.state.listView })}
@@ -507,10 +536,10 @@ seachGroups(onlineDetails){
                 </View>
                 : null}
 
-
-
               <View style={styles.searchButtonsContainer}>
-                <View style={{ flex: 1, left: -85 }}>
+                {/* <View style={{ flex: 1, left: -85 }}> */}
+                <View style={styles.buttons}>
+
                   <ActionButton
                     onPress={() => {
                       this.getCurrentLocation()
@@ -641,7 +670,7 @@ seachGroups(onlineDetails){
 
           :
 
-          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <View style={styles.loading}>
 
             <Image source={LOADING}></Image>
           </View>
@@ -654,6 +683,20 @@ seachGroups(onlineDetails){
 
 const styles = StyleSheet.create({
 
+  homeContainer:
+  {
+     flex: 1, 
+      width: SCREEN_WIDTH, 
+      backgroundColor: 'white', 
+    height: SCREEN_HEIGHT,
+     alignItems: 'center' 
+  },
+  mapContainer:
+  { flex: 6, 
+    zIndex: 0, 
+    width: SCREEN_WIDTH, 
+    height: SCREEN_HEIGHT 
+  },
   container: {
     flex: 1,
     zIndex: 1000,
@@ -667,9 +710,21 @@ const styles = StyleSheet.create({
     width: SCREEN_WIDTH,
     paddingLeft: 30,
     marginTop: 10,
-
-
   },
+header:
+{ flex: 8, 
+  flexDirection: 'row', 
+  alignItems: 'center', 
+  marginLeft: 25, 
+  marginTop: 15 },
+
+headerContainer:
+{flex: 1, 
+  zIndex: 1000, 
+  position: 'absolute', 
+  left: 0, 
+  top: 20, 
+  width: SCREEN_WIDTH},
 
   searchButtonsContainer: {
     flex: 1,
@@ -678,7 +733,6 @@ const styles = StyleSheet.create({
     top: 480,
     width: SCREEN_WIDTH,
     height: 200
-
   },
 
   switch: {
@@ -713,5 +767,35 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
   },
+  loading:
+  { flex: 1, 
+    alignItems: 'center',
+     justifyContent: 'center' 
+    },
+  listViewButton:
+  { flex: 1, 
+    top: 80 
+  },
+  badgeTxt:
+  { color: 'black',
+   fontFamily: 'regular', 
+   fontSize: 11, 
+   position: 'absolute' 
+  },
+  badgeView:
+  { left: -5,
+    top: -58, 
+    width: 18, 
+    height: 18, 
+    borderRadius: 10, 
+    borderColor: '#75cac3', 
+    borderWidth: 2, 
+    backgroundColor: 'white', 
+    alignItems: "center", 
+    justifyContent: 'center' },
+image:
+  { width: 60, height: 60 }
+,buttons:
+{ flex: 1, left: -85 }
 
 })

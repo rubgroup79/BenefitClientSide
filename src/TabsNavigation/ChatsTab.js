@@ -10,13 +10,6 @@ const ChatsTabView = ({ navigation }) => (
   <Chats navigation={navigation} />
 );
 
-// const ButtonsDetailTabView = ({ navigation }) => (
-//   <ButtonsDetails
-//     banner={`${navigation.state.params.name}s Profile`}
-//     navigation={navigation}
-//   />
-// );
-
 const ChatsTab = StackNavigator({
   Chats: {
     screen: ChatsTabView,

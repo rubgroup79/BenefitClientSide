@@ -3,11 +3,9 @@ import {
   StyleSheet,
   Text,
   View,
-  SafeAreaView,
   ScrollView,
   LayoutAnimation,
   Dimensions,
-  StatusBar,
   AsyncStorage,
   Image,
   ActivityIndicator
@@ -15,19 +13,12 @@ import {
 } from 'react-native';
 import { Slider, Divider, Button } from 'react-native-elements';
 import { Font } from 'expo';
-import AvatarImage from '../Components/AvatarImage';
-import NumericInput from 'react-native-numeric-input';
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import Icon1 from "react-native-vector-icons/FontAwesome";
 import Icon2 from "react-native-vector-icons/Feather";
 import ActionButton from 'react-native-action-button';
 import ImageUpload from '../Components/ImagePicker';
 import CustomButton from '../Components/CategoriesButton';
-import { StackActions, NavigationActions } from 'react-navigation';
-
-const MALE_AVATAR = require('../../Images/MaleAvatar.png');
-const FEMALE_AVATAR = require('../../Images/FemaleAvatar.png');
-const BOTH_AVATAR = require('../../Images/BothAvatar.png');
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SLIDER_SIZE = SCREEN_WIDTH - 150;
 
@@ -262,24 +253,19 @@ export default class TrainerProfile extends Component {
 
   render() {
     return (
-      <View style={{ flex: 1 }}>
+      <View style={styles.flex}>
         {this.state.fontLoaded && this.state.selectedSportCategories.length != 0 ? (
-          <View style={{ flex: 1, justifyContent: 'center' }}>
-            <View
-              style={[
-                styles.headerContainer,
-                { backgroundColor: '#f5f5f5', marginTop: 20 },
-              ]}
-            >
-              <Image style={{ width: 57, height: 38, marginLeft: 18 }} source={require('../../Images/LogoOnly.png')} />
+          <View style={styles.formContainer}>
+            <View  style={ styles.headerContainer} >
+              <Image style={styles.logoImage} source={require('../../Images/LogoOnly.png')} />
               <Text style={styles.heading}>{this.state.firstName + ' ' + this.state.lastName}</Text>
 
             </View>
 
             <ScrollView
-              style={{ flex: 2, marginTop: 15, }}>
+              style={styles.scrollView}>
               
-              <View style={{flex:1, zIndex:2,  position:'absolute', left:0, top:-10, height:100, width:100, justifyContent:'center'}}>
+              <View style={styles.actionButtonsView}>
               <ActionButton
               
                 renderIcon={active => active ? (<Icon2
@@ -310,7 +296,7 @@ export default class TrainerProfile extends Component {
                 <ActionButton.Item
                   buttonColor={this.state.editMode ? 'rgba(71, 224, 135,0.7)' : '#d7dbe2'}
                   size={35}
-                  buttonStyle={{ flex: 1, zIndex: 2 }}
+                  buttonStyle={styles.editButtonStyle}
                   onPress={() => {
                     if (this.state.editMode)
                       this.getTrainerDetails();
@@ -328,39 +314,37 @@ export default class TrainerProfile extends Component {
               </ActionButton>
               </View>
 
-              <View style={{ flexDirection: 'column', alignItems: 'center', alignContent: 'center', justifyContent: 'center', marginBottom: 20, }}>
-                <View style={{ flex: 1, alignItems: 'center', }}>
+              <View style={styles.trainerDetailsContainer}>
+                <View style={styles.pictureEditView}>
 
 
                   {this.state.editMode ? <View>
 
                     <ImageUpload setPicturePath={this.setPicturePath} editMode={this.state.editMode} ></ImageUpload>
 
-                  </View> : <Image style={{ width: 120, height: 120, borderRadius: 60 }} source={{ uri: this.state.picture }}></Image>}
+                  </View> : <Image style={styles.image} source={{ uri: this.state.picture }}></Image>}
                 </View>
-                <View style={{ flex: 1, flexDirection: 'column', marginTop: 10, alignItems: 'center' }}>
-                  <View style={{ flex: 1, flexDirection: 'row', marginTop: 5 }}>
+                <View style={styles.detailsContainer}>
+                  <View  style={styles.detailsView}>
 
-                    <Text style={{ fontFamily: 'light', color: '#7384B4', }}>{this.state.email}</Text>
+                    <Text style={styles.detailsText}>{this.state.email}</Text>
                   </View>
-                  <View style={{ flex: 1, flexDirection: 'row', marginTop: 5 }}>
+                  <View style={styles.detailsView}>
 
-                    <Text style={{ fontFamily: 'light', color: '#7384B4', }}>Age: {this.state.age}</Text>
+                    <Text style={styles.detailsText}>Age: {this.state.age}</Text>
                   </View>
-                  <View style={{ flex: 1, flexDirection: 'row', marginTop: 5 }}>
-                    <Image style={{ width: 20, height: 20 }} source={require('../../Images/SelectedStar.png')}></Image>
-                    <Text style={{ fontFamily: 'light', marginLeft: 10, marginTop: 2, color: '#7384B4', }}>{this.state.rate}</Text>
+                  <View style={styles.rateContainer}>
+                    <Image style={styles.rateStarImage} source={require('../../Images/SelectedStar.png')}></Image>
+                    <Text style={styles.rateText}>{this.state.rate}</Text>
                   </View>
 
                 </View>
               </View>
 
 
-              <View style={{ flex: 1, flexDirection: 'column', marginBottom: 20, }}>
+              <View style={styles.searchRadiusContainer}>
 
-                <Text
-                  style={style = styles.textHeadlines}
-                >
+                <Text  style={style = styles.textHeadlines} >
 
                   Search Radius
                 </Text>
@@ -386,7 +370,7 @@ export default class TrainerProfile extends Component {
 
                 </View>
 
-                <Text style={{ color: '#f34573', textAlign: 'center', fontSize: 13, fontFamily: 'light' }}>Radius: {this.state.searchRadius} km</Text>
+                <Text style={styles.radiusText}>Radius: {this.state.searchRadius} km</Text>
 
               </View>
               <Text
@@ -396,37 +380,28 @@ export default class TrainerProfile extends Component {
                 Favorite Sport Types
                 </Text>
               <ScrollView
-                style={{ flex: 1 }}
+                style={styles.flex}
                 horizontal
                 showsHorizontalScrollIndicator={false}
               >
 
-                <View
-                  style={{
-                    flex: 1,
-                    flexDirection: 'column',
-                    height: 170,
-                    marginLeft: 40,
-                    marginRight: 10,
-                    marginTop: 30
-                  }}
-                >
+                <View  style={styles.categoriesContainer} >
 
-                  <View style={{ flex: 1, flexDirection: 'row' }}>
+                <View style={styles.categoriesRow}>
                     <CustomButton selected={this.state.selectedSportCategories[0].Selected} editMode={this.state.editMode} title={this.state.sportCategories[0].Description} selected={this.state.selectedSportCategories[0].Selected} setCategories={this.setCategories} />
                     <CustomButton selected={this.state.selectedSportCategories[1].Selected} editMode={this.state.editMode} title={this.state.sportCategories[1].Description} selected={this.state.selectedSportCategories[1].Selected} setCategories={this.setCategories} />
                     <CustomButton selected={this.state.selectedSportCategories[2].Selected} editMode={this.state.editMode} title={this.state.sportCategories[2].Description} selected={this.state.selectedSportCategories[2].Selected} setCategories={this.setCategories} />
 
                   </View>
 
-                  <View style={{ flex: 1, flexDirection: 'row' }}>
+                  <View style={styles.categoriesRow}>
 
                     <CustomButton selected={this.state.selectedSportCategories[3].Selected} editMode={this.state.editMode} title={this.state.sportCategories[3].Description} selected={this.state.selectedSportCategories[3].Selected} setCategories={this.setCategories} />
                     <CustomButton selected={this.state.selectedSportCategories[4].Selected} editMode={this.state.editMode} title={this.state.sportCategories[4].Description} selected={this.state.selectedSportCategories[4].Selected} setCategories={this.setCategories} />
                     <CustomButton selected={this.state.selectedSportCategories[5].Selected} editMode={this.state.editMode} title={this.state.sportCategories[5].Description} selected={this.state.selectedSportCategories[5].Selected} setCategories={this.setCategories} />
 
                   </View>
-                  <View style={{ flex: 1, flexDirection: 'row' }}>
+                  <View style={styles.categoriesRow}>
 
                     <CustomButton selected={this.state.selectedSportCategories[6].Selected} editMode={this.state.editMode} title={this.state.sportCategories[6].Description} selected={this.state.selectedSportCategories[6].Selected} setCategories={this.setCategories} />
                     <CustomButton selected={this.state.selectedSportCategories[7].Selected} editMode={this.state.editMode} title={this.state.sportCategories[7].Description} selected={this.state.selectedSportCategories[7].Selected} setCategories={this.setCategories} />
@@ -437,228 +412,15 @@ export default class TrainerProfile extends Component {
                 </View>
 
               </ScrollView>
-              <Divider style={{ flex: 1, marginTop: 10 }}></Divider>
+              <Divider style={styles.divider}></Divider>
 
 
              <View>
 
-                 {/* <View style={{ flex: 1, flexDirection: 'column' }}>
-
-                  <Text style={styles.preferencesHeadlines} > PARTNER PREFERENCES</Text>
-
-                  <View style={styles.partnerPreferencesStyle}>
-
-                    <Text style={style = styles.partnersGenderHeadline}>
-                      Gender
-                    </Text>
-
-                    <View style={styles.partnerPreferencesContainerStyle} >
-
-                      <View style={styles.userTypesContainer}>
-
-                        <AvatarImage
-                          disabled={!this.state.editMode}
-                          label={"Male"}
-                          lableFontSize={11}
-                          labelColor={'#75cac3'}
-                          image={FEMALE_AVATAR}
-                          height={40}
-                          width={40}
-                          selectedHeight={50}
-                          selectedWidth={50}
-                          image={MALE_AVATAR}
-                          onPress={
-                            () => {
-                              this.setSelectedGenderPartner('Male')
-                              this.setState({ partnerGender: 'Male' })
-                            }
-                          }
-                          selected={this.state.partnerGender === 'Male'}
-                        />
-
-                        <AvatarImage
-                          disabled={!this.state.editMode}
-                          label={"Female"}
-                          lableFontSize={11}
-                          labelColor={'#f34573'}
-                          image={FEMALE_AVATAR}
-                          height={40}
-                          width={40}
-                          selectedHeight={50}
-                          selectedWidth={50}
-                          image={FEMALE_AVATAR}
-                          onPress={
-                            () => {
-                              this.setSelectedGenderPartner('Female')
-                              this.setState({ partnerGender: 'Female' })
-                            }
-                          }
-                          selected={this.state.partnerGender === 'Female'}
-                        />
-
-                        <AvatarImage
-                          disabled={!this.state.editMode}
-                          label={"Both"}
-                          lableFontSize={11}
-                          labelColor={'#7384B4'}
-                          image={FEMALE_AVATAR}
-                          height={40}
-                          width={40}
-                          selectedHeight={50}
-                          selectedWidth={50}
-                          image={BOTH_AVATAR}
-                          onPress={
-                            () => {
-                              this.setSelectedGenderPartner('Both')
-                              this.setState({ partnerGender: 'Both' })
-                            }
-                          }
-                          selected={this.state.partnerGender === 'Both'}
-                        />
-
-                      </View>
-
-                    </View>
-
-                  </View>
-
-                  <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignContent: "center", marginTop: 20, }}>
-
-                    <Text style={style = styles.partnersAgeHeadline}>
-                      Age
-                      </Text>
-
-                    {this.state.editMode ? <View style={{ flex: 5, justifyContent: 'center', flexDirection: 'row', marginRight: 25 }}>
-
-                      <NumericInput
-                        editable={false}
-                        style={styles.numericInput}
-                        value={this.state.minPartnerAge}
-                        onChange={value => this.setState({ minPartnerAge: value })}
-                        type='up-down'
-                        initValue={this.state.minPartnerAge}
-                        totalWidth={100}
-                        textColor='#7384B4'
-                        minValue={18}
-                        maxValue={this.state.maxPartnerAge}
-                        rounded
-                      />
-
-                      <Text style={{ flex: 1, color: 'white', textAlign: 'center', marginTop: 10, fontWeight: 'bold' }}>to</Text>
-
-                      <NumericInput
-                        editable={false}
-                        style={styles.numericInput}
-                        value={this.state.maxPartnerAge}
-                        onChange={value => this.setState({ maxPartnerAge: value })}
-                        type='up-down'
-                        initValue={this.state.maxPartnerAge}
-                        totalWidth={100}
-                        textColor='#7384B4'
-                        minValue={this.state.minPartnerAge}
-                        maxValue={100}
-                        rounded
-                      />
-                    </View> :
-                      <View style={{ flex: 5, justifyContent: 'center', flexDirection: 'row', marginRight: 25 }}>
-                        <Text style={{ flex: 1, color: 'white', marginTop: 10, fontWeight: 'bold', fontFamily: 'regular', color: '#f34573' }}>{this.state.minPartnerAge + " to " + this.state.maxPartnerAge}</Text>
-
-                      </View>
-                    }
-
-                  </View>
-
-                </View>
-
-
-
-              </View>
-
-
-              <View style={{ flex: 1, flexDirection: 'column' }}>
-
-                <Text style={styles.preferencesHeadlines}>TRAINER PREFERENCES</Text>
-
-                <View style={styles.partnerPreferencesStyle}>
-
-                  <Text style={style = styles.partnersGenderHeadline}>
-                    Gender
-                    </Text>
-
-                  <View style={styles.partnerPreferencesContainerStyle} >
-
-                    <View style={styles.userTypesContainer}>
-
-                      <AvatarImage
-                        disabled={!this.state.editMode}
-                        label={"Male"}
-                        lableFontSize={11}
-                        labelColor={'#75cac3'}
-                        image={FEMALE_AVATAR}
-                        height={40}
-                        width={40}
-                        selectedHeight={50}
-                        selectedWidth={50}
-                        image={MALE_AVATAR}
-                        onPress={
-                          () => {
-                            this.setSelectedGenderTrainer('Male')
-                            this.setState({ trainerGender: 'Male' })
-                          }
-                        }
-                        selected={this.state.trainerGender === 'Male'}
-                      />
-
-                      <AvatarImage
-                        disabled={!this.state.editMode}
-                        label={"Female"}
-                        lableFontSize={11}
-                        labelColor={'#f34573'}
-                        image={FEMALE_AVATAR}
-                        height={40}
-                        width={40}
-                        selectedHeight={50}
-                        selectedWidth={50}
-                        image={FEMALE_AVATAR}
-                        onPress={
-                          () => {
-                            this.setSelectedGenderTrainer('Female')
-                            this.setState({ trainerGender: 'Female' })
-                          }
-                        }
-                        selected={this.state.trainerGender === 'Female'}
-                      />
-
-                      <AvatarImage
-                        disabled={!this.state.editMode}
-                        label={"Both"}
-                        lableFontSize={11}
-                        labelColor={'#7384B4'}
-                        image={FEMALE_AVATAR}
-                        height={40}
-                        width={40}
-                        selectedHeight={50}
-                        selectedWidth={50}
-                        image={BOTH_AVATAR}
-                        onPress={
-                          () => {
-                            this.setSelectedGenderTrainer('Both')
-                            this.setState({ trainerGender: 'Both' })
-                          }
-                        }
-                        selected={this.state.trainerGender === 'Both'}
-                      />
-
-                    </View>
-
-                  </View>
-
-                </View> */}
-
-                <View style={{ flex: 1, flexDirection: 'column', marginBottom: 15 }}>
+                <View style={styles.priceContainer}>
 
                   <Text
-                    style={[styles.textHeadlines]}
+                    style={styles.textHeadlines}
                   >
                     Personal Training Price
                     </Text>
@@ -685,7 +447,7 @@ export default class TrainerProfile extends Component {
 
                   </View>
 
-                  <Text style={{ color: '#f34573', textAlign: 'center', fontSize: 13 }}>Price: {this.state.personalTrainingPrice} $</Text>
+                  <Text style={styles.priceText}>Price: {this.state.personalTrainingPrice} $</Text>
 
                 </View>
 
@@ -694,20 +456,9 @@ export default class TrainerProfile extends Component {
               </View>
 
               {this.state.editMode ? <Button
-                containerStyle={{ marginVertical: 20 }}
-                style={{
-                  flex: 1,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  marginBottom: 10
-                }}
-                buttonStyle={{
-                  height: 55,
-                  width: SCREEN_WIDTH - 250,
-                  borderRadius: 30,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
+                containerStyle={styles.updateButtonContainer}
+                style={styles.updateButton}
+                buttonStyle={style.updateButtonStyle}
                 linearGradientProps={{
                   colors: ['#75cac3', '#75cac3'],
                   start: [1, 0],
@@ -733,7 +484,7 @@ export default class TrainerProfile extends Component {
           </View>
         ) : (
 
-            <ActivityIndicator style={{ justifyContent: 'center', top: 350 }} size="large" color="gray" />
+            <ActivityIndicator style={styles.activityIndicator} size="large" color="gray" />
 
           )}
 
@@ -745,28 +496,71 @@ export default class TrainerProfile extends Component {
 
 
 const styles = StyleSheet.create({
-  statusBar: {
-    height: 10,
-  },
-
-  navBar: {
-    flexDirection: 'row',
-    height: 90,
-    width: SCREEN_WIDTH,
-    justifyContent: 'center',
-    alignContent: 'center',
-    alignItems: 'center',
-  },
-
-  nameHeader: {
+  formContainer:
+  { flex: 1, justifyContent: 'center' },
+  logoImage:
+  { width: 57, height: 38, marginLeft: 18 },
+  editButtonStyle:
+  { flex: 1, zIndex: 2 },
+  actionButtonsView:
+  {flex:1, zIndex:2,  position:'absolute', left:0, top:-10, height:100, width:100, justifyContent:'center'},
+  scrollView:
+  { flex: 2, marginTop: 15, },
+  categoriesRow:
+  { flex: 1, flexDirection: 'row' },
+  categoriesContainer:
+  {
     flex: 1,
-    color: '#f34573',
-    fontSize: 28,
-    textAlign: 'center',
-    justifyContent: 'center',
-    fontFamily: 'light'
+    flexDirection: 'column',
+    height: 170,
+    marginLeft: 40,
+    marginRight: 10,
+    marginTop: 30
   },
-
+  rateText:
+  { fontFamily: 'light', marginLeft: 10, marginTop: 2, color: '#7384B4', },
+  rateStarImage:
+  { width: 20, height: 20 },
+  trainerDetailsContainer:
+  { flexDirection: 'column', alignItems: 'center', alignContent: 'center', justifyContent: 'center', marginBottom: 20, },
+pictureEditView:
+{ flex: 1, alignItems: 'center', },
+rateContainer:
+{ flex: 1, flexDirection: 'row', marginTop: 5 },
+detailsText:
+{ fontFamily: 'light', color: '#7384B4', },
+detailsView:
+{ flex: 1, flexDirection: 'row', marginTop: 5 },
+detailsContainer:
+{ flex: 1, flexDirection: 'column', marginTop: 10, alignItems: 'center' },
+image:
+{ width: 120, height: 120, borderRadius: 60 },
+  radiusText:
+  { color: '#f34573', textAlign: 'center', fontSize: 13, fontFamily: 'light' },
+  searchRadiusContainer:
+  { flex: 1, flexDirection: 'column', marginBottom: 20, },
+  updateButtonContainer:
+  { marginVertical: 20 },
+  
+updateButtonStyle:
+{
+  height: 55,
+  width: SCREEN_WIDTH - 250,
+  borderRadius: 30,
+  justifyContent: 'center',
+  alignItems: 'center',
+},
+  updateButton:
+  {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 10
+  },
+priceText:
+{ color: '#f34573', textAlign: 'center', fontSize: 13 },
+priceContainer:
+{ flex: 1, flexDirection: 'column', marginBottom: 15 },
   sliderStyle: {
     width: SLIDER_SIZE,
     marginTop: 35,
@@ -781,26 +575,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginTop: -18
   },
-
-  partnerPreferencesContainerStyle: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'space-around',
-    margin: 10,
-    flexDirection: 'row',
-    marginRight: 40
-
-  },
+divider:
+{ flex: 1, marginTop: 10 },
   headerContainer: {
-    //flex: 1,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 25,
-    backgroundColor: '#d0d4db',
-    height: 80,
-    //paddingBottom:10
-  },
+    marginTop: 20,
+    backgroundColor: '#f5f5f5'    
+    ,height: 80,
+  }, 
+
 
   heading: {
     color: 'black',
@@ -809,7 +594,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginLeft: 15,
     fontFamily: 'light',
-    //marginLeft: -110
   },
 
   sliderRangeText: {
@@ -829,50 +613,13 @@ const styles = StyleSheet.create({
     marginTop: 10
   },
 
-  partnersGenderHeadline: {
-    flex: 1,
-    fontSize: 15,
-    color: '#75cac3',
-    fontFamily: 'regular',
-    marginLeft: 40,
-    marginTop: 30
-  },
 
-  partnersAgeHeadline: {
-    flex: 2,
-    fontSize: 15,
-    color: '#75cac3',
-    fontFamily: 'regular',
-    marginLeft: 40,
-    marginTop: 10
-  },
-
-  userTypesContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    width: SCREEN_WIDTH,
-    alignItems: 'center',
-    marginTop: -18,
-  },
-
-  partnerPreferencesStyle: {
-    flex: 1,
-    flexDirection: 'row',
-    marginTop: 15
-  },
-
-  numericInput: {
+  flex: {
     flex: 1,
   },
+  activityIndicator:
+    { justifyContent: 'center', top: 350 },
 
-  preferencesHeadlines: {
-    color: '#7384B4',
-    textAlign: 'center',
-    fontSize: 14,
-    fontFamily: "bold",
-    marginTop: 30,
-    marginBottom: 10
-  }
 
 
 });
