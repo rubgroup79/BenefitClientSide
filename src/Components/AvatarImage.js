@@ -8,11 +8,13 @@ import {
 } from 'react-native';
 
 const AvatarImage = props => {
+    
     const { image, label, labelColor, selected,height, width, selectedHeight, selectedWidth,lableFontSize, ...attributes } = props;
+
     return (
         
         <TouchableOpacity {...attributes}>
-            
+
             <View
                 style={[
                     styles.userTypeItemContainer,

@@ -51,7 +51,7 @@ export default class TrainerOnlineModal extends Component {
         else return 0;
     }
 
-   
+
     onConfirmStartTime = (hour, minute) => {
         start = hour + ":" + minute;
         this.setState({ startTime: moment(new Date()).format('YYYY-MM-DD') + " " + start + ":00.000" });
@@ -75,7 +75,7 @@ export default class TrainerOnlineModal extends Component {
                     Longitude: this.state.longitude,
                     StartTime: this.state.startTime,
                     EndTime: this.state.endTime,
-                 
+
                 };
                 this.props.onlineModalVisible();
 
@@ -199,45 +199,45 @@ export default class TrainerOnlineModal extends Component {
 const styles = StyleSheet.create({
     mainContainer: {
         width: SCREEN_WIDTH - 40,
-        height: SCREEN_HEIGHT - 370,
+        height: SCREEN_HEIGHT - 430,
         backgroundColor: 'rgba(255,255,255,0.9)',
         position: 'absolute',
         borderRadius: 40,
         top: 200,
         zIndex: 1,
     },
-header:
-{ flex: 1, flexDirection: 'row', alignItems: 'center' },
+    header:
+        { flex: 1, flexDirection: 'row', alignItems: 'center' },
     closeIcon: {
         top: 20,
         left: 20,
         flex: 1
     },
-buttonContainer:
-{ marginVertical: 20 },
-buttonStyle:
-{
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 10,
-},
-goButtonStyle:
-{
-    height: 60,
-    width: 140,
-    borderRadius: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f34573'
-},
-title:
-{
-    fontFamily: 'bold',
-    fontSize: 15,
-    color: 'white',
-    textAlign: 'center',
-},
+    buttonContainer:
+        { marginVertical: 20 },
+    buttonStyle:
+    {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 10,
+    },
+    goButtonStyle:
+    {
+        height: 60,
+        width: 140,
+        borderRadius: 30,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#f34573'
+    },
+    title:
+    {
+        fontFamily: 'bold',
+        fontSize: 15,
+        color: 'white',
+        textAlign: 'center',
+    },
     searchContainer: {
         flex: 1,
         flexDirection: 'column',

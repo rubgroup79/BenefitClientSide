@@ -232,7 +232,7 @@ export default class SearchResultsListView extends Component {
                 style={styles.resultContainer}
             >
 
-                <View style={style.leftView}>
+                <View style={styles.leftView}>
 
                     <View style={styles.avatarView}>
                         <Avatar
@@ -312,7 +312,7 @@ export default class SearchResultsListView extends Component {
 
     render() {
         return (
-            <View style={styles.conatiner}>
+            <View style={styles.container}>
 
                 <View style={styles.headerView}>
                     <Icon name='close' style={styles.closeIcon} size={20} color='gray' onPress={() => this.props.closeListView()}></Icon>
@@ -320,7 +320,7 @@ export default class SearchResultsListView extends Component {
                 </View>
 
                 {(this.props.CoupleResults.length != 0 || this.props.GroupResults.length != 0) ?
-                    <ScrollView style={style.scrollView}>
+                    <ScrollView style={styles.scrollView}>
                         {this.state.status == 1 ?
                             <View>
                                 {this.props.CoupleResults.map((x, index) => {
@@ -362,7 +362,16 @@ resultContainer:
 
 },
 container:
-{ flex: 1, alignItems: 'center', flexDirection: 'column', backgroundColor: 'rgba(255,255,255,0.9)', alignContent: "center", position: 'absolute', zIndex: 2, top: 90, width: SCREEN_WIDTH, },
+{
+    flex: 1,
+    flexDirection: 'column',
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    alignContent: "center",
+    position: 'absolute',
+    zIndex: 2,
+    top: 90,
+    width: SCREEN_WIDTH
+},
 headerView:
 { flex: 1, flexDirection: 'row', alignItems: 'center' },
 leftView:

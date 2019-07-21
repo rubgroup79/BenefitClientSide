@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { Font } from 'expo';
 import { Input, Button, withTheme } from 'react-native-elements';
-import MyDatePicker from '../Components/datePicker';
+import MyDatePicker from '../Components/DatePicker';
 import Icon from 'react-native-vector-icons/SimpleLineIcons';
 import AvatarImage from '../Components/AvatarImage';
 import CustomButton from '../Components/CategoriesButton';

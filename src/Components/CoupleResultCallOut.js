@@ -228,7 +228,7 @@ export default class CoupleResultCallOut extends React.Component {
                                 {this.props.type == 3 ?
                                     <View style={styles.type3ButtonsContainer}>
                                         <TouchableOpacity
-                                            style={style.sendMessageView}
+                                            style={styles.sendMessageView}
                                             onPress={() => {
                                                 this.props.UserCode == this.props.Data.SenderCode ? partnerUserCode = this.props.Data.ReceiverCode : partnerUserCode = this.props.Data.SenderCode;
                                                 this.props.navigation.navigate('Chat', { UserCode: this.props.UserCode, PartnerUserCode: partnerUserCode, FullName: this.props.Data.FirstName + " " + this.props.Data.LastName, Picture: this.props.Data.Picture })
@@ -380,7 +380,7 @@ const styles = StyleSheet.create({
     cancelOrApproveView:
     {
         flex: 1,
-        flexDirection: 'row'
+        alignItems:'center'
     },
     cancelSuggestionButton:
     {
@@ -392,6 +392,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginHorizontal: 10,
     },
+    buttonsContainer: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems:'center',
+
+    },
     replySuggestionView:
     {
         backgroundColor: 'rgba(222,222,222,1)',
@@ -400,7 +406,7 @@ const styles = StyleSheet.create({
         borderRadius: 100,
         justifyContent: 'center',
         alignItems: 'center',
-        marginHorizontal: 10,
+        marginHorizontal: 5,
     },
     sendMessageView:
     {

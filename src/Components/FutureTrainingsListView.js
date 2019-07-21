@@ -243,7 +243,7 @@ export default class FutureTrainingsListView extends Component {
                                 />
                             </View>
                             <TouchableOpacity
-                                style={styles.button}
+                                style={styles.chatButton}
                                 onPress={() => {
                                     this.props.navigation.navigate('Chat', { UserCode: this.props.UserCode, PartnerUserCode: x.PartnerUserCode, FullName: x.PartnerFirstName + " " + x.PartnerLastName, Picture: x.PartnerPicture })
                                 }}
@@ -252,7 +252,7 @@ export default class FutureTrainingsListView extends Component {
                             </TouchableOpacity>
 
                             <TouchableOpacity
-                                style={styles.button}
+                                style={styles.cancelButton}
                                 onPress={() => {
                                     this.cancelCoupleTraining(x)
 
@@ -359,7 +359,7 @@ export default class FutureTrainingsListView extends Component {
                             </View>
 
 
-                            {this.props.UserCode != x.CreatorCode && this.CreatorDetails.length != 0 ?
+                            {this.props.UserCode != x.CreatorCode && this.state.creatorDetails.length != 0 ?
                                 <TouchableOpacity
                                     style={styles.chatButton}
                                     onPress={() => {
