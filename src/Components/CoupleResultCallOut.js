@@ -183,7 +183,6 @@ export default class CoupleResultCallOut extends React.Component {
                                             containerStyle={styles.sendSuggestionContainer}
                                             icon={() => <Icon1 name="paper-plane" size={15} color={'white'}></Icon1>}
 
-
                                         />
                                     </View> : null}
 
@@ -448,4 +447,10 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         zIndex: 0
     },
+    sendSuggestion:{
+        fontFamily:'regular',
+        fontSize:12,
+        marginLeft:5,
+        marginTop:-3
+    }
 })

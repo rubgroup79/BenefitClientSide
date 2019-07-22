@@ -1,11 +1,14 @@
 {
   "expo": {
     "name": "BeneFIT",
-    "slug": "react-native-elements-app",
-    "description": "A demo app for React Native Elements UI Library",
+    "slug": "benefit-application",
+    "description": "",
     "privacy": "public",
     "sdkVersion": "31.0.0",
-    "platforms": ["ios", "android"],
+    "platforms": [
+      "ios",
+      "android"
+    ],
     "version": "1.0.0",
     "orientation": "portrait",
     "primaryColor": "#cccccc",
@@ -15,7 +18,9 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true
     }

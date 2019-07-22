@@ -15,20 +15,16 @@ import {
 } from 'react-native';
 import { Font } from 'expo';
 import { Input, Button } from 'react-native-elements';
-
 import Icon from 'react-native-vector-icons/FontAwesome';
 import SimpleIcon from 'react-native-vector-icons/SimpleLineIcons';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
-const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 const BG_IMAGE = require('../../Images/LogoWithName.png');
 
 // Enable LayoutAnimation on Android
 UIManager.setLayoutAnimationEnabledExperimental &&
   UIManager.setLayoutAnimationEnabledExperimental(true);
-
-
 
 const TabSelector = ({ selected }) => {
   return (
@@ -41,8 +37,6 @@ const TabSelector = ({ selected }) => {
 TabSelector.propTypes = {
   selected: PropTypes.bool.isRequired,
 };
-
-
 
 const navigateActionTrainee = NavigationActions.navigate({
   routeName: 'BottomNavigation',
@@ -224,7 +218,6 @@ export default class Login extends Component {
           this.setState({ userCode: response.UserCode, isTrainer: response.IsTrainer });
           this.getUserDetails(response.UserCode)
           this.registerForPushNotifications();
-          alert("Success! User Code= " + this.state.userCode);
           if (this.state.isTrainer == 0) // a trainee
             this.props.navigation.dispatch(navigateActionTrainee);
           else this.props.navigation.dispatch(navigateActionTrainer);
