@@ -86,7 +86,7 @@ export default class SigninTrainee extends Component {
           alert('Error');
         }
         else {
-          alert('User Code: ' + response);
+          //alert('User Code: ' + response);
           this.props.navigation.navigate('Login');
         }
       })
